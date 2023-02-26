@@ -1,11 +1,9 @@
-# FutureContents2D
+# BugEatingSwimmer-RepairmanInSubmarine
 ## リリースノート
-#### v1.0.1
-##### コード最適化
-#### v1.0.0
-Fix版第1段（オプション設定、ステージクリア済みデータ適用）
+#### v0.0.1
+##### プロトタイプ版制作
 ## プロジェクトバージョン
-### v1.0.1
+### v0.0.1
 ## UnityEditorバージョン
 ### [2021.3.13f1](https://unity.com/releases/editor/whats-new/2021.3.13)
 ## 使用アセット
