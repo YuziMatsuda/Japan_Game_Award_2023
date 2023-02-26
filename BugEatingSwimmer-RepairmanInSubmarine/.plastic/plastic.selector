@@ -1,0 +1,4 @@
+repository "BugEatingSwimmer-RepairmanInSubmarine@SCMPractice@cloud"
+  path "/"
+    smartbranch "/main"    
+     
