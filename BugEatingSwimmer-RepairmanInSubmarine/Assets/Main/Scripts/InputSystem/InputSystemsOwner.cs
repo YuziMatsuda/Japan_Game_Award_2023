@@ -54,15 +54,9 @@ namespace Main.InputSystem
         public void OnStart()
         {
             _inputActions = new FutureContents3D_Main();
-            _inputActions.Player.MoveLeft.started += inputPlayer.OnMovedLeft;
-            _inputActions.Player.MoveLeft.performed += inputPlayer.OnMovedLeft;
-            _inputActions.Player.MoveLeft.canceled += inputPlayer.OnMovedLeft;
-            _inputActions.Player.MoveRight.started += inputPlayer.OnMovedRight;
-            _inputActions.Player.MoveRight.performed += inputPlayer.OnMovedRight;
-            _inputActions.Player.MoveRight.canceled += inputPlayer.OnMovedRight;
-            _inputActions.Player.Jump.started += inputPlayer.OnJumped;
-            _inputActions.Player.Jump.performed += inputPlayer.OnJumped;
-            _inputActions.Player.Jump.canceled += inputPlayer.OnJumped;
+            _inputActions.Player.Move.started += inputPlayer.OnMoved;
+            _inputActions.Player.Move.performed += inputPlayer.OnMoved;
+            _inputActions.Player.Move.canceled += inputPlayer.OnMoved;
             _inputActions.UI.Pause.started += inputUI.OnPaused;
             _inputActions.UI.Pause.performed += inputUI.OnPaused;
             _inputActions.UI.Pause.canceled += inputUI.OnPaused;

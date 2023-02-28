@@ -14,16 +14,35 @@ namespace Main.Model
     /// プレイヤー
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
-    public class PlayerModel : LevelPhysicsSerializerCapsule
+    [RequireComponent(typeof(CapsuleCollider2D))]
+    public class PlayerModel : MonoBehaviour
     {
         /// <summary>移動速度</summary>
         [SerializeField] private float moveSpeed = 4f;
-        /// <summary>ジャンプ速度</summary>
-        [SerializeField] private float jumpSpeed = 6f;
         /// <summary>操作禁止フラグ</summary>
         private bool _inputBan;
         /// <summary>操作禁止フラグ</summary>
         public bool InputBan => _inputBan;
+        /// <summary>ブレーキ</summary>
+        [SerializeField] private float brake = 5f;
+        /// <summary>移動速度挙動</summary>
+        [SerializeField] private ForceMode2D forceMode = ForceMode2D.Force;
+        /// <summary>移動向き</summary>
+        [SerializeField] private EnumMovementDirectionMode movementDirectionMode = EnumMovementDirectionMode.Seamless;
+        /// <summary>ターゲットポインタ</summary>
+        [SerializeField] private Transform targetPointer;
+        /// <summary>ターゲットポインタ</summary>
+        private Transform _targetPointerClone;
+        /// <summary>ターゲットポインタ</summary>
+        public Transform TargetPointer => _targetPointerClone;
+        /// <summary>移動ベロシティ</summary>
+        private readonly Vector2ReactiveProperty _moveVelocityReactiveProperty = new Vector2ReactiveProperty();
+        /// <summary>移動ベロシティ</summary>
+        public IReactiveProperty<Vector2> MoveVelocityReactiveProperty => _moveVelocityReactiveProperty;
+        /// <summary>プレイヤーがインスタンス済みか</summary>
+        private readonly BoolReactiveProperty _isInstanced = new BoolReactiveProperty();
+        /// <summary>プレイヤーがインスタンス済みか</summary>
+        public IReactiveProperty<bool> IsInstanced => _isInstanced;
 
         /// <summary>
         /// 操作禁止フラグをセット
@@ -44,61 +63,110 @@ namespace Main.Model
             }
         }
 
-        protected override void Reset()
-        {
-            base.Reset();
-            distance = 0f;
-        }
+        [SerializeField] private Vector3 moveVelocityOutput;
+        [SerializeField] private float magnitudeOutput;
 
         private void Start()
         {
+            _targetPointerClone = Instantiate(targetPointer);
+            if (_targetPointerClone != null)
+                _isInstanced.Value = true;
             // Rigidbody
             var rigidbody = GetComponent<Rigidbody2D>();
             var rigidbodyGravityScale = rigidbody.gravityScale;
             // 移動制御のベロシティ
-            var moveVelocity = new Vector3();
+            Vector2 moveVelocity = new Vector2();
             // 位置・スケールのキャッシュ
-            var tForm = transform;
-            // ジャンプフラグ
-            var isJumped = false;
+            var transform = base.transform;
             // 移動入力に応じて移動座標をセット
             this.UpdateAsObservable()
                 .Subscribe(_ =>
                 {
-                    origin = gameObject.transform.position;
                     if (!_inputBan)
                     {
-                        moveVelocity = new Vector3(MainGameManager.Instance.InputSystemsOwner.InputPlayer.Moved.x, moveVelocity.y, moveVelocity.z) * moveSpeed * (1f + Time.deltaTime);
-                        var rayCastHit = Physics2D.CapsuleCast(origin, size, capsuleDirection, angle, direction, distance, LayerMask.GetMask(ConstLayerNames.LAYER_NAME_FLOOR));
-                        if (!isJumped &&
-                            MainGameManager.Instance.InputSystemsOwner.InputPlayer.Jumped &&
-                            rayCastHit.transform != null)
-                        {
-                            isJumped = true;
-                        }
-                        // 空中のみ重力が有効（Y軸引力にAddForceのX軸制御が負けるため）
-                        rigidbody.gravityScale = rayCastHit.transform == null ? rigidbodyGravityScale : 0f;
+                        moveVelocityOutput = moveVelocity;
+                        magnitudeOutput = moveVelocityOutput.magnitude;
+                        moveVelocity = new Vector2(MainGameManager.Instance.InputSystemsOwner.InputPlayer.Moved.x, MainGameManager.Instance.InputSystemsOwner.InputPlayer.Moved.y) * moveSpeed;
+                        _moveVelocityReactiveProperty.Value = moveVelocity;
                     }
                 });
             // 移動制御
             this.FixedUpdateAsObservable()
                 .Subscribe(_ =>
                 {
-                    if (isJumped)
+                    // 歩く走る挙動
+                    rigidbody.AddForce(moveVelocity * (forceMode.Equals(ForceMode2D.Force) ? 1f : Time.fixedDeltaTime), forceMode);
+                    // Axis指定がゼロなら位置移動の減衰値を高めて止まり安くする
+                    rigidbody.drag = 0f < moveVelocity.magnitude ? 0f : brake;
+                    // 移動方向に合わせて向きを変える
+                    transform.rotation = GetQuaternionDirection(movementDirectionMode, transform);
+                });
+        }
+
+        /// <summary>
+        /// 向き先をクォータニオンで取得
+        /// </summary>
+        /// <param name="mode">移動向きモード</param>
+        /// <param name="transform">トランスフォーム</param>
+        /// <returns>クォータニオン</returns>
+        private Quaternion GetQuaternionDirection(EnumMovementDirectionMode mode, Transform transform)
+        {
+            switch (mode)
+            {
+                case EnumMovementDirectionMode.Seamless:
+                    var toDirection = _targetPointerClone.position - transform.position;
+                    
+                    return Quaternion.FromToRotation(Vector2.right, toDirection);
+                case EnumMovementDirectionMode.LeftOrRight:
+                    toDirection = _targetPointerClone.position - transform.position;
+                    if (toDirection.x < Vector3.left.x)
+                        toDirection = Vector3.left;
+                    else if (Vector3.right.x <= toDirection.x)
+                        toDirection = Vector3.right;
+                    else
+                        return transform.rotation;
+
+                    return Quaternion.FromToRotation(Vector2.right, toDirection);
+                case EnumMovementDirectionMode.LeftOrRightOrUpOrDown:
+                    toDirection = _targetPointerClone.position - transform.position;
+                    if (Mathf.Abs(toDirection.x) < Mathf.Abs(toDirection.y))
                     {
-                        moveVelocity = new Vector3(moveVelocity.x, jumpSpeed, moveVelocity.z);
-                        MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_player_jump);
-                        isJumped = false;
-                        // ジャンプ挙動
-                        rigidbody.AddForce(moveVelocity, ForceMode2D.Impulse);
+                        if (toDirection.y < Vector3.down.y)
+                            toDirection = Vector3.down;
+                        else if (Vector3.up.y <= toDirection.y)
+                            toDirection = Vector3.up;
+                        else
+                            return transform.rotation;
+                    }
+                    else if (Mathf.Abs(toDirection.y) < Mathf.Abs(toDirection.x))
+                    {
+                        if (toDirection.x < Vector3.left.x)
+                            toDirection = Vector3.left;
+                        else if (Vector3.right.x <= toDirection.x)
+                            toDirection = Vector3.right;
+                        else
+                            return transform.rotation;
                     }
                     else
-                    {
-                        moveVelocity = new Vector3(moveVelocity.x, 0f, moveVelocity.z);
-                    }
-                    // 歩く走る挙動
-                    rigidbody.AddForce(moveVelocity);
-                });
+                        return transform.rotation;
+
+                    return Quaternion.FromToRotation(Vector2.right, toDirection);
+                default:
+                    throw new System.Exception("未到達エラー");
+            }
+        }
+
+        /// <summary>
+        /// 移動向きモード
+        /// </summary>
+        private enum EnumMovementDirectionMode
+        {
+            /// <summary>シームレス</summary>
+            Seamless,
+            /// <summary>左右</summary>
+            LeftOrRight,
+            /// <summary>上下左右</summary>
+            LeftOrRightOrUpOrDown,
         }
     }
 }

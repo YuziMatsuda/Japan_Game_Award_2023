@@ -75,6 +75,8 @@ namespace Main.Presenter
         [SerializeField] private PlayerView playerView;
         /// <summary>プレイヤーのモデル</summary>
         [SerializeField] private PlayerModel playerModel;
+        /// <summary>移動先にポインタ表示のビュー</summary>
+        [SerializeField] private TargetPointerView targetPointerView;
 
         private void Reset()
         {
@@ -590,6 +592,30 @@ namespace Main.Presenter
                                     var player = GameObject.FindGameObjectWithTag(ConstTagNames.TAG_NAME_PLAYER);
                                     playerView = player.GetComponent<PlayerView>();
                                     playerModel = player.GetComponent<PlayerModel>();
+                                    playerModel.IsInstanced.ObserveEveryValueChanged(x => x.Value)
+                                        .Subscribe(x =>
+                                        {
+                                            if (x)
+                                            {
+                                                targetPointerView = playerModel.TargetPointer.GetComponent<TargetPointerView>();
+                                                playerModel.MoveVelocityReactiveProperty.ObserveEveryValueChanged(x => x.Value)
+                                                    .Subscribe(x =>
+                                                    {
+                                                        if (!targetPointerView.SetPosition(playerModel.transform.position, x))
+                                                            Debug.LogError("位置情報をセット呼び出しの失敗");
+                                                        if (0 < x.magnitude)
+                                                        {
+                                                            if (!targetPointerView.RenderVisible())
+                                                                Debug.LogError("見える状態に描画呼び出しの失敗");
+                                                        }
+                                                        else
+                                                        {
+                                                            if (!targetPointerView.RenderUnVisible())
+                                                                Debug.LogError("見えない状態に描画呼び出しの失敗");
+                                                        }
+                                                    });
+                                            }
+                                        });
                                 }
                             });
                         safeZoneModel = GameObject.Find(ConstGameObjectNames.GAMEOBJECT_NAME_SAFEZONE).GetComponent<SafeZoneModel>();
