@@ -20,9 +20,26 @@ namespace Main.InputSystem
             _moved = context.ReadValue<Vector2>();
         }
 
+        /// <summary>アタック</summary>
+        private bool _attacked;
+        /// <summary>アタック</summary>
+        public bool Attacked => _attacked;
+
+        public void OnAttacked(InputAction.CallbackContext context)
+        {
+            if (context.canceled && _attacked)
+            {
+                _attacked = false;
+                return;
+            }
+            if (!context.performed) return;
+            _attacked = true;
+        }
+
         public void DisableAll()
         {
             _moved = new Vector2();
+            _attacked = false;
         }
     }
 }

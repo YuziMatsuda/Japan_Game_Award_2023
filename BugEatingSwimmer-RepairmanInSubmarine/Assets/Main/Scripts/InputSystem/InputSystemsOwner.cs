@@ -57,6 +57,8 @@ namespace Main.InputSystem
             _inputActions.Player.Move.started += inputPlayer.OnMoved;
             _inputActions.Player.Move.performed += inputPlayer.OnMoved;
             _inputActions.Player.Move.canceled += inputPlayer.OnMoved;
+            _inputActions.Player.Attack.performed += inputPlayer.OnAttacked;
+            _inputActions.Player.Attack.canceled += inputPlayer.OnAttacked;
             _inputActions.UI.Pause.started += inputUI.OnPaused;
             _inputActions.UI.Pause.performed += inputUI.OnPaused;
             _inputActions.UI.Pause.canceled += inputUI.OnPaused;

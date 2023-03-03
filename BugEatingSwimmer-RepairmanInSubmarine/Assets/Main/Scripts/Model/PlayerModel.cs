@@ -26,9 +26,9 @@ namespace Main.Model
         /// <summary>ブレーキ</summary>
         [SerializeField] private float brake = 5f;
         /// <summary>移動速度挙動</summary>
-        [SerializeField] private ForceMode2D forceMode = ForceMode2D.Force;
+        [SerializeField] private ForceMode2D forceMode = ForceMode2D.Impulse;
         /// <summary>移動向き</summary>
-        [SerializeField] private EnumMovementDirectionMode movementDirectionMode = EnumMovementDirectionMode.Seamless;
+        [SerializeField] private EnumMovementDirectionMode movementDirectionMode = EnumMovementDirectionMode.LeftOrRight;
         /// <summary>ターゲットポインタ</summary>
         [SerializeField] private Transform targetPointer;
         /// <summary>ターゲットポインタ</summary>
@@ -43,6 +43,16 @@ namespace Main.Model
         private readonly BoolReactiveProperty _isInstanced = new BoolReactiveProperty();
         /// <summary>プレイヤーがインスタンス済みか</summary>
         public IReactiveProperty<bool> IsInstanced => _isInstanced;
+        /// <summary>アタックモーション時間</summary>
+        [SerializeField] private float attackDuration = .5f;
+        /// <summary>アタックモーション距離</summary>
+        [SerializeField] private float attackDistance = 1f;
+        /// <summary>アタックモーションモード</summary>
+        [SerializeField] private EnumAttackMotionMode enumAttackMotionMode = EnumAttackMotionMode.OneAttack;
+        /// <summary>つつくアクション実行中フラグ</summary>
+        private readonly BoolReactiveProperty _isPlayingAction = new BoolReactiveProperty();
+        /// <summary>つつくアクション実行中フラグ</summary>
+        public IReactiveProperty<bool> IsPlayingAction => _isPlayingAction;
 
         /// <summary>
         /// 操作禁止フラグをセット
@@ -65,6 +75,8 @@ namespace Main.Model
 
         [SerializeField] private Vector3 moveVelocityOutput;
         [SerializeField] private float magnitudeOutput;
+        [SerializeField] private Vector3 normalizedOutput;
+        [SerializeField] private bool isPlayingActionOutput;
 
         private void Start()
         {
@@ -75,7 +87,8 @@ namespace Main.Model
             var rigidbody = GetComponent<Rigidbody2D>();
             var rigidbodyGravityScale = rigidbody.gravityScale;
             // 移動制御のベロシティ
-            Vector2 moveVelocity = new Vector2();
+            var moveVelocity = new Vector2ReactiveProperty();
+            var moveVelocityLast = new Vector2ReactiveProperty();
             // 位置・スケールのキャッシュ
             var transform = base.transform;
             // 移動入力に応じて移動座標をセット
@@ -84,10 +97,11 @@ namespace Main.Model
                 {
                     if (!_inputBan)
                     {
-                        moveVelocityOutput = moveVelocity;
+                        moveVelocityOutput = moveVelocity.Value;
                         magnitudeOutput = moveVelocityOutput.magnitude;
-                        moveVelocity = new Vector2(MainGameManager.Instance.InputSystemsOwner.InputPlayer.Moved.x, MainGameManager.Instance.InputSystemsOwner.InputPlayer.Moved.y) * moveSpeed;
-                        _moveVelocityReactiveProperty.Value = moveVelocity;
+                        normalizedOutput = moveVelocityOutput.normalized;
+                        if (!AttackMovement(_isPlayingAction, moveVelocity, moveVelocityLast, movementDirectionMode))
+                            Debug.LogError("攻撃のモーション呼び出しの失敗");
                     }
                 });
             // 移動制御
@@ -95,12 +109,77 @@ namespace Main.Model
                 .Subscribe(_ =>
                 {
                     // 歩く走る挙動
-                    rigidbody.AddForce(moveVelocity * (forceMode.Equals(ForceMode2D.Force) ? 1f : Time.fixedDeltaTime), forceMode);
+                    rigidbody.AddForce(moveVelocity.Value * (forceMode.Equals(ForceMode2D.Force) ? 1f : Time.fixedDeltaTime), forceMode);
                     // Axis指定がゼロなら位置移動の減衰値を高めて止まり安くする
-                    rigidbody.drag = 0f < moveVelocity.magnitude ? 0f : brake;
+                    rigidbody.drag = 0f < moveVelocity.Value.magnitude && !_isPlayingAction.Value ? 0f : brake;
                     // 移動方向に合わせて向きを変える
-                    transform.rotation = GetQuaternionDirection(movementDirectionMode, transform);
+                    if (0f < moveVelocity.Value.magnitude)
+                        transform.rotation = GetQuaternionDirection(movementDirectionMode, transform);
                 });
+        }
+
+        /// <summary>
+        /// 攻撃のモーション
+        /// </summary>
+        /// <param name="isPlayingAction">攻撃モーション中</param>
+        /// <param name="moveVelocity">移動ベロシティ</param>
+        /// <param name="moveVelocityLast">最後に向いた移動ベロシティ</param>
+        /// <param name="movementDirectionMode">移動向き</param>
+        /// <returns>成功／失敗</returns>
+        private bool AttackMovement(BoolReactiveProperty isPlayingAction, Vector2ReactiveProperty moveVelocity, Vector2ReactiveProperty moveVelocityLast, EnumMovementDirectionMode movementDirectionMode)
+        {
+            try
+            {
+                if (!isPlayingAction.Value)
+                    moveVelocity.Value = new Vector2(MainGameManager.Instance.InputSystemsOwner.InputPlayer.Moved.x, MainGameManager.Instance.InputSystemsOwner.InputPlayer.Moved.y) * moveSpeed;
+                if (0 < moveVelocity.Value.magnitude)
+                    moveVelocityLast.Value = moveVelocity.Value;
+                _moveVelocityReactiveProperty.Value = moveVelocity.Value;
+                isPlayingActionOutput = isPlayingAction.Value;
+                if (!isPlayingAction.Value &&
+                    MainGameManager.Instance.InputSystemsOwner.InputPlayer.Attacked)
+                {
+                    isPlayingAction.Value = true;
+                    switch (enumAttackMotionMode)
+                    {
+                        case EnumAttackMotionMode.OneAttack:
+                            transform.DOPunchPosition(GetNormalized(moveVelocityLast.Value, movementDirectionMode) * attackDistance, attackDuration, 1, 1f)
+                                .OnComplete(() => isPlayingAction.Value = false);
+                            break;
+                        case EnumAttackMotionMode.SeveralAttack:
+                            // DOPunchPositionはもっとダイナミックに動かさないと振動数の引数が作用しない？
+                            transform.DOPunchPosition(GetNormalized(moveVelocityLast.Value, movementDirectionMode) * attackDistance, attackDuration, 5, 1f)
+                                .OnComplete(() => isPlayingAction.Value = false);
+                            break;
+                        default:
+                            Debug.LogError("例外エラー");
+                            break;
+                    }
+                }
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// ベクターのノーマライズを取得
+        /// </summary>
+        /// <param name="moveVelocityLast">最後に向いた移動ベロシティ</param>
+        /// <param name="movementDirectionMode">移動向き</param>
+        /// <returns>ベクター（ノーマライズ）</returns>
+        private Vector2 GetNormalized(Vector2 moveVelocityLast, EnumMovementDirectionMode movementDirectionMode)
+        {
+            if (!movementDirectionMode.Equals(EnumMovementDirectionMode.LeftOrRight))
+                return moveVelocityLast.normalized;
+            else
+            {
+                return new Vector2(moveVelocityLast.normalized.x, 0f);
+            }
         }
 
         /// <summary>
@@ -167,6 +246,17 @@ namespace Main.Model
             LeftOrRight,
             /// <summary>上下左右</summary>
             LeftOrRightOrUpOrDown,
+        }
+
+        /// <summary>
+        /// 攻撃アクションモーションモード
+        /// </summary>
+        private enum EnumAttackMotionMode
+        {
+            /// <summary>一回つつく</summary>
+            OneAttack,
+            /// <summary>複数つつく</summary>
+            SeveralAttack,
         }
     }
 }

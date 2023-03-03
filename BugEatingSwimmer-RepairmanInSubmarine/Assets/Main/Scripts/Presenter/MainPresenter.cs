@@ -616,6 +616,13 @@ namespace Main.Presenter
                                                     });
                                             }
                                         });
+                                    var attackTrigger = GameObject.FindGameObjectWithTag(ConstTagNames.TAG_ATTACK_TRIGGER).GetComponent<AttackTrigger>();
+                                    playerModel.IsPlayingAction.ObserveEveryValueChanged(x => x.Value)
+                                        .Subscribe(x =>
+                                        {
+                                            if (!attackTrigger.SetColliderEnabled(x))
+                                                Debug.LogError("コライダーの有効／無効をセット呼び出しの失敗");
+                                        });
                                 }
                             });
                         safeZoneModel = GameObject.Find(ConstGameObjectNames.GAMEOBJECT_NAME_SAFEZONE).GetComponent<SafeZoneModel>();
