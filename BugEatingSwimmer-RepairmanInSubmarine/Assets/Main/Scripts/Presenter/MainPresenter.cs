@@ -75,6 +75,10 @@ namespace Main.Presenter
         [SerializeField] private PlayerView playerView;
         /// <summary>プレイヤーのモデル</summary>
         [SerializeField] private PlayerModel playerModel;
+        /// <summary>移動先にポインタ表示のビュー</summary>
+        [SerializeField] private TargetPointerView targetPointerView;
+        /// <summary>【デモ用】方角モードの二次元配列出力</summary>
+        [SerializeField] string[] intDirectionModesOutputAry;
 
         private void Reset()
         {
@@ -590,6 +594,63 @@ namespace Main.Presenter
                                     var player = GameObject.FindGameObjectWithTag(ConstTagNames.TAG_NAME_PLAYER);
                                     playerView = player.GetComponent<PlayerView>();
                                     playerModel = player.GetComponent<PlayerModel>();
+                                    playerModel.IsInstanced.ObserveEveryValueChanged(x => x.Value)
+                                        .Subscribe(x =>
+                                        {
+                                            if (x)
+                                            {
+                                                targetPointerView = playerModel.TargetPointer.GetComponent<TargetPointerView>();
+                                                playerModel.MoveVelocityReactiveProperty.ObserveEveryValueChanged(x => x.Value)
+                                                    .Subscribe(x =>
+                                                    {
+                                                        if (!targetPointerView.SetPosition(playerModel.transform.position, x))
+                                                            Debug.LogError("位置情報をセット呼び出しの失敗");
+                                                        if (0 < x.magnitude)
+                                                        {
+                                                            if (!targetPointerView.RenderVisible())
+                                                                Debug.LogError("見える状態に描画呼び出しの失敗");
+                                                        }
+                                                        else
+                                                        {
+                                                            if (!targetPointerView.RenderUnVisible())
+                                                                Debug.LogError("見えない状態に描画呼び出しの失敗");
+                                                        }
+                                                    });
+                                            }
+                                        });
+                                    var attackTrigger = GameObject.FindGameObjectWithTag(ConstTagNames.TAG_ATTACK_TRIGGER).GetComponent<AttackTrigger>();
+                                    playerModel.IsPlayingAction.ObserveEveryValueChanged(x => x.Value)
+                                        .Subscribe(x =>
+                                        {
+                                            if (!attackTrigger.SetColliderEnabled(x))
+                                                Debug.LogError("コライダーの有効／無効をセット呼び出しの失敗");
+                                        });
+                                    var moleculesObj = GameObject.FindGameObjectsWithTag(ConstTagNames.TAG_MOLECULES);
+                                    if (moleculesObj != null)
+                                    {
+                                        var intDirectionModesOutputList = new List<string>();
+                                        for (var i = 0; i < moleculesObj.Length; i++)
+                                        {
+                                            int idx = i;
+                                            moleculesObj[idx].GetComponent<PivotModel>().IsTurning.ObserveEveryValueChanged(x => x.Value)
+                                                .Subscribe(x =>
+                                                {
+                                                    if (!x)
+                                                    {
+                                                        intDirectionModesOutputList.Add(moleculesObj[idx].name);
+                                                        foreach (var cc in moleculesObj[idx].GetComponent<PivotModel>().IntDirectionModes)
+                                                        {
+                                                            intDirectionModesOutputList.Add(string.Join(",", cc));
+                                                        }
+                                                        intDirectionModesOutputAry = intDirectionModesOutputList.ToArray();
+                                                    }
+                                                });
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Debug.LogWarning("ノードとコードのオブジェクト取得に失敗");
+                                    }
                                 }
                             });
                         safeZoneModel = GameObject.Find(ConstGameObjectNames.GAMEOBJECT_NAME_SAFEZONE).GetComponent<SafeZoneModel>();
