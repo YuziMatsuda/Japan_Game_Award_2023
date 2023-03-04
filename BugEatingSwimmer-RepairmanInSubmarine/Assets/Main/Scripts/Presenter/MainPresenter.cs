@@ -77,6 +77,8 @@ namespace Main.Presenter
         [SerializeField] private PlayerModel playerModel;
         /// <summary>移動先にポインタ表示のビュー</summary>
         [SerializeField] private TargetPointerView targetPointerView;
+        /// <summary>【デモ用】方角モードの二次元配列出力</summary>
+        [SerializeField] string[] intDirectionModesOutputAry;
 
         private void Reset()
         {
@@ -623,6 +625,32 @@ namespace Main.Presenter
                                             if (!attackTrigger.SetColliderEnabled(x))
                                                 Debug.LogError("コライダーの有効／無効をセット呼び出しの失敗");
                                         });
+                                    var moleculesObj = GameObject.FindGameObjectsWithTag(ConstTagNames.TAG_MOLECULES);
+                                    if (moleculesObj != null)
+                                    {
+                                        var intDirectionModesOutputList = new List<string>();
+                                        for (var i = 0; i < moleculesObj.Length; i++)
+                                        {
+                                            int idx = i;
+                                            moleculesObj[idx].GetComponent<PivotModel>().IsTurning.ObserveEveryValueChanged(x => x.Value)
+                                                .Subscribe(x =>
+                                                {
+                                                    if (!x)
+                                                    {
+                                                        intDirectionModesOutputList.Add(moleculesObj[idx].name);
+                                                        foreach (var cc in moleculesObj[idx].GetComponent<PivotModel>().IntDirectionModes)
+                                                        {
+                                                            intDirectionModesOutputList.Add(string.Join(",", cc));
+                                                        }
+                                                        intDirectionModesOutputAry = intDirectionModesOutputList.ToArray();
+                                                    }
+                                                });
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Debug.LogWarning("ノードとコードのオブジェクト取得に失敗");
+                                    }
                                 }
                             });
                         safeZoneModel = GameObject.Find(ConstGameObjectNames.GAMEOBJECT_NAME_SAFEZONE).GetComponent<SafeZoneModel>();
