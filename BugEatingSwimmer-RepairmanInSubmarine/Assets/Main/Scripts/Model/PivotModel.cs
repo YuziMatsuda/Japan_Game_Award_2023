@@ -35,6 +35,8 @@ namespace Main.Model
         private int[][] _intDirectionModes = { new int[3], new int[3], new int[3] };
         /// <summary>方角モード二次元配列</summary>
         public int[][] IntDirectionModes => _intDirectionModes;
+        /// <summary>回転方角モード</summary>
+        [SerializeField] private EnumSpinDirectionMode isSpinDirectionMode = EnumSpinDirectionMode.Positive;
 
         private void Reset()
         {
@@ -60,7 +62,7 @@ namespace Main.Model
                 !_isTurning.Value)
             {
                 _isTurning.Value = true;
-                var turnValue = GetTurnValue(_transform, collision.ClosestPoint(_transform.position));
+                var turnValue = GetTurnValue(_transform, collision.ClosestPoint(_transform.position), isSpinDirectionMode);
                 if (turnValue == 0)
                     Debug.LogError("ターン加算値の取得呼び出しの失敗");
                 enumDirectionMode.Value = (int)GetAjustedEnumDirectionMode((EnumDirectionMode)enumDirectionMode.Value, turnValue);
@@ -75,26 +77,37 @@ namespace Main.Model
         /// <param name="transform">トランスフォーム</param>
         /// <param name="target">ターゲットの座標</param>
         /// <returns>ターン加算値</returns>
-        private int GetTurnValue(Transform transform, Vector2 target)
+        private int GetTurnValue(Transform transform, Vector2 target, EnumSpinDirectionMode enumSpinDirectionMode)
         {
             try
             {
-                if (transform.position.y == target.y ||
-                       transform.position.x == target.x)
-                    throw new System.Exception("同一座標位置は例外エラー");
+                switch (enumSpinDirectionMode)
+                {
+                    case EnumSpinDirectionMode.Auto:
+                        if (transform.position.y == target.y ||
+                               transform.position.x == target.x)
+                            throw new System.Exception("同一座標位置は例外エラー");
 
-                if (transform.position.x < target.x)
-                {
-                    // 上かつ、右からの衝突は反時計回り
-                    // 下かつ、右からの衝突は時計回り
-                    return transform.position.y < target.y  ? - 1 : 1;
+                        if (transform.position.x < target.x)
+                        {
+                            // 上かつ、右からの衝突は反時計回り
+                            // 下かつ、右からの衝突は時計回り
+                            return transform.position.y < target.y ? -1 : 1;
+                        }
+                        else
+                        {
+                            // 上かつ、左からの衝突は時計回り
+                            // 下かつ、左からの衝突は反時計回り
+                            return transform.position.y < target.y ? 1 : -1;
+                        }
+                    case EnumSpinDirectionMode.Positive:
+                        return 1;
+                    case EnumSpinDirectionMode.Negative:
+                        return -1;
+                    default:
+                        throw new System.Exception("例外エラー");
                 }
-                else
-                {
-                    // 上かつ、左からの衝突は時計回り
-                    // 下かつ、左からの衝突は反時計回り
-                    return transform.position.y < target.y ? 1 : -1;
-                }
+
             }
             catch (System.Exception e)
             {
