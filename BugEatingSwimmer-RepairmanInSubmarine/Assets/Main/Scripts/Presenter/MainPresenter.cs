@@ -10,6 +10,7 @@ using Main.Audio;
 using System.Linq;
 using Main.InputSystem;
 using System.Threading.Tasks;
+using Main.Test;
 
 namespace Main.Presenter
 {
@@ -77,8 +78,21 @@ namespace Main.Presenter
         [SerializeField] private PlayerModel playerModel;
         /// <summary>移動先にポインタ表示のビュー</summary>
         [SerializeField] private TargetPointerView targetPointerView;
-        /// <summary>【デモ用】方角モードの二次元配列出力</summary>
-        [SerializeField] string[] intDirectionModesOutputAry;
+
+        /// <summary>
+        /// デベロップメントオプション
+        /// </summary>
+        [System.Serializable]
+        public struct DevelopmentOption
+        {
+            /// <summary>【デモ用】方角モードの二次元配列出力</summary>
+            public string[] intDirectionModesOutputAry;
+            /// <summary>【デモ用】疑似サクセスインターフェース</summary>
+            public TestSuccess testSuccess;
+        }
+
+        /// <summary>デベロップメントオプション</summary>
+        [SerializeField] private DevelopmentOption developmentOption;
 
         private void Reset()
         {
@@ -117,6 +131,7 @@ namespace Main.Presenter
             jumpGuideView = GameObject.Find("JumpGuide").GetComponent<JumpGuideView>();
             fadeImageView = GameObject.Find("FadeImage").GetComponent<FadeImageView>();
             fadeImageModel = GameObject.Find("FadeImage").GetComponent<FadeImageModel>();
+            developmentOption.testSuccess = GameObject.Find("TestSuccess").GetComponent<TestSuccess>();
         }
 
         public void OnStart()
@@ -618,41 +633,83 @@ namespace Main.Presenter
                                                     });
                                             }
                                         });
-                                    var attackTrigger = GameObject.FindGameObjectWithTag(ConstTagNames.TAG_ATTACK_TRIGGER).GetComponent<AttackTrigger>();
+                                    var attackTrigger = GameObject.FindGameObjectWithTag(ConstTagNames.TAG_NAME_ATTACK_TRIGGER).GetComponent<AttackTrigger>();
                                     playerModel.IsPlayingAction.ObserveEveryValueChanged(x => x.Value)
                                         .Subscribe(x =>
                                         {
                                             if (!attackTrigger.SetColliderEnabled(x))
                                                 Debug.LogError("コライダーの有効／無効をセット呼び出しの失敗");
                                         });
-                                    var moleculesObj = GameObject.FindGameObjectsWithTag(ConstTagNames.TAG_MOLECULES);
-                                    if (moleculesObj != null)
-                                    {
-                                        var intDirectionModesOutputList = new List<string>();
-                                        for (var i = 0; i < moleculesObj.Length; i++)
-                                        {
-                                            int idx = i;
-                                            moleculesObj[idx].GetComponent<PivotModel>().IsTurning.ObserveEveryValueChanged(x => x.Value)
-                                                .Subscribe(x =>
-                                                {
-                                                    if (!x)
-                                                    {
-                                                        intDirectionModesOutputList.Add(moleculesObj[idx].name);
-                                                        foreach (var cc in moleculesObj[idx].GetComponent<PivotModel>().IntDirectionModes)
-                                                        {
-                                                            intDirectionModesOutputList.Add(string.Join(",", cc));
-                                                        }
-                                                        intDirectionModesOutputAry = intDirectionModesOutputList.ToArray();
-                                                    }
-                                                });
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Debug.LogWarning("ノードとコードのオブジェクト取得に失敗");
-                                    }
                                 }
                             });
+                        // スタートノード
+                        var startNode = GameObject.FindGameObjectWithTag(ConstTagNames.TAG_NAME_STARTNODE);
+                        if (startNode != null)
+                        {
+                            startNode.GetComponent<StartNodeModel>().IsPosting.ObserveEveryValueChanged(x => x.Value)
+                                .Subscribe(x =>
+                                {
+                                    if (x)
+                                        Debug.Log("実行中");
+                                    else
+                                        Debug.Log("実行停止");
+                                });
+                        }
+                        else
+                        {
+                            Debug.LogWarning("ノードのオブジェクト取得に失敗");
+                        }
+                        // ゴールノード
+                        var goalNode = GameObject.FindGameObjectWithTag(ConstTagNames.TAG_NAME_GOALNODE);
+                        if (goalNode != null)
+                        {
+                            // T.B.D バグフィックス
+                            developmentOption.testSuccess.IsClicked.ObserveEveryValueChanged(x => x.Value)
+                                .Subscribe(x =>
+                                {
+                                    if (x)
+                                    {
+                                        var goalNodeView = goalNode.GetComponent<GoalNodeView>();
+                                        // 取り出したバグのモデルを監視
+                                        if (!goalNodeView.bugfix())
+                                            Debug.LogError("バグフィックス呼び出しの失敗");
+                                        var bug = goalNodeView.InstanceBug;
+                                        bug.GetComponent<BugModel>().IsEated.ObserveEveryValueChanged(x => x.Value)
+                                            .Subscribe(x =>
+                                            {
+                                                if (x)
+                                                    isGoalReached.Value = true;
+                                            });
+                                    }
+                                });
+                        }
+                        // コード系
+                        var moleculesObj = GameObject.FindGameObjectsWithTag(ConstTagNames.TAG_NAME_MOLECULES);
+                        if (moleculesObj != null)
+                        {
+                            var intDirectionModesOutputList = new List<string>();
+                            for (var i = 0; i < moleculesObj.Length; i++)
+                            {
+                                int idx = i;
+                                moleculesObj[idx].GetComponent<PivotModel>().IsTurning.ObserveEveryValueChanged(x => x.Value)
+                                    .Subscribe(x =>
+                                    {
+                                        if (!x)
+                                        {
+                                            intDirectionModesOutputList.Add(moleculesObj[idx].name);
+                                            foreach (var cc in moleculesObj[idx].GetComponent<PivotModel>().IntDirectionModes)
+                                            {
+                                                intDirectionModesOutputList.Add(string.Join(",", cc));
+                                            }
+                                            developmentOption.intDirectionModesOutputAry = intDirectionModesOutputList.ToArray();
+                                        }
+                                    });
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogWarning("コードのオブジェクト取得に失敗");
+                        }
                         safeZoneModel = GameObject.Find(ConstGameObjectNames.GAMEOBJECT_NAME_SAFEZONE).GetComponent<SafeZoneModel>();
                         safeZoneModel.IsTriggerExited.ObserveEveryValueChanged(x => x.Value)
                             .Subscribe(x =>

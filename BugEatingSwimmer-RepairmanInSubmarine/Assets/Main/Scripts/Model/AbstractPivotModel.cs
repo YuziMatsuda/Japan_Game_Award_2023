@@ -1,74 +1,74 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Main.Common;
 using UniRx;
 using System.Linq;
-using Main.Common;
 using DG.Tweening;
 
 namespace Main.Model
 {
     /// <summary>
     /// モデル
-    /// 始点
+    /// 始点／スタートノード／ゴールノードの親クラス
     /// オブジェクトごとにコライダーは複数存在する想定のためRequireComponentでコライダー有無はチェックしない
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
-    [RequireComponent(typeof(PivotConfig))]
-    public class PivotModel : MonoBehaviour
+    //[RequireComponent(typeof(PivotConfig))]
+    public class AbstractPivotModel : MonoBehaviour
     {
-        /// <summary>ターンアニメーション実行中</summary>
-        private readonly BoolReactiveProperty _isTurning = new BoolReactiveProperty();
-        /// <summary>ターンアニメーション実行中</summary>
-        public IReactiveProperty<bool> IsTurning => _isTurning;
+        ///// <summary>ターンアニメーション実行中</summary>
+        //private readonly BoolReactiveProperty _isTurning = new BoolReactiveProperty();
+        ///// <summary>ターンアニメーション実行中</summary>
+        //public IReactiveProperty<bool> IsTurning => _isTurning;
         /// <summary>接触対象のオブジェクトタグ</summary>
-        [SerializeField] private string[] tags = { ConstTagNames.TAG_NAME_ATTACK_TRIGGER };
+        [SerializeField] protected string[] tags = { ConstTagNames.TAG_NAME_ATTACK_TRIGGER };
         /// <summary>トランスフォーム</summary>
-        private Transform _transform;
-        /// <summary>方角モード</summary>
-        private readonly IntReactiveProperty enumDirectionMode = new IntReactiveProperty();
-        /// <summary>ターンアニメーション時間</summary>
-        [SerializeField] private float turnDuration = .5f;
-        /// <summary>方角モードのベクター配列</summary>
-        [SerializeField] private Vector3[] vectorDirectionModes = { new Vector3(0, 0, 0f), new Vector3(0, 0, -90f), new Vector3(0, 0, 180f), new Vector3(0, 0, 90f) };
+        protected Transform _transform;
+        ///// <summary>方角モード</summary>
+        //private readonly IntReactiveProperty enumDirectionMode = new IntReactiveProperty();
+        ///// <summary>ターンアニメーション時間</summary>
+        //[SerializeField] private float turnDuration = .5f;
+        ///// <summary>方角モードのベクター配列</summary>
+        //[SerializeField] private Vector3[] vectorDirectionModes = { new Vector3(0, 0, 0f), new Vector3(0, 0, -90f), new Vector3(0, 0, 180f), new Vector3(0, 0, 90f) };
         /// <summary>方角モード二次元配列</summary>
-        private int[][] _intDirectionModes = { new int[3], new int[3], new int[3] };
+        protected int[][] _intDirectionModes = { new int[3], new int[3], new int[3] };
         /// <summary>方角モード二次元配列</summary>
         public int[][] IntDirectionModes => _intDirectionModes;
-        /// <summary>回転方角モード</summary>
-        [SerializeField] private EnumSpinDirectionMode isSpinDirectionMode = EnumSpinDirectionMode.Positive;
+        ///// <summary>回転方角モード</summary>
+        //[SerializeField] private EnumSpinDirectionMode isSpinDirectionMode = EnumSpinDirectionMode.Positive;
 
         private void Reset()
         {
-            var enumDirectionModeDefault = GetComponent<PivotConfig>().EnumDirectionModeDefault;
-            transform.localEulerAngles = vectorDirectionModes[(int)enumDirectionModeDefault];
+            //var enumDirectionModeDefault = GetComponent<PivotConfig>().EnumDirectionModeDefault;
+            //transform.localEulerAngles = vectorDirectionModes[(int)enumDirectionModeDefault];
         }
 
-        private void Start()
+        protected virtual void Start()
         {
             if (_transform == null)
                 _transform = transform;
-            enumDirectionMode.Value = (int)GetComponent<PivotConfig>().EnumDirectionModeDefault;
-            enumDirectionMode.ObserveEveryValueChanged(x => x.Value)
-                .Subscribe(x =>
-                {
-                    _intDirectionModes = GetIntDirectionModes((EnumDirectionMode)x);
-                });
+            //enumDirectionMode.Value = (int)GetComponent<PivotConfig>().EnumDirectionModeDefault;
+            //enumDirectionMode.ObserveEveryValueChanged(x => x.Value)
+            //    .Subscribe(x =>
+            //    {
+            //        _intDirectionModes = GetIntDirectionModes((EnumDirectionMode)x);
+            //    });
         }
 
-        private void OnTriggerEnter2D(Collider2D collision)
+        protected virtual void OnTriggerEnter2D(Collider2D collision)
         {
-            if (0 < tags.Where(q => collision.CompareTag(q)).Select(q => q).ToArray().Length &&
-                !_isTurning.Value)
-            {
-                _isTurning.Value = true;
-                var turnValue = GetTurnValue(_transform, collision.ClosestPoint(_transform.position), isSpinDirectionMode);
-                if (turnValue == 0)
-                    Debug.LogError("ターン加算値の取得呼び出しの失敗");
-                enumDirectionMode.Value = (int)GetAjustedEnumDirectionMode((EnumDirectionMode)enumDirectionMode.Value, turnValue);
-                _transform.DOLocalRotate(vectorDirectionModes[enumDirectionMode.Value], turnDuration)
-                    .OnComplete(() => _isTurning.Value = false);
-            }
+            //if (0 < tags.Where(q => collision.CompareTag(q)).Select(q => q).ToArray().Length &&
+            //    !_isTurning.Value)
+            //{
+            //    _isTurning.Value = true;
+            //    var turnValue = GetTurnValue(_transform, collision.ClosestPoint(_transform.position), isSpinDirectionMode);
+            //    if (turnValue == 0)
+            //        Debug.LogError("ターン加算値の取得呼び出しの失敗");
+            //    enumDirectionMode.Value = (int)GetAjustedEnumDirectionMode((EnumDirectionMode)enumDirectionMode.Value, turnValue);
+            //    _transform.DOLocalRotate(vectorDirectionModes[enumDirectionMode.Value], turnDuration)
+            //        .OnComplete(() => _isTurning.Value = false);
+            //}
         }
 
         /// <summary>

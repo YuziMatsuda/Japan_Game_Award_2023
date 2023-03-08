@@ -7,6 +7,8 @@ TagManager:
   - Level
   - AttackTrigger
   - Molecules
+  - StartNode
+  - GoalNode
   layers:
   - Default
   - TransparentFX
