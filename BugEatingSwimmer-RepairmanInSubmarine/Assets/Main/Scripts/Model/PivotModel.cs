@@ -13,28 +13,19 @@ namespace Main.Model
     /// 始点
     /// オブジェクトごとにコライダーは複数存在する想定のためRequireComponentでコライダー有無はチェックしない
     /// </summary>
-    [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(PivotConfig))]
-    public class PivotModel : MonoBehaviour
+    public class PivotModel : AbstractPivotModel
     {
         /// <summary>ターンアニメーション実行中</summary>
         private readonly BoolReactiveProperty _isTurning = new BoolReactiveProperty();
         /// <summary>ターンアニメーション実行中</summary>
         public IReactiveProperty<bool> IsTurning => _isTurning;
-        /// <summary>接触対象のオブジェクトタグ</summary>
-        [SerializeField] private string[] tags = { ConstTagNames.TAG_NAME_ATTACK_TRIGGER };
-        /// <summary>トランスフォーム</summary>
-        private Transform _transform;
         /// <summary>方角モード</summary>
         private readonly IntReactiveProperty enumDirectionMode = new IntReactiveProperty();
         /// <summary>ターンアニメーション時間</summary>
         [SerializeField] private float turnDuration = .5f;
         /// <summary>方角モードのベクター配列</summary>
         [SerializeField] private Vector3[] vectorDirectionModes = { new Vector3(0, 0, 0f), new Vector3(0, 0, -90f), new Vector3(0, 0, 180f), new Vector3(0, 0, 90f) };
-        /// <summary>方角モード二次元配列</summary>
-        private int[][] _intDirectionModes = { new int[3], new int[3], new int[3] };
-        /// <summary>方角モード二次元配列</summary>
-        public int[][] IntDirectionModes => _intDirectionModes;
         /// <summary>回転方角モード</summary>
         [SerializeField] private EnumSpinDirectionMode isSpinDirectionMode = EnumSpinDirectionMode.Positive;
 
@@ -44,10 +35,9 @@ namespace Main.Model
             transform.localEulerAngles = vectorDirectionModes[(int)enumDirectionModeDefault];
         }
 
-        private void Start()
+        protected override void Start()
         {
-            if (_transform == null)
-                _transform = transform;
+            base.Start();
             enumDirectionMode.Value = (int)GetComponent<PivotConfig>().EnumDirectionModeDefault;
             enumDirectionMode.ObserveEveryValueChanged(x => x.Value)
                 .Subscribe(x =>
@@ -56,7 +46,7 @@ namespace Main.Model
                 });
         }
 
-        private void OnTriggerEnter2D(Collider2D collision)
+        protected override void OnTriggerEnter2D(Collider2D collision)
         {
             if (0 < tags.Where(q => collision.CompareTag(q)).Select(q => q).ToArray().Length &&
                 !_isTurning.Value)
