@@ -20,10 +20,39 @@ namespace Main.Model
         [SerializeField] protected string[] tags = { ConstTagNames.TAG_NAME_ATTACK_TRIGGER };
         /// <summary>トランスフォーム</summary>
         protected Transform _transform;
-        /// <summary>方角モード二次元配列</summary>
-        protected int[][] _intDirectionModes = { new int[3], new int[3], new int[3] };
-        /// <summary>方角モード二次元配列</summary>
-        public int[][] IntDirectionModes => _intDirectionModes;
+        /// <summary>信号発生アニメーション実行中</summary>
+        protected readonly BoolReactiveProperty _isPosting = new BoolReactiveProperty();
+        /// <summary>信号発生アニメーション実行中</summary>
+        public IReactiveProperty<bool> IsPosting => _isPosting;
+        /// <summary>信号受信フラグ</summary>
+        protected readonly BoolReactiveProperty _isGetting = new BoolReactiveProperty();
+        /// <summary>信号受信フラグ</summary>
+        public IReactiveProperty<bool> IsGetting => _isGetting;
+        /// <summary>POST先のノードコードリスト項目数</summary>
+        protected readonly IntReactiveProperty _toListLength = new IntReactiveProperty(-1);
+        /// <summary>POST先のノードコードリスト項目数</summary>
+        public IReactiveProperty<int> ToListLength => _toListLength;
+        /// <summary>POST先のノードコードリスト</summary>
+        protected Transform[] _toList;
+        /// <summary>POST先のノードコードリスト</summary>
+        public Transform[] ToList => _toList;
+        /// <summary>GET元のノードコードリスト項目数</summary>
+        protected readonly IntReactiveProperty _fromListLength = new IntReactiveProperty(-1);
+        /// <summary>GET元のノードコードリスト項目数</summary>
+        public IReactiveProperty<int> FromListLength => _fromListLength;
+        /// <summary>GET元のノードコードリスト</summary>
+        protected Transform[] _fromList;
+        /// <summary>GET元のノードコードリスト</summary>
+        public Transform[] FromList => _fromList;
+        /// <summary>レイの距離</summary>
+        [SerializeField] protected float rayDistance = 3f;
+        /// <summary>レイのレイヤーマスク</summary>
+        [SerializeField] protected LayerMask rayLayerMask;
+
+        protected virtual void Reset()
+        {
+            rayLayerMask = 1 << LayerMask.NameToLayer(ConstTagNames.TAG_NAME_MOLECULES);
+        }
 
         protected virtual void Start()
         {

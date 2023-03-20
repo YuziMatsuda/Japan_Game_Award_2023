@@ -12,9 +12,10 @@ GameObject:
   - component: {fileID: 7821346570544382182}
   - component: {fileID: 7821346570544382201}
   - component: {fileID: 7821346570544382200}
+  - component: {fileID: 8393006488868500153}
   - component: {fileID: 7821346570544382180}
   - component: {fileID: 4911194301767041896}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: GoalNode
   m_TagString: GoalNode
   m_Icon: {fileID: 0}
@@ -135,6 +136,19 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &8393006488868500153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7821346570544382203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0c260ed64a4a2d4cbbacbec742f2702, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enumDirectionModeDefault: 0
 --- !u!114 &7821346570544382180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149,6 +163,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tags:
   - AttackTrigger
+  rayDistance: 3
+  rayLayerMask:
+    serializedVersion: 2
+    m_Bits: 128
+  enumPostMode: 2
+  vectorDirectionModes:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: -90}
+  - {x: 0, y: 0, z: 180}
+  - {x: 0, y: 0, z: 90}
 --- !u!114 &4911194301767041896
 MonoBehaviour:
   m_ObjectHideFlags: 0

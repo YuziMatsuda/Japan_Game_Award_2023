@@ -14,23 +14,30 @@ namespace Main.Model
     /// オブジェクトごとにコライダーは複数存在する想定のためRequireComponentでコライダー有無はチェックしない
     /// </summary>
     [RequireComponent(typeof(PivotConfig))]
-    public class PivotModel : AbstractPivotModel
+    public class PivotModel : AbstractPivotModel, IPivotModel, IStartNodeModel, IGoalNodeModel
     {
         /// <summary>ターンアニメーション実行中</summary>
         private readonly BoolReactiveProperty _isTurning = new BoolReactiveProperty();
         /// <summary>ターンアニメーション実行中</summary>
         public IReactiveProperty<bool> IsTurning => _isTurning;
         /// <summary>方角モード</summary>
-        private readonly IntReactiveProperty enumDirectionMode = new IntReactiveProperty();
+        private readonly IntReactiveProperty _enumDirectionMode = new IntReactiveProperty();
+        /// <summary>方角モード</summary>
+        public IReactiveProperty<int> EnumDirectionModeReact => _enumDirectionMode;
         /// <summary>ターンアニメーション時間</summary>
         [SerializeField] private float turnDuration = .5f;
         /// <summary>方角モードのベクター配列</summary>
         [SerializeField] private Vector3[] vectorDirectionModes = { new Vector3(0, 0, 0f), new Vector3(0, 0, -90f), new Vector3(0, 0, 180f), new Vector3(0, 0, 90f) };
         /// <summary>回転方角モード</summary>
         [SerializeField] private EnumSpinDirectionMode isSpinDirectionMode = EnumSpinDirectionMode.Positive;
+        /// <summary>アルゴリズムの共通処理</summary>
+        private AlgorithmCommon _algorithmCommon = new AlgorithmCommon();
 
-        private void Reset()
+        protected override void Reset()
         {
+            base.Reset();
+            rayLayerMask = rayLayerMask | 1 << LayerMask.NameToLayer(ConstTagNames.TAG_NAME_GOALNODE);
+            rayLayerMask = rayLayerMask | 1 << LayerMask.NameToLayer(ConstTagNames.TAG_NAME_STARTNODE);
             var enumDirectionModeDefault = GetComponent<PivotConfig>().EnumDirectionModeDefault;
             transform.localEulerAngles = vectorDirectionModes[(int)enumDirectionModeDefault];
         }
@@ -38,27 +45,32 @@ namespace Main.Model
         protected override void Start()
         {
             base.Start();
-            enumDirectionMode.Value = (int)GetComponent<PivotConfig>().EnumDirectionModeDefault;
-            enumDirectionMode.ObserveEveryValueChanged(x => x.Value)
-                .Subscribe(x =>
-                {
-                    _intDirectionModes = GetIntDirectionModes((EnumDirectionMode)x);
-                });
+            _enumDirectionMode.Value = (int)GetComponent<PivotConfig>().EnumDirectionModeDefault;
         }
 
         protected override void OnTriggerEnter2D(Collider2D collision)
         {
-            if (0 < tags.Where(q => collision.CompareTag(q)).Select(q => q).ToArray().Length &&
+            if (GetComponent<PivotConfig>().EnumAtomicMode.Equals(EnumAtomicMode.Molecules) &&
+                0 < tags.Where(q => collision.CompareTag(q)).Select(q => q).ToArray().Length &&
                 !_isTurning.Value)
             {
                 _isTurning.Value = true;
                 var turnValue = GetTurnValue(_transform, collision.ClosestPoint(_transform.position), isSpinDirectionMode);
                 if (turnValue == 0)
                     Debug.LogError("ターン加算値の取得呼び出しの失敗");
-                enumDirectionMode.Value = (int)GetAjustedEnumDirectionMode((EnumDirectionMode)enumDirectionMode.Value, turnValue);
-                _transform.DOLocalRotate(vectorDirectionModes[enumDirectionMode.Value], turnDuration)
+                _enumDirectionMode.Value = (int)_algorithmCommon.GetAjustedEnumDirectionMode((EnumDirectionMode)_enumDirectionMode.Value, turnValue);
+                _transform.DOLocalRotate(vectorDirectionModes[_enumDirectionMode.Value], turnDuration)
                     .OnComplete(() => _isTurning.Value = false);
             }
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawRay(transform.position, Vector2.up * rayDistance);
+            Gizmos.DrawRay(transform.position, Vector2.right * rayDistance);
+            Gizmos.DrawRay(transform.position, Vector2.down * rayDistance);
+            Gizmos.DrawRay(transform.position, Vector2.left * rayDistance);
         }
 
         /// <summary>
@@ -106,78 +118,210 @@ namespace Main.Model
             }
         }
 
-        /// <summary>
-        /// 方角モードをInt二次元配列へ変換して取得
-        /// </summary>
-        /// <param name="enumDirectionMode">方角モード</param>
-        /// <returns>方角モード（Int二次元配列）</returns>
-        private int[][] GetIntDirectionModes(EnumDirectionMode enumDirectionMode)
+        public bool GetSignal()
+        {
+            return GetSignal(false);
+        }
+
+        public bool GetSignal(bool isGetProcessStart)
         {
             try
             {
-                int[][] directionModesArray = { new int[3], new int[3], new int[3] };
-
-                switch (enumDirectionMode)
+                if (!isGetProcessStart)
                 {
-                    case EnumDirectionMode.Up:
-                        directionModesArray[0] = new int[3] { 0, 1, 0 };
-                        directionModesArray[1] = new int[3] { 0, 1, 0 };
-                        directionModesArray[2] = new int[3] { 0, 0, 0 };
-
-                        return directionModesArray;
-                    case EnumDirectionMode.Right:
-                        directionModesArray[0] = new int[3] { 0, 0, 0 };
-                        directionModesArray[1] = new int[3] { 0, 1, 1 };
-                        directionModesArray[2] = new int[3] { 0, 0, 0 };
-
-                        return directionModesArray;
-                    case EnumDirectionMode.Down:
-                        directionModesArray[0] = new int[3] { 0, 0, 0 };
-                        directionModesArray[1] = new int[3] { 0, 1, 0 };
-                        directionModesArray[2] = new int[3] { 0, 1, 0 };
-
-                        return directionModesArray;
-                    case EnumDirectionMode.Left:
-                        directionModesArray[0] = new int[3] { 0, 0, 0 };
-                        directionModesArray[1] = new int[3] { 1, 1, 0 };
-                        directionModesArray[2] = new int[3] { 0, 0, 0 };
-
-                        return directionModesArray;
-                    default:
-                        throw new System.Exception("例外エラー");
+                    // 演繹法ルート
+                    if (!_isPosting.Value)
+                    {
+                        _isPosting.Value = true;
+                        var modes = GetModes((EnumDirectionMode)_enumDirectionMode.Value);
+                        _toList = MainGameManager.Instance.AlgorithmOwner.GetSignalDestinations(modes.ToArray(), _transform, EnumCodeState.Normal, rayDistance, rayLayerMask);
+                        _toListLength.Value = _toList.Length;
+                    }
                 }
+                else
+                {
+                    // 帰納法ルート
+                    if (!_isGetting.Value)
+                    {
+                        _isGetting.Value = true;
+                        var algorithmOwner = MainGameManager.Instance.AlgorithmOwner;
+                        var prevNodeCode = algorithmOwner.GetHistorySignalsGetedLasted(_transform);
+                        var otherIgnoreDirection = -1;
+                        if (prevNodeCode.GetComponent<GoalNodeModel>() != null)
+                        {
+                            otherIgnoreDirection = prevNodeCode.GetComponent<GoalNodeModel>().EnumDirectionModeReact.Value;
+                        }
+                        else if (prevNodeCode.GetComponent<PivotModel>() != null)
+                        {
+                            otherIgnoreDirection = prevNodeCode.GetComponent<PivotModel>().EnumDirectionModeReact.Value;
+                        }
+                        else
+                            throw new System.Exception("ゴールノードまたはコードの情報無し");
+
+                        var modes = GetModes((EnumDirectionMode)_enumDirectionMode.Value, new EnumDirectionMode[1] { _algorithmCommon.GetAjustedEnumDirectionMode((EnumDirectionMode)otherIgnoreDirection, 2) });
+                        var fromListReverse = algorithmOwner.GetSignalDestinationsReverse(modes.ToArray(), _transform, EnumCodeState.Normal, rayDistance, rayLayerMask);
+                        var fromList = new List<Transform>();
+                        if (GetComponent<PivotConfig>().EnumAtomicMode.Equals(EnumAtomicMode.Molecules) &&
+                            !_algorithmCommon.GetAjustedEnumDirectionMode((EnumDirectionMode)otherIgnoreDirection, 2).Equals((EnumDirectionMode)_enumDirectionMode.Value))
+                        {
+                            fromList.AddRange(algorithmOwner.GetSignalDestinations(GetModes((EnumDirectionMode)_enumDirectionMode.Value).ToArray(), _transform, EnumCodeState.Normal, rayDistance, rayLayerMask));
+                        }
+                        var merge = new List<Transform>();
+                        if (0 < fromListReverse.Length)
+                            merge.AddRange(fromListReverse);
+                        if (0 < fromList.Count)
+                            merge.AddRange(fromList);
+                        _fromList = merge.ToArray();
+                        _fromListLength.Value = _fromList.Length;
+                    }
+                }
+
+                return true;
             }
             catch (System.Exception e)
             {
                 Debug.LogError(e);
-                return null;
+                return false;
             }
         }
 
         /// <summary>
-        /// 方角モード変換してを取得
-        /// 限界値を超えた値はアジャストする
+        /// ノードコードを辿る方向を取得
         /// </summary>
-        /// <param name="enumDirectionMode">方角モード</param>
-        /// <param name="addend">足す値</param>
-        /// <returns>方角モード（正常値）</returns>
-        private EnumDirectionMode GetAjustedEnumDirectionMode(EnumDirectionMode enumDirectionMode, int addend)
+        /// <param name="enumDirectionMode">方向モード</param>
+        /// <returns>対象方向モード配列</returns>
+        private List<EnumDirectionMode> GetModes(EnumDirectionMode enumDirectionMode)
         {
-            if ((enumDirectionMode + addend) < 0)
+            return GetModes(enumDirectionMode, null);
+        }
+
+        /// <summary>
+        /// ノードコードを辿る方向を取得
+        /// </summary>
+        /// <param name="enumDirectionMode">方向モード</param>
+        /// <param name="ignoreEnumDirectionModes">例外対象の方向モード配列</param>
+        /// <returns>対象方向モード配列</returns>
+        private List<EnumDirectionMode> GetModes(EnumDirectionMode enumDirectionMode, EnumDirectionMode[] ignoreEnumDirectionModes)
+        {
+            var modes = new List<EnumDirectionMode>();
+            if (ignoreEnumDirectionModes == null)
             {
-                enumDirectionMode = EnumDirectionMode.Left;
-                return enumDirectionMode;
-            }
-            else if (EnumDirectionMode.Left < (enumDirectionMode + addend))
-            {
-                enumDirectionMode = EnumDirectionMode.Up;
-                return enumDirectionMode;
+                if (enumDirectionMode.Equals(EnumDirectionMode.Up))
+                    modes.Add(EnumDirectionMode.Up);
+                if (enumDirectionMode.Equals(EnumDirectionMode.Right))
+                    modes.Add(EnumDirectionMode.Right);
+                if (enumDirectionMode.Equals(EnumDirectionMode.Down))
+                    modes.Add(EnumDirectionMode.Down);
+                if (enumDirectionMode.Equals(EnumDirectionMode.Left))
+                    modes.Add(EnumDirectionMode.Left);
             }
             else
             {
-                // 境界値チェックのため処理無しでも問題なし
-                return enumDirectionMode + addend;
+                if (ignoreEnumDirectionModes.Where(q => q.Equals(EnumDirectionMode.Up)).Select(q => q).ToArray().Length < 1)
+                    modes.Add(EnumDirectionMode.Up);
+                if (ignoreEnumDirectionModes.Where(q => q.Equals(EnumDirectionMode.Right)).Select(q => q).ToArray().Length < 1)
+                    modes.Add(EnumDirectionMode.Right);
+                if (ignoreEnumDirectionModes.Where(q => q.Equals(EnumDirectionMode.Down)).Select(q => q).ToArray().Length < 1)
+                    modes.Add(EnumDirectionMode.Down);
+                if (ignoreEnumDirectionModes.Where(q => q.Equals(EnumDirectionMode.Left)).Select(q => q).ToArray().Length < 1)
+                    modes.Add(EnumDirectionMode.Left);
+            }
+
+            return modes;
+        }
+
+        public bool SetIsPosting(bool isPostingValue)
+        {
+            try
+            {
+                if (_isPosting != null)
+                    _isPosting.Value = isPostingValue;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
             }
         }
+
+        public bool SetToListLength(int toListLength)
+        {
+            try
+            {
+                if (_toListLength != null)
+                    _toListLength.Value = toListLength;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool WaitSignalPost()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool SetFromListLength(int fromListLength)
+        {
+            try
+            {
+                if (_fromListLength != null)
+                    _fromListLength.Value = fromListLength;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool SetIsGetting(bool isGettingValue)
+        {
+            try
+            {
+                if (_isGetting != null)
+                    _isGetting.Value = isGettingValue;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool Getting()
+        {
+            throw new System.NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// モデル
+    /// 始点
+    /// インターフェース
+    /// </summary>
+    public interface IPivotModel
+    {
+        /// <summary>
+        /// シグナル受信
+        /// </summary>
+        /// <returns>成功／失敗</returns>
+        public bool GetSignal();
+        /// <summary>
+        /// シグナル受信
+        /// </summary>
+        /// <param name="isGetProcessStart">帰納法フラグ</param>
+        /// <returns>成功／失敗</returns>
+        public bool GetSignal(bool isGetProcessStart);
     }
 }

@@ -21,5 +21,7 @@ namespace Main.Common
         public static readonly string TAG_NAME_STARTNODE = "StartNode";
         /// <summary>ゴールノード</summary>
         public static readonly string TAG_NAME_GOALNODE = "GoalNode";
+        /// <summary>原子</summary>
+        public static readonly string TAG_NAME_ATOMS = "Atoms";
     }
 }

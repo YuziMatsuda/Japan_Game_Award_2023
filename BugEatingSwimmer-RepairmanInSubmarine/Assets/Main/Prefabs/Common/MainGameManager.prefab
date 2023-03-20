@@ -48,6 +48,50 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 75d8e350201b9534cb460dc008ee8580, type: 2}
   - {fileID: 2100000, guid: 80e5814790ed26942af85f239f35f86b, type: 2}
   - {fileID: 2100000, guid: f75c96fe9f81f0d48a340c4901a0fd18, type: 2}
+--- !u!1 &221583501
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 221583503}
+  - component: {fileID: 221583502}
+  m_Layer: 0
+  m_Name: AlgorithmOwner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &221583503
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 221583501}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1369696456132551609}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &221583502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 221583501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2ec5699a6903644e8cf9e9ae784e983, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1095801330
 GameObject:
   m_ObjectHideFlags: 0
@@ -256,6 +300,10 @@ MonoBehaviour:
   goalPointModel: {fileID: 0}
   playerView: {fileID: 0}
   playerModel: {fileID: 0}
+  targetPointerView: {fileID: 0}
+  developmentOption:
+    intDirectionModesOutputAry: []
+    testSuccess: {fileID: 0}
 --- !u!1 &1369696454729978949
 GameObject:
   m_ObjectHideFlags: 0
@@ -350,7 +398,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 346c426d03ae1824cb2a4a60edfd631e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultVisible: 0
+  defaultVisible: 1
 --- !u!1 &1369696454805104203
 GameObject:
   m_ObjectHideFlags: 0
@@ -682,6 +730,7 @@ Transform:
   - {fileID: 1827416083}
   - {fileID: 128176305}
   - {fileID: 1095801331}
+  - {fileID: 221583503}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -704,3 +753,4 @@ MonoBehaviour:
   inputSystemsOwner: {fileID: 1827416086}
   skyBoxOwner: {fileID: 128176306}
   levelOwner: {fileID: 1095801332}
+  algorithmOwner: {fileID: 221583502}
