@@ -3,6 +3,7 @@
 
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 namespace Fungus
 {
@@ -48,8 +49,12 @@ namespace Fungus
 
         protected Writer writer;
 
+        private Fungus_Select _actions;
+
         protected virtual void Awake()
         {
+            _actions = new Fungus_Select();
+            _actions.Enable();
             writer = GetComponent<Writer>();
 
             CheckEventSystem();
@@ -86,8 +91,12 @@ namespace Fungus
 
             if (writer != null)
             {
-                if (Input.GetButtonDown(currentStandaloneInputModule.submitButton) ||
-                    (cancelEnabled && Input.GetButton(currentStandaloneInputModule.cancelButton)))
+                //if (Input.GetButtonDown(currentStandaloneInputModule.submitButton) ||
+                //    (cancelEnabled && Input.GetButton(currentStandaloneInputModule.cancelButton)))
+                //{
+                //    SetNextLineFlag();
+                //}
+                if (_actions.UI.Submit.WasPerformedThisFrame() || (cancelEnabled && _actions.UI.Cancel.IsPressed()))
                 {
                     SetNextLineFlag();
                 }
