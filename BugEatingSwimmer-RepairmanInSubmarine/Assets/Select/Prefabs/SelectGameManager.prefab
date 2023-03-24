@@ -240,26 +240,10 @@ MonoBehaviour:
   pageViews:
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   pageModels:
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   logoStageViews:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -269,62 +253,24 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  pivotAndCodeIShortUIViews:
   - {fileID: 0}
   - {fileID: 0}
+  pivotAndCodeIShortUIModels:
   - {fileID: 0}
   - {fileID: 0}
+  captionStageViews:
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  logoCursorViews:
-  - {fileID: 0}
-  - {fileID: 0}
-  logoCursorModels:
-  - {fileID: 0}
-  - {fileID: 0}
-  commentTextViews:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  commentTextModels:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  captionStageModels:
   - {fileID: 0}
   - {fileID: 0}
   fadeImageView: {fileID: 0}
   fadeImageModel: {fileID: 0}
   contentsCountInPage: 5
-  selectStageFrame: {fileID: 0}
+  selectStageFrameView: {fileID: 0}
+  playerView: {fileID: 0}
+  logoStagesView: {fileID: 0}
 --- !u!1 &3906211334646022044
 GameObject:
   m_ObjectHideFlags: 0
