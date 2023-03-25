@@ -1,0 +1,5 @@
+PartId,SceneId,Terms,Fixed
+0,1,StartNode_1/Code_1/Code_2/Code_5/Code_6/Code_3/GoalNode_1,0
+1,1,StartNode_1/Code_1/Code_2/Code_3/GoalNode_1,0
+2,1,StartNode_1/Code_1/Code_4/Code_5/Code_6/Code_3/GoalNode_1,0
+0,2,StartNode_1/Code_1/GoalNode_1,0
