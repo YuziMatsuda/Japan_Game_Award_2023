@@ -19,6 +19,10 @@ namespace Main.Common
         private readonly BoolReactiveProperty _isInstanced = new BoolReactiveProperty();
         /// <summary>レベルがインスタンス済みか</summary>
         public IReactiveProperty<bool> IsInstanced => _isInstanced;
+        /// <summary>インスタンス済みレベル</summary>
+        private Transform _instancedLevel;
+        /// <summary>インスタンス済みレベル</summary>
+        public Transform InstancedLevel => _instancedLevel;
 
         private void Reset()
         {
@@ -43,8 +47,8 @@ namespace Main.Common
             var sysComCashResources = tResourcesAccessory.LoadSaveDatasCSV(ConstResorcesNames.SYSTEM_COMMON_CASH);
             var sysComCash = tResourcesAccessory.GetSystemCommonCash(sysComCashResources);
 
-            var g = Instantiate(levelPrefabs[sysComCash[EnumSystemCommonCash.SceneId]], Vector3.zero, Quaternion.identity, level);
-            if (g != null)
+            _instancedLevel = Instantiate(levelPrefabs[sysComCash[EnumSystemCommonCash.SceneId]], Vector3.zero, Quaternion.identity, level).transform;
+            if (_instancedLevel != null)
                 _isInstanced.Value = true;
         }
     }

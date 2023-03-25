@@ -13,9 +13,7 @@ namespace Select.Model
     /// モデル
     /// ロゴステージ
     /// </summary>
-    [RequireComponent(typeof(Button))]
-    [RequireComponent(typeof(EventTrigger))]
-    public class LogoStageModel : UIEventController
+    public class LogoStageModel : UIEventController, ILogoStageModel
     {
         /// <summary>ステージ番号</summary>
         private int _index = -1;
@@ -34,10 +32,6 @@ namespace Select.Model
                 return _index;
             }
         }
-        /// <summary>ボタン</summary>
-        private Button _button;
-        /// <summary>イベントトリガー</summary>
-        private EventTrigger _eventTrigger;
         /// <summary>ステージの状態</summary>
         private readonly IntReactiveProperty stageState = new IntReactiveProperty();
         /// <summary>ステージの状態</summary>
@@ -59,14 +53,15 @@ namespace Select.Model
                 var mainSceneStagesState = SelectGameManager.Instance.SceneOwner.GetMainSceneStagesState();
                 stageState.Value = mainSceneStagesState[Index][EnumMainSceneStagesState.State];
                 // 未クリアの場合次のステージへナビゲーションしない
-                if (stageState.Value != 2)
-                {
-                    if (_button == null)
-                        _button = GetComponent<Button>();
-                    Navigation navigation = _button.navigation;
-                    navigation.selectOnRight = null;
-                    _button.navigation = navigation;
-                }
+                Debug.Log("T.B.D 未クリアの場合次のステージへナビゲーションしない");
+                //if (stageState.Value != 2)
+                //{
+                //    if (_button == null)
+                //        _button = GetComponent<Button>();
+                //    Navigation navigation = _button.navigation;
+                //    navigation.selectOnRight = null;
+                //    _button.navigation = navigation;
+                //}
 
                 return true;
             }
@@ -77,11 +72,6 @@ namespace Select.Model
             }
         }
 
-        /// <summary>
-        /// ボタンのステータスを変更
-        /// </summary>
-        /// <param name="enabled">有効／無効</param>
-        /// <returns>成功／失敗</returns>
         public bool SetButtonEnabled(bool enabled)
         {
             try
@@ -98,11 +88,6 @@ namespace Select.Model
             }
         }
 
-        /// <summary>
-        /// イベントトリガーのステータスを変更
-        /// </summary>
-        /// <param name="enabled">有効／無効</param>
-        /// <returns>成功／失敗</returns>
         public bool SetEventTriggerEnabled(bool enabled)
         {
             try
@@ -119,5 +104,27 @@ namespace Select.Model
                 return false;
             }
         }
+    }
+
+    /// <summary>
+    /// モデル
+    /// ロゴステージ
+    /// インターフェース
+    /// </summary>
+    public interface ILogoStageModel
+    {
+        /// <summary>
+        /// ボタンのステータスを変更
+        /// </summary>
+        /// <param name="enabled">有効／無効</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetButtonEnabled(bool enabled);
+
+        /// <summary>
+        /// イベントトリガーのステータスを変更
+        /// </summary>
+        /// <param name="enabled">有効／無効</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetEventTriggerEnabled(bool enabled);
     }
 }

@@ -14,9 +14,10 @@ GameObject:
   - component: {fileID: 3510356067311252669}
   - component: {fileID: 7453025132582565660}
   - component: {fileID: 2177946357393909634}
-  m_Layer: 0
+  - component: {fileID: 2688145068106797634}
+  m_Layer: 9
   m_Name: Pivot
-  m_TagString: Untagged
+  m_TagString: Atoms
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -138,6 +139,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enumDirectionModeDefault: 0
+  enumAtomicMode: 0
+  enumPostMode: 0
 --- !u!114 &2177946357393909634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,9 +155,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tags:
   - AttackTrigger
+  rayDistance: 3
+  rayLayerMask:
+    serializedVersion: 2
+    m_Bits: 1408
   turnDuration: 0.5
   vectorDirectionModes:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: -90}
   - {x: 0, y: 0, z: 180}
   - {x: 0, y: 0, z: 90}
+  isSpinDirectionMode: 1
+--- !u!114 &2688145068106797634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3861951771426835073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57683fe42321e6c44ad3427ed59b83ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  postDuration: 0.5

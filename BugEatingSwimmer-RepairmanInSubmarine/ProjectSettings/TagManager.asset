@@ -7,6 +7,9 @@ TagManager:
   - Level
   - AttackTrigger
   - Molecules
+  - StartNode
+  - GoalNode
+  - Atoms
   layers:
   - Default
   - TransparentFX
@@ -15,10 +18,10 @@ TagManager:
   - Water
   - UI
   - Floor
-  - 
-  - 
-  - 
-  - 
+  - Molecules
+  - GoalNode
+  - Atoms
+  - StartNode
   - 
   - 
   - 
