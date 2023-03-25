@@ -91,6 +91,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4911194301767041896, guid: 89da3b286d42eb24e8160c95378a5fae, type: 3}
+      propertyPath: bugReturnMoveDuration
+      value: 0.15
+      objectReference: {fileID: 0}
     - target: {fileID: 7821346570544382180, guid: 89da3b286d42eb24e8160c95378a5fae, type: 3}
       propertyPath: rayLayerMask.m_Bits
       value: 640

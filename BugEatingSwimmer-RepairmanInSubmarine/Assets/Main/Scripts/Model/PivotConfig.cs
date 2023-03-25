@@ -19,5 +19,9 @@ namespace Main.Model
         [SerializeField] private EnumAtomicMode enumAtomicMode = EnumAtomicMode.Atoms;
         /// <summary>アトミックモード</summary>
         public EnumAtomicMode EnumAtomicMode => enumAtomicMode;
+        /// <summary>ノードコードの識別ID</summary>
+        [SerializeField] private EnumNodeCodeID enumNodeCodeId = EnumNodeCodeID.StartNode_1;
+        /// <summary>ノードコードの識別ID</summary>
+        public EnumNodeCodeID EnumNodeCodeID => enumNodeCodeId;
     }
 }

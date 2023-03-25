@@ -41,7 +41,18 @@ namespace Main.Model
 
         public bool SetIsPosting(bool isPostingValue)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                if (_isPosting != null)
+                    _isPosting.Value = isPostingValue;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
         }
 
         public bool SetToListLength(int toListLength)

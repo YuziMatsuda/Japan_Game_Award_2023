@@ -63,9 +63,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9840e6fd74c05f48860f94a2dca29e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveDutation: 0.5
-  target: {x: 0, y: 1, z: 0}
-  distance: 1.5
   tags:
   - AttackTrigger
 --- !u!114 &-4403554264167223581
@@ -90,6 +87,7 @@ GameObject:
   m_Component:
   - component: {fileID: 431470602213936176}
   - component: {fileID: 3450131146723500684}
+  - component: {fileID: 770826558294334067}
   m_Layer: 0
   m_Name: BodySprite
   m_TagString: Untagged
@@ -164,3 +162,15 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &770826558294334067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8801027016678669389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e3bbc91d1fe7cc458a8d34bba052248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

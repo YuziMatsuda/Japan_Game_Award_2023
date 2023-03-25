@@ -20,7 +20,7 @@ namespace Main.View
         /// <summary>バグクローン</summary>
         public Transform InstanceBug => _instancedBug;
         /// <summary>移動アニメーション時間</summary>
-        [SerializeField] private float bugMoveDutation = .5f;
+        [SerializeField] private float bugMoveDuration = .5f;
         /// <summary>移動アニメーション方向</summary>
         [SerializeField] private Vector3 bugMoveDirection = Vector3.up;
         /// <summary>移動アニメーション距離</summary>
@@ -29,6 +29,8 @@ namespace Main.View
         [SerializeField] private float postDuration = .5f;
         /// <summary>信号発生アニメーション時間</summary>
         private bool _isRuning;
+        /// <summary>撤退移動アニメーション時間</summary>
+        [SerializeField] private float bugReturnMoveDuration = .15f;
 
         public bool bugfix()
         {
@@ -37,7 +39,14 @@ namespace Main.View
                 if (_instancedBug == null)
                 {
                     _instancedBug = Instantiate(bug, transform.position, Quaternion.identity, transform);
-                    _instancedBug.DOLocalMove(bugMoveDirection, bugMoveDutation * bugMoveDistance);
+                    // T.B.D 未クリアかクリア済みでカラーを変更
+                    var isAlreadyCleared = false;
+                    if (_instancedBug.GetComponent<BugView>() != null)
+                    {
+                        if (!_instancedBug.GetComponent<BugView>().SetColorCleared(isAlreadyCleared))
+                            throw new System.Exception("カラーを設定呼び出しの失敗");
+                    }
+                    _instancedBug.DOLocalMove(bugMoveDirection * bugMoveDistance, bugMoveDuration);
                 }
 
                 return true;
@@ -73,6 +82,13 @@ namespace Main.View
         {
             throw new NotImplementedException();
         }
+
+        public IEnumerator degrad(IObserver<bool> observer)
+        {
+            _instancedBug.DOLocalMove(Vector3.zero, bugReturnMoveDuration)
+                .OnComplete(() => observer.OnNext(true));
+            yield return null;
+        }
     }
 
     /// <summary>
@@ -87,5 +103,12 @@ namespace Main.View
         /// </summary>
         /// <returns>成功／失敗</returns>
         public bool bugfix();
+        /// <summary>
+        /// デグレード
+        /// バグを撤退させる
+        /// </summary>
+        /// <param name="observer">バインド</param>
+        /// <returns>コルーチン</returns>
+        public IEnumerator degrad(System.IObserver<bool> observer);
     }
 }

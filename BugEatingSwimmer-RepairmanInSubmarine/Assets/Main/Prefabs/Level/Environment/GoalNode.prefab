@@ -149,6 +149,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enumDirectionModeDefault: 0
+  enumAtomicMode: 0
 --- !u!114 &7821346570544382180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,7 +168,6 @@ MonoBehaviour:
   rayLayerMask:
     serializedVersion: 2
     m_Bits: 128
-  enumPostMode: 2
   vectorDirectionModes:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: -90}
@@ -186,6 +186,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bug: {fileID: 3624644306180605264, guid: f106b5c46c5e67d4abfe0a15f082b83c, type: 3}
-  bugMoveDutation: 0.5
+  bugMoveDuration: 0.5
   bugMoveDirection: {x: 0, y: 1, z: 0}
   bugMoveDistance: 1.5
+  postDuration: 0.5
+  bugReturnMoveDuration: 0.15

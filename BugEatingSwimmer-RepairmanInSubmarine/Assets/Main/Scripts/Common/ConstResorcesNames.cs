@@ -21,5 +21,7 @@ namespace Main.Common
         public static readonly string MAIN_SCENE_STAGES_CONFIG = "MainSceneStagesConfig";
         /// <summary>ステージクリア済みデータ</summary>
         public static readonly string MAIN_SCENE_STAGES_STATE = "MainSceneStagesState";
+        /// <summary>ステージクリア条件</summary>
+        public static readonly string MAIN_SCENE_STAGES_MODULES_STATE = "MainSceneStagesModulesState";
     }
 }

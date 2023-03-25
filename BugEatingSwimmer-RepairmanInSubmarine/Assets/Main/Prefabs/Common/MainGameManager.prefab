@@ -92,6 +92,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2ec5699a6903644e8cf9e9ae784e983, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tags:
+  - StartNode
+  - GoalNode
+  - Molecules
 --- !u!1 &1095801330
 GameObject:
   m_ObjectHideFlags: 0
@@ -301,9 +305,6 @@ MonoBehaviour:
   playerView: {fileID: 0}
   playerModel: {fileID: 0}
   targetPointerView: {fileID: 0}
-  developmentOption:
-    intDirectionModesOutputAry: []
-    testSuccess: {fileID: 0}
 --- !u!1 &1369696454729978949
 GameObject:
   m_ObjectHideFlags: 0
@@ -398,7 +399,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 346c426d03ae1824cb2a4a60edfd631e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultVisible: 1
+  defaultVisible: 0
 --- !u!1 &1369696454805104203
 GameObject:
   m_ObjectHideFlags: 0

@@ -14,7 +14,7 @@ namespace Main.Model
     /// </summary>
     [RequireComponent(typeof(BoxCollider2D))]
     [RequireComponent(typeof(PivotConfig))]
-    public class StartNodeModel : AbstractPivotModel, IStartNodeModel, IPivotModel
+    public class StartNodeModel : AbstractPivotModel, IStartNodeModel, IPivotModel, IGoalNodeModel
     {
         /// <summary>信号発生インターバル</summary>
         [SerializeField] private float postIntervalSeconds = 5f;
@@ -171,6 +171,32 @@ namespace Main.Model
                 Debug.LogError(e);
                 return false;
             }
+        }
+
+        public bool SetIsGetting(bool isGettingValue)
+        {
+            try
+            {
+                if (_isGetting != null)
+                    _isGetting.Value = isGettingValue;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool Getting()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool SetFromListLength(int fromListLength)
+        {
+            throw new System.NotImplementedException();
         }
     }
 
