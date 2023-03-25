@@ -9,7 +9,7 @@ namespace Main.Common
     /// <summary>
     /// シーンオーナー
     /// </summary>
-    public class SceneOwner : MonoBehaviour, IMainGameManager
+    public class SceneOwner : MonoBehaviour, IMainGameManager, ISceneOwner
     {
         /// <summary>次のシーン名</summary>
         [SerializeField] private string nextSceneName = "MainScene";
@@ -147,5 +147,55 @@ namespace Main.Common
         {
             SceneManager.LoadScene(backSceneName);
         }
+
+        public Dictionary<EnumMainSceneStagesModulesState, string>[] GetMainSceneStagesModulesState()
+        {
+            try
+            {
+                var tMResources = new MainTemplateResourcesAccessory();
+                var datas = tMResources.LoadSaveDatasCSV(ConstResorcesNames.MAIN_SCENE_STAGES_MODULES_STATE);
+                if (datas == null)
+                    throw new System.Exception("リソース読み込みの失敗");
+
+                return tMResources.GetMainSceneStagesModulesState(datas);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return null;
+            }
+        }
+
+        public bool SaveMainSceneStagesModulesState(Dictionary<EnumMainSceneStagesModulesState, string>[] configMaps)
+        {
+            try
+            {
+                var tMResources = new MainTemplateResourcesAccessory();
+                if (!tMResources.SaveDatasCSVOfMainSceneStagesModulesState(ConstResorcesNames.MAIN_SCENE_STAGES_MODULES_STATE, configMaps))
+                    Debug.LogError("CSV保存呼び出しの失敗");
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+    }
+
+    public interface ISceneOwner
+    {
+        /// <summary>
+        /// ステージクリア条件を取得
+        /// </summary>
+        /// <returns>ステージクリア条件データ</returns>
+        public Dictionary<EnumMainSceneStagesModulesState, string>[] GetMainSceneStagesModulesState();
+
+        /// <summary>
+        /// ステージクリア条件の保存
+        /// </summary>
+        /// <returns>成功／失敗</returns>
+        public bool SaveMainSceneStagesModulesState(Dictionary<EnumMainSceneStagesModulesState, string>[] configMaps);
     }
 }

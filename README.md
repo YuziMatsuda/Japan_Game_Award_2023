@@ -1,9 +1,11 @@
 # BugEatingSwimmer-RepairmanInSubmarine
 ## リリースノート
-#### v0.0.1
-##### プロトタイプ版制作
+#### v0.0.2
+##### α版制作
+###### v0.0.1
+###### プロトタイプ版制作
 ## プロジェクトバージョン
-### v0.0.1
+### v0.0.2
 ## UnityEditorバージョン
 ### [2021.3.13f1](https://unity.com/releases/editor/whats-new/2021.3.13)
 ## 使用アセット
