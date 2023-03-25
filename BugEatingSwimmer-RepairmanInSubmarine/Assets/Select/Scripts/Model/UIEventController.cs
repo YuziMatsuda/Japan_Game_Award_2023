@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Select.Common;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 namespace Select.Model
@@ -10,6 +11,8 @@ namespace Select.Model
     /// <summary>
     /// イベントコントローラー
     /// </summary>
+    [RequireComponent(typeof(Button))]
+    [RequireComponent(typeof(EventTrigger))]
     public class UIEventController : MonoBehaviour
     {
         /// <summary>
@@ -34,6 +37,10 @@ namespace Select.Model
         public IReactiveProperty<int> EventState => _eventState;
         /// <summary>イベントシステム</summary>
         private EventSystem _eventSystem;
+        /// <summary>ボタン</summary>
+        protected Button _button;
+        /// <summary>イベントトリガー</summary>
+        protected EventTrigger _eventTrigger;
 
         protected virtual void OnEnable()
         {
