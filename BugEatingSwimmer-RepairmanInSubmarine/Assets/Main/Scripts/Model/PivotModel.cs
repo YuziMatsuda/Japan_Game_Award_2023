@@ -5,6 +5,7 @@ using UniRx;
 using System.Linq;
 using Main.Common;
 using DG.Tweening;
+using Main.View;
 
 namespace Main.Model
 {
@@ -24,34 +25,54 @@ namespace Main.Model
         private readonly IntReactiveProperty _enumDirectionMode = new IntReactiveProperty();
         /// <summary>方角モード</summary>
         public IReactiveProperty<int> EnumDirectionModeReact => _enumDirectionMode;
-        /// <summary>ターンアニメーション時間</summary>
-        [SerializeField] private float turnDuration = .5f;
         /// <summary>方角モードのベクター配列</summary>
         [SerializeField] private Vector3[] vectorDirectionModes = { new Vector3(0, 0, 0f), new Vector3(0, 0, -90f), new Vector3(0, 0, 180f), new Vector3(0, 0, 90f) };
         /// <summary>回転方角モード</summary>
         [SerializeField] private EnumSpinDirectionMode isSpinDirectionMode = EnumSpinDirectionMode.Positive;
         /// <summary>アルゴリズムの共通処理</summary>
         private AlgorithmCommon _algorithmCommon = new AlgorithmCommon();
+        /// <summary>コード挙動制御</summary>
+        [SerializeField] private ShadowCodeCell shadowCodeCell;
+        /// <summary>コード（明）挙動制御</summary>
+        [SerializeField] private LightCodeCell lightCodeCell;
 
         protected override void Reset()
         {
             base.Reset();
             rayLayerMask = rayLayerMask | 1 << LayerMask.NameToLayer(ConstTagNames.TAG_NAME_GOALNODE);
             rayLayerMask = rayLayerMask | 1 << LayerMask.NameToLayer(ConstTagNames.TAG_NAME_STARTNODE);
-            var enumDirectionModeDefault = GetComponent<PivotConfig>().EnumDirectionModeDefault;
-            transform.localEulerAngles = vectorDirectionModes[(int)enumDirectionModeDefault];
+
+            shadowCodeCell = transform.GetChild(0).GetChild(0).GetComponent<ShadowCodeCell>() != null ? transform.GetChild(0).GetChild(0).GetComponent<ShadowCodeCell>() : null;
+            lightCodeCell = transform.GetChild(1).GetComponent<LightCodeCell>() != null ? transform.GetChild(1).GetComponent<LightCodeCell>() : null;
+            if (GetComponent<PivotConfig>().EnumAtomicMode.Equals(EnumAtomicMode.Molecules))
+            {
+                var enumDirectionModeDefault = GetComponent<PivotConfig>().EnumDirectionModeDefault;
+                shadowCodeCell.transform.localEulerAngles = vectorDirectionModes[(int)enumDirectionModeDefault];
+                lightCodeCell.transform.localEulerAngles = vectorDirectionModes[(int)enumDirectionModeDefault];
+            }
         }
 
         protected override void Start()
         {
             base.Start();
             _enumDirectionMode.Value = (int)GetComponent<PivotConfig>().EnumDirectionModeDefault;
+
+            if (GetComponent<PivotConfig>().EnumAtomicMode.Equals(EnumAtomicMode.Molecules) &&
+                lightCodeCell != null)
+            {
+                if (!lightCodeCell.SetAlphaOff())
+                    Debug.LogError("アルファ値をセット呼び出しの失敗");
+                if (!lightCodeCell.InitializeLight((EnumDirectionMode)_enumDirectionMode.Value))
+                    Debug.LogError("アルファ値をセット呼び出しの失敗");
+            }
         }
 
         protected override void OnTriggerEnter2D(Collider2D collision)
         {
             if (GetComponent<PivotConfig>().EnumAtomicMode.Equals(EnumAtomicMode.Molecules) &&
                 0 < tags.Where(q => collision.CompareTag(q)).Select(q => q).ToArray().Length &&
+                shadowCodeCell != null &&
+                lightCodeCell != null &&
                 !_isTurning.Value)
             {
                 _isTurning.Value = true;
@@ -59,8 +80,22 @@ namespace Main.Model
                 if (turnValue == 0)
                     Debug.LogError("ターン加算値の取得呼び出しの失敗");
                 _enumDirectionMode.Value = (int)_algorithmCommon.GetAjustedEnumDirectionMode((EnumDirectionMode)_enumDirectionMode.Value, turnValue);
-                _transform.DOLocalRotate(vectorDirectionModes[_enumDirectionMode.Value], turnDuration)
-                    .OnComplete(() => _isTurning.Value = false);
+                // 回転アニメーション
+                if (!lightCodeCell.SetAlphaOff())
+                    Debug.LogError("アルファ値をセット呼び出しの失敗");
+                Observable.FromCoroutine<bool>(observer => shadowCodeCell.PlaySpinAnimation(observer, vectorDirectionModes[_enumDirectionMode.Value]))
+                    .Subscribe(_ =>
+                    {
+                        if (!lightCodeCell.SetSpinDirection(vectorDirectionModes[_enumDirectionMode.Value]))
+                            Debug.LogError("回転方角セット呼び出しの失敗");
+                        Observable.FromCoroutine<bool>(observer => lightCodeCell.PlayLightAnimation(observer, (EnumDirectionMode)_enumDirectionMode.Value))
+                            .Subscribe(_ =>
+                            {
+                                _isTurning.Value = false;
+                            })
+                            .AddTo(gameObject);
+                    })
+                    .AddTo(gameObject);
             }
         }
 
