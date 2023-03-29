@@ -11,6 +11,10 @@ PrefabInstance:
       propertyPath: enumDirectionModeDefault
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5820564241654100534, guid: e7c9fa0b738c4a24b8adc298480f8ba0, type: 3}
+      propertyPath: postDuration
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 7097470748788225344, guid: e7c9fa0b738c4a24b8adc298480f8ba0, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -402,6 +406,10 @@ PrefabInstance:
     - target: {fileID: 2338793705859664395, guid: afa4cab702f079d48b393b735256967e, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3504730031916077768, guid: afa4cab702f079d48b393b735256967e, type: 3}
+      propertyPath: postDuration
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5239915902554473928, guid: afa4cab702f079d48b393b735256967e, type: 3}
       propertyPath: m_LocalRotation.w

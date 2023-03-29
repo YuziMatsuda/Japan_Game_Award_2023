@@ -150,6 +150,11 @@ namespace Main.Model
                 return false;
             }
         }
+
+        public bool SetOnTriggerEnter2DDisabled(bool onTriggerEnter2DDisabled)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 
     /// <summary>

@@ -35,6 +35,8 @@ namespace Main.Model
         [SerializeField] private ShadowCodeCell shadowCodeCell;
         /// <summary>コード（明）挙動制御</summary>
         [SerializeField] private LightCodeCell lightCodeCell;
+        /// <summary>衝突判定の状態が無効k</summary>
+        private bool _onTriggerEnter2DDisabled;
 
         protected override void Reset()
         {
@@ -69,7 +71,8 @@ namespace Main.Model
 
         protected override void OnTriggerEnter2D(Collider2D collision)
         {
-            if (GetComponent<PivotConfig>().EnumAtomicMode.Equals(EnumAtomicMode.Molecules) &&
+            if (!_onTriggerEnter2DDisabled &&
+                GetComponent<PivotConfig>().EnumAtomicMode.Equals(EnumAtomicMode.Molecules) &&
                 0 < tags.Where(q => collision.CompareTag(q)).Select(q => q).ToArray().Length &&
                 shadowCodeCell != null &&
                 lightCodeCell != null &&
@@ -338,6 +341,21 @@ namespace Main.Model
         {
             throw new System.NotImplementedException();
         }
+
+        public bool SetOnTriggerEnter2DDisabled(bool onTriggerEnter2DDisabled)
+        {
+            try
+            {
+                _onTriggerEnter2DDisabled = onTriggerEnter2DDisabled;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
     }
 
     /// <summary>
@@ -358,5 +376,11 @@ namespace Main.Model
         /// <param name="isGetProcessStart">帰納法フラグ</param>
         /// <returns>成功／失敗</returns>
         public bool GetSignal(bool isGetProcessStart);
+        /// <summary>
+        /// OnTriggerEnter判定をセット
+        /// </summary>
+        /// <param name="onTriggerEnter2DDisabled">無効とするか</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetOnTriggerEnter2DDisabled(bool onTriggerEnter2DDisabled);
     }
 }

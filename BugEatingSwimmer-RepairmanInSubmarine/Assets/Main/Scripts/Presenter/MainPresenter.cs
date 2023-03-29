@@ -119,6 +119,8 @@ namespace Main.Presenter
 
         public void OnStart()
         {
+            var common = new MainPresenterCommon();
+
             // 初期設定
             pauseView.gameObject.SetActive(false);
             gameProceedButtonView.gameObject.SetActive(false);
@@ -708,64 +710,43 @@ namespace Main.Presenter
                                         Debug.Log($"POST実行中:[{goalNode.name}]");
                                         if (!MainGameManager.Instance.AlgorithmOwner.AddHistorySignalsPosted(goalNode.transform))
                                             Debug.LogError("信号が送信された履歴へ追加呼び出しの失敗");
-                                        foreach (var item in MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted)
-                                        {
-                                            if (item.GetComponent<StartNodeView>() != null)
+
+                                        if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, true))
+                                            Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
+                                        Observable.FromCoroutine<bool>(observer => MainGameManager.Instance.AlgorithmOwner.PlayRunLightningSignal(observer))
+                                            .Subscribe(_ =>
                                             {
-                                                Observable.FromCoroutine<bool>(observer => item.GetComponent<StartNodeView>().PlayLightAnimation(observer))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        // スタートからゴールまで繋がっている状態ならリセットしない
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
-                                            if (item.GetComponent<PivotView>() != null)
-                                            {
-                                                Observable.FromCoroutine<bool>(observer => item.GetComponent<PivotView>().PlayLightAnimation(observer))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        // スタートからゴールまで繋がっている状態ならリセットしない
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
-                                            if (item.GetComponent<GoalNodeView>() != null)
-                                            {
-                                                Observable.FromCoroutine<bool>(observer => item.GetComponent<GoalNodeView>().PlayLightAnimation(observer))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        // スタートからゴールまで繋がっている状態ならリセットしない
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
-                                        }
-                                        //Debug.Log($"クリア条件:{string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray())}");
-                                        var isBugFixed = false;
-                                        // HistorySignalsPostedからノードコードの組み合わせを参照
-                                        foreach (var item in mainSceneStagesModulesState.Where(q => q[EnumMainSceneStagesModulesState.SceneId].Equals(currentStageDic[EnumSystemCommonCash.SceneId] + "") &&
-                                            q[EnumMainSceneStagesModulesState.Terms].Equals(string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray()))).Select(q => q))
-                                        {
-                                            isBugFixed = item[EnumMainSceneStagesModulesState.Fixed].Equals(ConstGeneric.DIGITFORM_TRUE);
-                                        }
-                                        var goalNodeView = goalNode.GetComponent<GoalNodeView>();
-                                        // 取り出したバグのモデルを監視
-                                        if (!goalNodeView.bugfix())
-                                            Debug.LogError("バグフィックス呼び出しの失敗");
-                                        var bug = goalNodeView.InstanceBug;
-                                        if (!bug.GetComponent<BugView>().SetColorCleared(isBugFixed))
-                                            Debug.LogError("カラーを設定呼び出しの失敗");
-                                        bug.GetComponent<BugModel>().IsEated.ObserveEveryValueChanged(x => x.Value)
-                                            .Subscribe(x =>
-                                            {
-                                                if (x)
+                                                if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, false))
+                                                    Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
+                                                // スタートからゴールまで繋がっている状態ならリセットしない
+                                                //Debug.Log($"クリア条件:{string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray())}");
+                                                var isBugFixed = false;
+                                                // HistorySignalsPostedからノードコードの組み合わせを参照
+                                                foreach (var item in mainSceneStagesModulesState.Where(q => q[EnumMainSceneStagesModulesState.SceneId].Equals(currentStageDic[EnumSystemCommonCash.SceneId] + "") &&
+                                                    q[EnumMainSceneStagesModulesState.Terms].Equals(string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray()))).Select(q => q))
                                                 {
-                                                    // HistorySignalsPostedの内容を保存する
-                                                    foreach (var item in mainSceneStagesModulesState.Where(q => q[EnumMainSceneStagesModulesState.SceneId].Equals(currentStageDic[EnumSystemCommonCash.SceneId] + "") &&
-                                                        q[EnumMainSceneStagesModulesState.Terms].Equals(string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray()))).Select(q => q))
-                                                    {
-                                                        item[EnumMainSceneStagesModulesState.Fixed] = ConstGeneric.DIGITFORM_TRUE;
-                                                    }
-                                                    isGoalReached.Value = true;
+                                                    isBugFixed = item[EnumMainSceneStagesModulesState.Fixed].Equals(ConstGeneric.DIGITFORM_TRUE);
                                                 }
+                                                // 取り出したバグのモデルを監視
+                                                if (!goalNode.GetComponent<GoalNodeView>().bugfix())
+                                                    Debug.LogError("バグフィックス呼び出しの失敗");
+                                                var bug = goalNode.GetComponent<GoalNodeView>().InstanceBug;
+                                                if (!bug.GetComponent<BugView>().SetColorCleared(isBugFixed))
+                                                    Debug.LogError("カラーを設定呼び出しの失敗");
+                                                bug.GetComponent<BugModel>().IsEated.ObserveEveryValueChanged(x => x.Value)
+                                                    .Subscribe(x =>
+                                                    {
+                                                        if (x)
+                                                        {
+                                                            // HistorySignalsPostedの内容を保存する
+                                                            foreach (var item in mainSceneStagesModulesState.Where(q => q[EnumMainSceneStagesModulesState.SceneId].Equals(currentStageDic[EnumSystemCommonCash.SceneId] + "") &&
+                                                                q[EnumMainSceneStagesModulesState.Terms].Equals(string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray()))).Select(q => q))
+                                                            {
+                                                                item[EnumMainSceneStagesModulesState.Fixed] = ConstGeneric.DIGITFORM_TRUE;
+                                                            }
+                                                            isGoalReached.Value = true;
+                                                        }
+                                                    });
                                             });
                                     }
                                     else
@@ -830,7 +811,12 @@ namespace Main.Presenter
                                         {
                                             // IsPostingがTrueならバグフィックス状態
                                             // バグフィックス状態でコードをつつく　⇒　回転によりコードが繋がらなくなる
-                                            if (goalNode.GetComponent<GoalNodeModel>().IsPosting.Value)
+                                            // Histroyに含まないコード回転は無視する
+                                            if (goalNode.GetComponent<GoalNodeModel>().IsPosting.Value &&
+                                                0 < MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Where(q => q.Equals(codeObjs[idx].transform))
+                                                    .Select(q => q)
+                                                    .ToArray()
+                                                    .Length)
                                             {
                                                 var bug = goalNode.GetComponent<GoalNodeView>().InstanceBug;
                                                 Observable.FromCoroutine<bool>(observer => goalNode.GetComponent<GoalNodeView>().degrad(observer))
@@ -838,7 +824,8 @@ namespace Main.Presenter
                                                     {
                                                         Destroy(bug.gameObject);
                                                         // 一度全てをリセット
-                                                        isGetProcessStart.Value = !isGetProcessStart.Value;
+                                                        if (!common.ResetAllPostingState(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted))
+                                                            Debug.LogError("POSTのリセット呼び出しの失敗");
                                                     })
                                                     .AddTo(gameObject);
                                             }
@@ -945,90 +932,48 @@ namespace Main.Presenter
                                     else
                                     {
                                         // 上記でもモジュールが繋がっていない状態として判断された場合リセットする
-
-                                        // POSTのリセット
-                                        foreach (var item in MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted)
-                                        {
-                                            if (item.GetComponent<StartNodeView>() != null)
+                                        if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, true))
+                                            Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
+                                        Observable.FromCoroutine<bool>(observer => MainGameManager.Instance.AlgorithmOwner.PlayRunLightningSignal(observer))
+                                            .Subscribe(_ =>
                                             {
-                                                Observable.FromCoroutine<bool>(observer => item.GetComponent<StartNodeView>().PlayLightAnimation(observer))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        if (!item.GetComponent<StartNodeModel>().SetIsPosting(false))
-                                                            Debug.LogError("信号発生アニメーション実行中フラグをセット呼び出しの失敗");
-                                                        if (!item.GetComponent<StartNodeModel>().SetToListLength(-1))
-                                                            Debug.LogError("POST先のノードコードリスト数をセット呼び出しの失敗");
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
-                                            if (item.GetComponent<PivotView>() != null)
-                                            {
-                                                Observable.FromCoroutine<bool>(observer => item.GetComponent<PivotView>().PlayLightAnimation(observer))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        if (!item.GetComponent<PivotModel>().SetIsPosting(false))
-                                                            Debug.LogError("信号発生アニメーション実行中フラグをセット呼び出しの失敗");
-                                                        if (!item.GetComponent<PivotModel>().SetToListLength(-1))
-                                                            Debug.LogError("POST先のノードコードリスト数をセット呼び出しの失敗");
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
-                                            if (item.GetComponent<GoalNodeView>() != null)
-                                            {
-                                                Observable.FromCoroutine<bool>(observer => item.GetComponent<GoalNodeView>().PlayLightAnimation(observer))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        if (!item.GetComponent<GoalNodeModel>().SetIsPosting(false))
-                                                            Debug.LogError("信号発生アニメーション実行中フラグをセット呼び出しの失敗");
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
-                                        }
+                                                if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, false))
+                                                    Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
+                                                if (!common.ResetAllPostingState(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted))
+                                                    Debug.LogError("POSTのリセット呼び出しの失敗");
+                                            });
                                     }
                                 }
                                 else
                                 {
                                     Debug.Log("Getプロセス初期状態／停止");
 
-                                    if (MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted != null)
+                                    // 帰納法処理ありの場合の信号発生演出用
+                                    if (goalNode != null &&
+                                        goalNode.GetComponent<PivotConfig>() != null &&
+                                        goalNode.GetComponent<PivotConfig>().EnumAtomicMode.Equals(EnumAtomicMode.Molecules))
                                     {
-                                        // POSTのリセット
-                                        foreach (var item in MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted)
+                                        // ゴールまで繋がる⇒コード回転で再び未接続の状態は信号発生演出しない
+                                        if (MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted != null &&
+                                            0 < MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Where(q => q.GetComponent<GoalNodeModel>() != null)
+                                            .Select(q => q)
+                                            .ToArray().Length)
                                         {
-                                            if (item.GetComponent<StartNodeView>() != null)
-                                            {
-                                                Observable.FromCoroutine<bool>(observer => item.GetComponent<StartNodeView>().PlayLightAnimation(observer))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        if (!item.GetComponent<StartNodeModel>().SetIsPosting(false))
-                                                            Debug.LogError("信号発生アニメーション実行中フラグをセット呼び出しの失敗");
-                                                        if (!item.GetComponent<StartNodeModel>().SetToListLength(-1))
-                                                            Debug.LogError("POST先のノードコードリスト数をセット呼び出しの失敗");
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
-                                            if (item.GetComponent<PivotView>() != null)
-                                            {
-                                                Observable.FromCoroutine<bool>(observer => item.GetComponent<PivotView>().PlayLightAnimation(observer))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        if (!item.GetComponent<PivotModel>().SetIsPosting(false))
-                                                            Debug.LogError("信号発生アニメーション実行中フラグをセット呼び出しの失敗");
-                                                        if (!item.GetComponent<PivotModel>().SetToListLength(-1))
-                                                            Debug.LogError("POST先のノードコードリスト数をセット呼び出しの失敗");
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
-                                            if (item.GetComponent<GoalNodeView>() != null)
-                                            {
-                                                Observable.FromCoroutine<bool>(observer => item.GetComponent<GoalNodeView>().PlayLightAnimation(observer))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        if (!item.GetComponent<GoalNodeModel>().SetIsPosting(false))
-                                                            Debug.LogError("信号発生アニメーション実行中フラグをセット呼び出しの失敗");
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
+                                            if (!common.ResetAllPostingState(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted))
+                                                Debug.LogError("POSTのリセット呼び出しの失敗");
+                                        }
+                                        else
+                                        {
+                                            if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, true))
+                                                Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
+                                            Observable.FromCoroutine<bool>(observer => MainGameManager.Instance.AlgorithmOwner.PlayRunLightningSignal(observer))
+                                                .Subscribe(_ =>
+                                                {
+                                                    if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, false))
+                                                        Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
+                                                    if (!common.ResetAllPostingState(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted))
+                                                        Debug.LogError("POSTのリセット呼び出しの失敗");
+                                                });
                                         }
                                     }
                                     if (MainGameManager.Instance.AlgorithmOwner.HistorySignalsGeted != null)

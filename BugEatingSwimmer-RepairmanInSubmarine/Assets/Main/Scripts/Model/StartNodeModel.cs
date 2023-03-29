@@ -17,13 +17,15 @@ namespace Main.Model
     public class StartNodeModel : AbstractPivotModel, IStartNodeModel, IPivotModel, IGoalNodeModel
     {
         /// <summary>信号発生インターバル</summary>
-        [SerializeField] private float postIntervalSeconds = 5f;
+        [SerializeField] private float postIntervalSeconds = 3f;
         /// <summary>方角モード</summary>
         private readonly IntReactiveProperty _enumDirectionMode = new IntReactiveProperty();
         /// <summary>方角モード</summary>
         public IReactiveProperty<int> EnumDirectionModeReact => _enumDirectionMode;
         /// <summary>方角モードのベクター配列</summary>
         [SerializeField] private Vector3[] vectorDirectionModes = { new Vector3(0, 0, 0f), new Vector3(0, 0, -90f), new Vector3(0, 0, 180f), new Vector3(0, 0, 90f) };
+        /// <summary>衝突判定の状態が無効k</summary>
+        private bool _onTriggerEnter2DDisabled;
 
         protected override void Reset()
         {
@@ -52,7 +54,8 @@ namespace Main.Model
 
         protected override void OnTriggerEnter2D(Collider2D collision)
         {
-            if (0 < tags.Where(q => collision.CompareTag(q)).Select(q => q).ToArray().Length)
+            if (!_onTriggerEnter2DDisabled &&
+                0 < tags.Where(q => collision.CompareTag(q)).Select(q => q).ToArray().Length)
             {
                 if (!Posting(_isPosting, _toListLength))
                     Debug.LogError("送信呼び出しの失敗");
@@ -197,6 +200,21 @@ namespace Main.Model
         public bool SetFromListLength(int fromListLength)
         {
             throw new System.NotImplementedException();
+        }
+
+        public bool SetOnTriggerEnter2DDisabled(bool onTriggerEnter2DDisabled)
+        {
+            try
+            {
+                _onTriggerEnter2DDisabled = onTriggerEnter2DDisabled;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
         }
     }
 
