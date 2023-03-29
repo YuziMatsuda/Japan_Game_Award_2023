@@ -385,6 +385,7 @@ MonoBehaviour:
   duration: 0.05
   offFade: 0
   onFade: 1
+  multipleConnections: []
 --- !u!1 &2130950150695343405
 GameObject:
   m_ObjectHideFlags: 0
@@ -485,6 +486,7 @@ MonoBehaviour:
   duration: 0.05
   offFade: 0
   onFade: 1
+  multipleConnections: []
 --- !u!1 &2205896950024728716
 GameObject:
   m_ObjectHideFlags: 0
@@ -837,6 +839,7 @@ MonoBehaviour:
   duration: 0.05
   offFade: 0
   onFade: 1
+  multipleConnections: []
 --- !u!1 &3051477559943020964
 GameObject:
   m_ObjectHideFlags: 0
@@ -1411,6 +1414,11 @@ MonoBehaviour:
   duration: 0.05
   offFade: 0
   onFade: 1
+  multipleConnections:
+  - {fileID: 21300000, guid: 6f956ad5e57f23b41966736bda2f2d4f, type: 3}
+  - {fileID: 21300000, guid: 5c968ef292d790e4db2a6d941dc4b5ff, type: 3}
+  - {fileID: 21300000, guid: caad89624b6536449a0f8e14c2aaacb2, type: 3}
+  - {fileID: 21300000, guid: a8a42708c11f1c74ba6a44801f4a2be9, type: 3}
 --- !u!1 &5495360833579652552
 GameObject:
   m_ObjectHideFlags: 0
@@ -2056,6 +2064,7 @@ MonoBehaviour:
   duration: 0.05
   offFade: 0
   onFade: 1
+  multipleConnections: []
 --- !u!1 &7756236807545280070
 GameObject:
   m_ObjectHideFlags: 0
@@ -2324,6 +2333,7 @@ MonoBehaviour:
   duration: 0.05
   offFade: 0
   onFade: 1
+  multipleConnections: []
 --- !u!1 &9100314283150743484
 GameObject:
   m_ObjectHideFlags: 0

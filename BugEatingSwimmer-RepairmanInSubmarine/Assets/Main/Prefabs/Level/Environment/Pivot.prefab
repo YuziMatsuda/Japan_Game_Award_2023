@@ -78,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 9aab73762fa31384daf79b112bb14023, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 33b6eba137010964c8785a1a1028c897, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -159,13 +159,14 @@ MonoBehaviour:
   rayLayerMask:
     serializedVersion: 2
     m_Bits: 1408
-  turnDuration: 0.5
   vectorDirectionModes:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: -90}
   - {x: 0, y: 0, z: 180}
   - {x: 0, y: 0, z: 90}
   isSpinDirectionMode: 1
+  shadowCodeCell: {fileID: 0}
+  lightCodeCell: {fileID: 0}
 --- !u!114 &2688145068106797634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,4 +179,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57683fe42321e6c44ad3427ed59b83ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  postDuration: 0.5
