@@ -14,7 +14,7 @@ namespace Main.Common
         /// <summary>パーティクルシステムを配列管理</summary>
         [SerializeField] private Transform[] particleSystems;
         /// <summary>プール済みのパーティクルシステム情報マップ</summary>
-        private Dictionary<int, int> _particleSystemsIdxDictionary = new Dictionary<int, int>();
+        private Dictionary<string, int> _particleSystemsIdxDictionary = new Dictionary<string, int>();
 
         public Transform GetParticleSystemsTransform(int instanceID, EnumParticleSystemsIndex index)
         {
@@ -33,6 +33,8 @@ namespace Main.Common
             {
                 var particle = GetParticleSystems(instanceID, index);
                 particle.transform.position = position;
+                if (!particle.transform.gameObject.activeSelf)
+                    particle.transform.gameObject.SetActive(true);
                 particle.Play();
 
                 return true;
@@ -46,10 +48,18 @@ namespace Main.Common
 
         public bool StopParticleSystems(int instanceID, EnumParticleSystemsIndex index)
         {
+            return StopParticleSystems(instanceID, index, false);
+        }
+
+        public bool StopParticleSystems(int instanceID, EnumParticleSystemsIndex index, bool stopImmediately)
+        {
             try
             {
                 var particle = GetParticleSystems(instanceID, index);
-                particle.Stop();
+                if (!stopImmediately)
+                    particle.Stop();
+                else
+                    particle.transform.gameObject.SetActive(false);
 
                 return true;
             }
@@ -68,13 +78,13 @@ namespace Main.Common
         /// <returns>パーティクルシステム</returns>
         private ParticleSystem GetParticleSystems(int instanceID, EnumParticleSystemsIndex index)
         {
-            if (!_particleSystemsIdxDictionary.ContainsKey(instanceID))
+            if (!_particleSystemsIdxDictionary.ContainsKey($"{instanceID + index}"))
             {
                 var sfx = Instantiate(particleSystems[(int)index], _transform);
-                _particleSystemsIdxDictionary.Add(instanceID, _transform.childCount - 1);
+                _particleSystemsIdxDictionary.Add($"{instanceID + index}", _transform.childCount - 1);
                 return sfx.GetComponent<ParticleSystem>();
             }
-            return _transform.GetChild(_particleSystemsIdxDictionary[instanceID]).GetComponent<ParticleSystem>();
+            return _transform.GetChild(_particleSystemsIdxDictionary[$"{instanceID + index}"]).GetComponent<ParticleSystem>();
         }
     }
 
@@ -100,6 +110,15 @@ namespace Main.Common
         /// <param name="index">パーティクルシステムのインデックス</param>
         /// <returns>成功／失敗</returns>
         public bool StopParticleSystems(int instanceID, EnumParticleSystemsIndex index);
+
+        /// <summary>
+        /// 指定されたパーティクルシステムを停止する
+        /// </summary>
+        /// <param name="instanceID">オブジェクト識別ID</param>
+        /// <param name="index">パーティクルシステムのインデックス</param>
+        /// <param name="stopImmediately">即時で止める</param>
+        /// <returns>成功／失敗</returns>
+        public bool StopParticleSystems(int instanceID, EnumParticleSystemsIndex index, bool stopImmediately);
 
         /// <summary>
         /// パーティクルシステムのトランスフォーム取得

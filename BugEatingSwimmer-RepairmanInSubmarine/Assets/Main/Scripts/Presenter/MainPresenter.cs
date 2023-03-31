@@ -630,6 +630,60 @@ namespace Main.Presenter
                                             if (!attackTrigger.SetColliderEnabled(x))
                                                 Debug.LogError("コライダーの有効／無効をセット呼び出しの失敗");
                                         });
+                                    var chargePhase = new IntReactiveProperty(-1);
+                                    playerModel.InputPowerChargeTime.ObserveEveryValueChanged(x => x.Value)
+                                        .Subscribe(x =>
+                                        {
+                                            if (playerModel.PowerChargePhaseTimes[2] < x)
+                                                chargePhase.Value = 2;
+                                            else if (playerModel.PowerChargePhaseTimes[1] < x)
+                                                chargePhase.Value = 1;
+                                            else if (playerModel.PowerChargePhaseTimes[0] < x)
+                                                chargePhase.Value = 0;
+                                            else
+                                            {
+                                                chargePhase.Value = -1;
+                                            }
+                                            if (playerModel.PowerChargePhaseTimes[0] < x)
+                                                if (!playerView.HoverCharge())
+                                                    Debug.LogError("チャージのホバー呼び出しの失敗");
+                                        });
+                                    chargePhase.ObserveEveryValueChanged(x => x.Value)
+                                        .Subscribe(x =>
+                                        {
+                                            switch (x)
+                                            {
+                                                case 0:
+                                                    if (!playerView.StartCharge(x))
+                                                        Debug.LogError("チャージ開始呼び出しの失敗");
+                                                    if (!playerView.ChangeChargeMode(0, true))
+                                                        Debug.LogError("チャージ開始呼び出しの失敗");
+                                                    break;
+                                                case 1:
+                                                    // 処理無し
+                                                    break;
+                                                case 2:
+                                                    if (!playerView.ChangeChargeMode(1, true))
+                                                        Debug.LogError("チャージ開始呼び出しの失敗");
+                                                    break;
+                                                case -1:
+                                                    if (!playerView.StopCharge())
+                                                        Debug.LogError("チャージ停止呼び出しの失敗");
+                                                    for (var i = 0; i < playerView.Halos.PlayerHalos.Length; i++)
+                                                        if (!playerView.ChangeChargeMode(i, false))
+                                                            Debug.LogError("チャージ状態を切り替え呼び出しの失敗");
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
+                                        });
+                                    playerModel.IsPressAndHoldAndReleased.ObserveEveryValueChanged(x => x.Value)
+                                        .Subscribe(x =>
+                                        {
+                                            if (x)
+                                                if (!playerView.PlayPowerAttackEffect())
+                                                    Debug.LogError("パワーアタックのエフェクト発生呼び出しの失敗");
+                                        });
                                 }
                             });
                         // Getプロセスの実行状態（false:初期状態／停止、true:実行中）

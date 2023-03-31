@@ -11,5 +11,7 @@ namespace Main.Common
     {
         DustConnectSignal,
         DustConnectSignalSmall,
+        ParticlesOfLightGatherAround,
+        Explosion,
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Main.Common;
 
 namespace Main.View
 {
@@ -8,7 +9,127 @@ namespace Main.View
     /// ビュー
     /// プレイヤー
     /// </summary>
-    public class PlayerView : MonoBehaviour
+    public class PlayerView : ShadowCodeCellParent, IPlayerView, IPlayerHalo
     {
+        /// <summary>プレイヤーのハロー</summary>
+        [SerializeField] private Halos halos;
+        /// <summary>プレイヤーのハロー</summary>
+        public Halos Halos => halos;
+
+        private void Reset()
+        {
+            halos = transform.GetChild(2).GetComponent<Halos>();
+        }
+
+        public bool StartCharge(float inputPowerChargeTime)
+        {
+            try
+            {
+                if (_transform == null)
+                    _transform = transform;
+
+                if (!MainGameManager.Instance.ParticleSystemsOwner.PlayParticleSystems(GetInstanceID(), EnumParticleSystemsIndex.ParticlesOfLightGatherAround, _transform.position))
+                    Debug.LogError("指定されたパーティクルシステムを再生する呼び出しの失敗");
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool StopCharge()
+        {
+            try
+            {
+                if (!MainGameManager.Instance.ParticleSystemsOwner.StopParticleSystems(GetInstanceID(), EnumParticleSystemsIndex.ParticlesOfLightGatherAround, true))
+                    Debug.LogError("指定されたパーティクルシステムを再生する呼び出しの失敗");
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool SetHaloEnabled(bool enabled)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool ChangeChargeMode(int idx, bool enabled)
+        {
+            return halos.ChangeChargeMode(idx, enabled);
+        }
+
+        public bool HoverCharge()
+        {
+            try
+            {
+                if (_transform == null)
+                    _transform = transform;
+
+                var particlesOflight = MainGameManager.Instance.ParticleSystemsOwner.GetParticleSystemsTransform(GetInstanceID(), EnumParticleSystemsIndex.ParticlesOfLightGatherAround);
+                particlesOflight.transform.position = _transform.position;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool PlayPowerAttackEffect()
+        {
+            try
+            {
+                if (_transform == null)
+                    _transform = transform;
+
+                if (!MainGameManager.Instance.ParticleSystemsOwner.PlayParticleSystems(GetInstanceID(), EnumParticleSystemsIndex.Explosion, _transform.position))
+                    throw new System.Exception("指定されたパーティクルシステムを再生する呼び出しの失敗");
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+    }
+
+    public interface IPlayerView
+    {
+        /// <summary>
+        /// チャージ開始
+        /// </summary>
+        /// <param name="inputPowerChargeTime">パワーチャージ時間</param>
+        /// <returns>成功／失敗</returns>
+        public bool StartCharge(float inputPowerChargeTime);
+
+        /// <summary>
+        /// チャージのホバー
+        /// </summary>
+        /// <returns>成功／失敗</returns>
+        public bool HoverCharge();
+
+        /// <summary>
+        /// チャージ停止
+        /// </summary>
+        /// <returns>成功／失敗</returns>
+        public bool StopCharge();
+
+        /// <summary>
+        /// パワーアタックのエフェクト発生
+        /// </summary>
+        /// <returns>成功／失敗</returns>
+        public bool PlayPowerAttackEffect();
     }
 }

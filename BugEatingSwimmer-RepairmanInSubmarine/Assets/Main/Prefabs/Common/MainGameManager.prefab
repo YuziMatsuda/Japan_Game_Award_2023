@@ -805,3 +805,5 @@ MonoBehaviour:
   particleSystems:
   - {fileID: 1974009911470306521, guid: dfd990d6091f17f4795b9e3a1d4b106b, type: 3}
   - {fileID: 1974009911470306521, guid: e9e48106277f70e4cb4de7db5195e909, type: 3}
+  - {fileID: 1111211621718819113, guid: 8162b5c3ba13eba43b8254dae0265225, type: 3}
+  - {fileID: 8950452120447351947, guid: 78ac88398ab5a5748aaf465884e74319, type: 3}
