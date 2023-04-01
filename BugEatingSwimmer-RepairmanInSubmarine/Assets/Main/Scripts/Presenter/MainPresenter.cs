@@ -684,6 +684,17 @@ namespace Main.Presenter
                                                 if (!playerView.PlayPowerAttackEffect())
                                                     Debug.LogError("パワーアタックのエフェクト発生呼び出しの失敗");
                                         });
+                                    playerModel.OnTurn.ObserveEveryValueChanged(x => x.Value)
+                                        .Subscribe(x =>
+                                        {
+                                            if (x)
+                                            {
+                                                if (!playerModel.SetOnTrurn(false))
+                                                    Debug.LogError("ターン状態をセット呼び出しの失敗");
+                                                if (!playerView.PlayTurnAnimation())
+                                                    Debug.LogError("ターン用のアニメーション再生呼び出しの失敗");
+                                            }
+                                        });
                                 }
                             });
                         // Getプロセスの実行状態（false:初期状態／停止、true:実行中）

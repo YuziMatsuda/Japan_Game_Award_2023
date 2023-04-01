@@ -9,16 +9,19 @@ namespace Main.View
     /// ビュー
     /// プレイヤー
     /// </summary>
-    public class PlayerView : ShadowCodeCellParent, IPlayerView, IPlayerHalo
+    public class PlayerView : ShadowCodeCellParent, IPlayerView, IPlayerHalo, IBodySpritePlayer
     {
         /// <summary>プレイヤーのハロー</summary>
         [SerializeField] private Halos halos;
         /// <summary>プレイヤーのハロー</summary>
         public Halos Halos => halos;
+        /// <summary>プレイヤーのボディのスプライト</summary>
+        [SerializeField] private BodySpritePlayer bodySpritePlayer;
 
         private void Reset()
         {
             halos = transform.GetChild(2).GetComponent<Halos>();
+            bodySpritePlayer = transform.GetChild(0).GetComponent<BodySpritePlayer>();
         }
 
         public bool StartCharge(float inputPowerChargeTime)
@@ -102,6 +105,11 @@ namespace Main.View
                 Debug.LogError(e);
                 return false;
             }
+        }
+
+        public bool PlayTurnAnimation()
+        {
+            return bodySpritePlayer.PlayTurnAnimation();
         }
     }
 

@@ -71,6 +71,10 @@ namespace Main.Model
         private readonly BoolReactiveProperty _isPressAndHoldAndReleased = new BoolReactiveProperty();
         /// <summary>押し続けて離す</summary>
         public IReactiveProperty<bool> IsPressAndHoldAndReleased => _isPressAndHoldAndReleased;
+        /// <summary>ターン実行状態</summary>
+        private readonly BoolReactiveProperty _onTurn = new BoolReactiveProperty();
+        /// <summary>ターン実行状態</summary>
+        public IReactiveProperty<bool> OnTurn => _onTurn;
 
         public bool SetInputBan(bool unactive)
         {
@@ -97,6 +101,8 @@ namespace Main.Model
             // 移動制御のベロシティ
             var moveVelocity = new Vector2ReactiveProperty();
             var moveVelocityLast = new Vector2ReactiveProperty();
+            // 最後に参照された移動向き（デフォルトは右向き）
+            var toDirectionLast = new Vector3ReactiveProperty(Vector3.right);
             // 位置・スケールのキャッシュ
             var transform = base.transform;
             // 移動入力に応じて移動座標をセット
@@ -127,7 +133,7 @@ namespace Main.Model
                         0f : brake;
                     // 移動方向に合わせて向きを変える
                     if (0f < moveVelocity.Value.magnitude)
-                        transform.rotation = GetQuaternionDirection(movementDirectionMode, transform);
+                        transform.rotation = GetQuaternionDirection(movementDirectionMode, transform, _onTurn, toDirectionLast);
                 });
         }
 
@@ -269,7 +275,9 @@ namespace Main.Model
         /// <param name="mode">移動向きモード</param>
         /// <param name="transform">トランスフォーム</param>
         /// <returns>クォータニオン</returns>
-        private Quaternion GetQuaternionDirection(EnumMovementDirectionMode mode, Transform transform)
+        /// <param name="onTurn">ターン実行状態</param>
+        /// <param name="toDirectionLast">最後に参照された移動向き</param>
+        private Quaternion GetQuaternionDirection(EnumMovementDirectionMode mode, Transform transform, BoolReactiveProperty onTurn, Vector3ReactiveProperty toDirectionLast)
         {
             switch (mode)
             {
@@ -285,6 +293,13 @@ namespace Main.Model
                         toDirection = Vector3.right;
                     else
                         return transform.rotation;
+
+                    // 左右の切り替えが発生した場合は都度更新
+                    if (!toDirectionLast.Value.Equals(toDirection))
+                    {
+                        onTurn.Value = true;
+                        toDirectionLast.Value = toDirection;
+                    }
 
                     return Quaternion.FromToRotation(Vector2.right, toDirection);
                 case EnumMovementDirectionMode.LeftOrRightOrUpOrDown:
@@ -322,6 +337,20 @@ namespace Main.Model
             {
                 // T.B.D パワーシェル実装時に使用する
                 _isPower.Value = enabled;
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool SetOnTrurn(bool enabled)
+        {
+            try
+            {
+                _onTurn.Value = enabled;
                 return true;
             }
             catch (System.Exception e)
@@ -371,5 +400,12 @@ namespace Main.Model
         /// <param name="enabled">有効</param>
         /// <returns>成功／失敗</returns>
         public bool SetIsPower(bool enabled);
+
+        /// <summary>
+        /// ターン状態をセット
+        /// </summary>
+        /// <param name="enabled">有効</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetOnTrurn(bool enabled);
     }
 }
