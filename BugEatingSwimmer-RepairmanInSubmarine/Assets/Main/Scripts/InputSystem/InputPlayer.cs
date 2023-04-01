@@ -36,10 +36,27 @@ namespace Main.InputSystem
             _attacked = true;
         }
 
+        /// <summary>キャンセル</summary>
+        private bool _canceled;
+        /// <summary>キャンセル</summary>
+        public bool Canceled => _canceled;
+
+        public void OnCanceled(InputAction.CallbackContext context)
+        {
+            if (context.canceled && _canceled)
+            {
+                _canceled = false;
+                return;
+            }
+            if (!context.performed) return;
+            _canceled = true;
+        }
+
         public void DisableAll()
         {
             _moved = new Vector2();
             _attacked = false;
+            _canceled = false;
         }
     }
 }

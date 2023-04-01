@@ -96,6 +96,7 @@ MonoBehaviour:
   - StartNode
   - GoalNode
   - Molecules
+  pathDuration: 0.15
 --- !u!1 &1095801330
 GameObject:
   m_ObjectHideFlags: 0
@@ -732,6 +733,7 @@ Transform:
   - {fileID: 128176305}
   - {fileID: 1095801331}
   - {fileID: 221583503}
+  - {fileID: 6239027276364180388}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -755,3 +757,53 @@ MonoBehaviour:
   skyBoxOwner: {fileID: 128176306}
   levelOwner: {fileID: 1095801332}
   algorithmOwner: {fileID: 221583502}
+  particleSystemsOwner: {fileID: 3024240338226834771}
+--- !u!1 &4414222006299124334
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6239027276364180388}
+  - component: {fileID: 3024240338226834771}
+  m_Layer: 0
+  m_Name: ParticleSystemsOwner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6239027276364180388
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4414222006299124334}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1369696456132551609}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3024240338226834771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4414222006299124334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f26bb07f203fe24cbffa5998f9ccbe4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particleSystems:
+  - {fileID: 1974009911470306521, guid: dfd990d6091f17f4795b9e3a1d4b106b, type: 3}
+  - {fileID: 1974009911470306521, guid: e9e48106277f70e4cb4de7db5195e909, type: 3}
+  - {fileID: 1111211621718819113, guid: 8162b5c3ba13eba43b8254dae0265225, type: 3}
+  - {fileID: 8950452120447351947, guid: 78ac88398ab5a5748aaf465884e74319, type: 3}
