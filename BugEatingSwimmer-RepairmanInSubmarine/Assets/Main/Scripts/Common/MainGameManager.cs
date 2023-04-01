@@ -49,6 +49,10 @@ namespace Main.Common
         [SerializeField] private AlgorithmOwner algorithmOwner;
         /// <summary>アルゴリズムのオーナー</summary>
         public AlgorithmOwner AlgorithmOwner => algorithmOwner;
+        /// <summary>パーティクルのオーナー</summary>
+        [SerializeField] private ParticleSystemsOwner particleSystemsOwner;
+        /// <summary>パーティクルのオーナー</summary>
+        public ParticleSystemsOwner ParticleSystemsOwner => particleSystemsOwner;
 
         private void Reset()
         {
@@ -60,6 +64,7 @@ namespace Main.Common
             skyBoxOwner = GameObject.Find("SkyBoxOwner").GetComponent<SkyBoxOwner>();
             levelOwner = GameObject.Find("LevelOwner").GetComponent<LevelOwner>();
             algorithmOwner = GameObject.Find("AlgorithmOwner").GetComponent<AlgorithmOwner>();
+            particleSystemsOwner = GameObject.Find("ParticleSystemsOwner").GetComponent<ParticleSystemsOwner>();
         }
 
         private void Awake()
@@ -77,6 +82,7 @@ namespace Main.Common
             skyBoxOwner.OnStart();
             levelOwner.OnStart();
             algorithmOwner.OnStart();
+            particleSystemsOwner.OnStart();
         }
     }
 

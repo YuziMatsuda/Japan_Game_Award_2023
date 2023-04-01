@@ -1,0 +1,20 @@
+パーティクルのデモ素材
+・拡散
+	DiffusionLarge
+	DiffusionSmall
+・ダスト
+	Dust
+	DustFloat
+	DustRing
+・光の粒子
+	ParticlesOfLight
+・煙
+	Smoke
+	SmokeDiffusion
+・爆発
+	Explosion
+・泡
+	Bubble
+	BubbleLarge
+・土埃
+	RunDust

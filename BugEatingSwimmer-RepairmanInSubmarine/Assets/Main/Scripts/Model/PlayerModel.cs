@@ -15,7 +15,7 @@ namespace Main.Model
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(CapsuleCollider2D))]
-    public class PlayerModel : MonoBehaviour
+    public class PlayerModel : MonoBehaviour, IPlayerModel
     {
         /// <summary>移動速度</summary>
         [SerializeField] private float moveSpeed = 4f;
@@ -53,12 +53,29 @@ namespace Main.Model
         private readonly BoolReactiveProperty _isPlayingAction = new BoolReactiveProperty();
         /// <summary>つつくアクション実行中フラグ</summary>
         public IReactiveProperty<bool> IsPlayingAction => _isPlayingAction;
+        /// <summary>正面と判断する入力角度</summary>
+        [SerializeField, Range(0f, 180f)] private float inputAngleFrontal = 60f;
+        /// <summary>パワー状態</summary>
+        [SerializeField] bool isPowerDemo;
+        /// <summary>パワー状態</summary>
+        private readonly BoolReactiveProperty _isPower = new BoolReactiveProperty();
+        /// <summary>パワーチャージ時間</summary>
+        private readonly FloatReactiveProperty _inputPowerChargeTime = new FloatReactiveProperty();
+        /// <summary>パワーチャージ時間</summary>
+        public IReactiveProperty<float> InputPowerChargeTime => _inputPowerChargeTime;
+        /// <summary>パワーチャージの段階を変える時間</summary>
+        [SerializeField] private float[] powerChargePhaseTimes = { 0f, .5f, 1f };
+        /// <summary>パワーチャージの段階を変える時間</summary>
+        public float[] PowerChargePhaseTimes => powerChargePhaseTimes;
+        /// <summary>押し続けて離す</summary>
+        private readonly BoolReactiveProperty _isPressAndHoldAndReleased = new BoolReactiveProperty();
+        /// <summary>押し続けて離す</summary>
+        public IReactiveProperty<bool> IsPressAndHoldAndReleased => _isPressAndHoldAndReleased;
+        /// <summary>ターン実行状態</summary>
+        private readonly BoolReactiveProperty _onTurn = new BoolReactiveProperty();
+        /// <summary>ターン実行状態</summary>
+        public IReactiveProperty<bool> OnTurn => _onTurn;
 
-        /// <summary>
-        /// 操作禁止フラグをセット
-        /// </summary>
-        /// <param name="unactive">許可／禁止</param>
-        /// <returns>成功／失敗</returns>
         public bool SetInputBan(bool unactive)
         {
             try
@@ -73,11 +90,6 @@ namespace Main.Model
             }
         }
 
-        [SerializeField] private Vector3 moveVelocityOutput;
-        [SerializeField] private float magnitudeOutput;
-        [SerializeField] private Vector3 normalizedOutput;
-        [SerializeField] private bool isPlayingActionOutput;
-
         private void Start()
         {
             _targetPointerClone = Instantiate(targetPointer);
@@ -89,20 +101,24 @@ namespace Main.Model
             // 移動制御のベロシティ
             var moveVelocity = new Vector2ReactiveProperty();
             var moveVelocityLast = new Vector2ReactiveProperty();
+            // 最後に参照された移動向き（デフォルトは右向き）
+            var toDirectionLast = new Vector3ReactiveProperty(Vector3.right);
             // 位置・スケールのキャッシュ
             var transform = base.transform;
             // 移動入力に応じて移動座標をセット
             this.UpdateAsObservable()
                 .Subscribe(_ =>
                 {
+                    // T.B.D パワーシェル実装時は消す
+                    _isPower.Value = isPowerDemo;
+
                     if (!_inputBan)
                     {
-                        moveVelocityOutput = moveVelocity.Value;
-                        magnitudeOutput = moveVelocityOutput.magnitude;
-                        normalizedOutput = moveVelocityOutput.normalized;
-                        if (!AttackMovement(_isPlayingAction, moveVelocity, moveVelocityLast, movementDirectionMode))
+                        if (!AttackMovement(_isPlayingAction, moveVelocity, moveVelocityLast, movementDirectionMode, _isPower, _inputPowerChargeTime, _isPressAndHoldAndReleased, powerChargePhaseTimes))
                             Debug.LogError("攻撃のモーション呼び出しの失敗");
                     }
+                    else
+                        _inputPowerChargeTime.Value = 0f;
                 });
             // 移動制御
             this.FixedUpdateAsObservable()
@@ -111,11 +127,27 @@ namespace Main.Model
                     // 歩く走る挙動
                     rigidbody.AddForce(moveVelocity.Value * (forceMode.Equals(ForceMode2D.Force) ? 1f : Time.fixedDeltaTime), forceMode);
                     // Axis指定がゼロなら位置移動の減衰値を高めて止まり安くする
-                    rigidbody.drag = 0f < moveVelocity.Value.magnitude && !_isPlayingAction.Value ? 0f : brake;
+                    rigidbody.drag = !_isPlayingAction.Value &&
+                        0f < moveVelocity.Value.magnitude &&
+                        !CheckDrift(moveVelocity.Value, rigidbody.velocity, inputAngleFrontal) ?
+                        0f : brake;
                     // 移動方向に合わせて向きを変える
                     if (0f < moveVelocity.Value.magnitude)
-                        transform.rotation = GetQuaternionDirection(movementDirectionMode, transform);
+                        transform.rotation = GetQuaternionDirection(movementDirectionMode, transform, _onTurn, toDirectionLast);
                 });
+        }
+
+        /// <summary>
+        /// ドリフト状態かチェック
+        /// ※有効角度の範囲を超えているならドリフト状態とみなす
+        /// </summary>
+        /// <param name="moveVelocity">移動制御入力</param>
+        /// <param name="rigidbodyVelocity">オブジェクト自身のベロシティ</param>
+        /// <param name="effectiveAngle">有効角度</param>
+        /// <returns>ドリフト状態が有効</returns>
+        private bool CheckDrift(Vector2 moveVelocity, Vector2 rigidbodyVelocity, float effectiveAngle)
+        {
+            return effectiveAngle < Vector3.Angle(moveVelocity, rigidbodyVelocity);
         }
 
         /// <summary>
@@ -125,8 +157,12 @@ namespace Main.Model
         /// <param name="moveVelocity">移動ベロシティ</param>
         /// <param name="moveVelocityLast">最後に向いた移動ベロシティ</param>
         /// <param name="movementDirectionMode">移動向き</param>
+        /// <param name="isPower">パワー状態</param>
+        /// <param name="inputPowerChargeTime">パワーチャージ時間</param>
+        /// <param name="isPressAndHoldAndReleased">押し続けて離す</param>
+        /// <param name="powerChargePhaseTimes">パワーチャージの段階を変える時間</param>
         /// <returns>成功／失敗</returns>
-        private bool AttackMovement(BoolReactiveProperty isPlayingAction, Vector2ReactiveProperty moveVelocity, Vector2ReactiveProperty moveVelocityLast, EnumMovementDirectionMode movementDirectionMode)
+        private bool AttackMovement(BoolReactiveProperty isPlayingAction, Vector2ReactiveProperty moveVelocity, Vector2ReactiveProperty moveVelocityLast, EnumMovementDirectionMode movementDirectionMode, BoolReactiveProperty isPower, FloatReactiveProperty inputPowerChargeTime, BoolReactiveProperty isPressAndHoldAndReleased, float[] powerChargePhaseTimes)
         {
             try
             {
@@ -135,26 +171,77 @@ namespace Main.Model
                 if (0 < moveVelocity.Value.magnitude)
                     moveVelocityLast.Value = moveVelocity.Value;
                 _moveVelocityReactiveProperty.Value = moveVelocity.Value;
-                isPlayingActionOutput = isPlayingAction.Value;
-                if (!isPlayingAction.Value &&
-                    MainGameManager.Instance.InputSystemsOwner.InputPlayer.Attacked)
+                if (!isPower.Value)
                 {
-                    isPlayingAction.Value = true;
-                    switch (enumAttackMotionMode)
+                    if (!isPlayingAction.Value &&
+                        MainGameManager.Instance.InputSystemsOwner.InputPlayer.Attacked)
                     {
-                        case EnumAttackMotionMode.OneAttack:
-                            transform.DOPunchPosition(GetNormalized(moveVelocityLast.Value, movementDirectionMode) * attackDistance, attackDuration, 1, 1f)
-                                .OnComplete(() => isPlayingAction.Value = false);
-                            break;
-                        case EnumAttackMotionMode.SeveralAttack:
-                            // DOPunchPositionはもっとダイナミックに動かさないと振動数の引数が作用しない？
-                            transform.DOPunchPosition(GetNormalized(moveVelocityLast.Value, movementDirectionMode) * attackDistance, attackDuration, 5, 1f)
-                                .OnComplete(() => isPlayingAction.Value = false);
-                            break;
-                        default:
-                            Debug.LogError("例外エラー");
-                            break;
+                        if (!PlayPunchAction(isPlayingAction, moveVelocityLast, movementDirectionMode))
+                            Debug.LogError("パンチアクション呼び出しの失敗");
                     }
+                }
+                else
+                {
+                    if (MainGameManager.Instance.InputSystemsOwner.InputPlayer.Attacked &&
+                        !MainGameManager.Instance.InputSystemsOwner.InputPlayer.Canceled)
+                    {
+                        inputPowerChargeTime.Value += Time.deltaTime;
+                        isPressAndHoldAndReleased.Value = false;
+                    }
+                    else if (0f < inputPowerChargeTime.Value &&
+                        !isPlayingAction.Value &&
+                        powerChargePhaseTimes[2] < inputPowerChargeTime.Value &&
+                        !MainGameManager.Instance.InputSystemsOwner.InputPlayer.Canceled)
+                    {
+                        inputPowerChargeTime.Value = 0f;
+                        if (!PlayPunchAction(isPlayingAction, moveVelocityLast, movementDirectionMode))
+                            Debug.LogError("パンチアクション呼び出しの失敗");
+                        isPressAndHoldAndReleased.Value = true;
+                    }
+                    else if (0f < inputPowerChargeTime.Value)
+                    {
+                        inputPowerChargeTime.Value = 0f;
+                    }
+                    // float型の最大値丸め込み
+                    if (1037f < inputPowerChargeTime.Value)
+                        inputPowerChargeTime.Value = 1.1f;
+                }
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// パンチアクション
+        /// </summary>
+        /// <param name="isPlayingAction">攻撃モーション中</param>
+        /// <param name="moveVelocityLast">最後に向いた移動ベロシティ</param>
+        /// <param name="movementDirectionMode">移動向き</param>
+        /// <returns>成功／失敗</returns>
+        private bool PlayPunchAction(BoolReactiveProperty isPlayingAction, Vector2ReactiveProperty moveVelocityLast, EnumMovementDirectionMode movementDirectionMode)
+        {
+            try
+            {
+                isPlayingAction.Value = true;
+                switch (enumAttackMotionMode)
+                {
+                    case EnumAttackMotionMode.OneAttack:
+                        transform.DOPunchPosition(GetNormalized(moveVelocityLast.Value, movementDirectionMode) * attackDistance, attackDuration, 1, 1f)
+                            .OnComplete(() => isPlayingAction.Value = false);
+                        break;
+                    case EnumAttackMotionMode.SeveralAttack:
+                        // DOPunchPositionはもっとダイナミックに動かさないと振動数の引数が作用しない？
+                        transform.DOPunchPosition(GetNormalized(moveVelocityLast.Value, movementDirectionMode) * attackDistance, attackDuration, 5, 1f)
+                            .OnComplete(() => isPlayingAction.Value = false);
+                        break;
+                    default:
+                        Debug.LogError("例外エラー");
+                        break;
                 }
 
                 return true;
@@ -188,7 +275,9 @@ namespace Main.Model
         /// <param name="mode">移動向きモード</param>
         /// <param name="transform">トランスフォーム</param>
         /// <returns>クォータニオン</returns>
-        private Quaternion GetQuaternionDirection(EnumMovementDirectionMode mode, Transform transform)
+        /// <param name="onTurn">ターン実行状態</param>
+        /// <param name="toDirectionLast">最後に参照された移動向き</param>
+        private Quaternion GetQuaternionDirection(EnumMovementDirectionMode mode, Transform transform, BoolReactiveProperty onTurn, Vector3ReactiveProperty toDirectionLast)
         {
             switch (mode)
             {
@@ -204,6 +293,13 @@ namespace Main.Model
                         toDirection = Vector3.right;
                     else
                         return transform.rotation;
+
+                    // 左右の切り替えが発生した場合は都度更新
+                    if (!toDirectionLast.Value.Equals(toDirection))
+                    {
+                        onTurn.Value = true;
+                        toDirectionLast.Value = toDirection;
+                    }
 
                     return Quaternion.FromToRotation(Vector2.right, toDirection);
                 case EnumMovementDirectionMode.LeftOrRightOrUpOrDown:
@@ -235,6 +331,35 @@ namespace Main.Model
             }
         }
 
+        public bool SetIsPower(bool enabled)
+        {
+            try
+            {
+                // T.B.D パワーシェル実装時に使用する
+                _isPower.Value = enabled;
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool SetOnTrurn(bool enabled)
+        {
+            try
+            {
+                _onTurn.Value = enabled;
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
         /// <summary>
         /// 移動向きモード
         /// </summary>
@@ -258,5 +383,29 @@ namespace Main.Model
             /// <summary>複数つつく</summary>
             SeveralAttack,
         }
+    }
+
+    public interface IPlayerModel
+    {
+        /// <summary>
+        /// 操作禁止フラグをセット
+        /// </summary>
+        /// <param name="unactive">許可／禁止</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetInputBan(bool unactive);
+
+        /// <summary>
+        /// パワー状態をセット
+        /// </summary>
+        /// <param name="enabled">有効</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetIsPower(bool enabled);
+
+        /// <summary>
+        /// ターン状態をセット
+        /// </summary>
+        /// <param name="enabled">有効</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetOnTrurn(bool enabled);
     }
 }
