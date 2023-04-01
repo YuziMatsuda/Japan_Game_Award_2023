@@ -23,5 +23,7 @@ namespace Main.Common
         public static readonly string TAG_NAME_GOALNODE = "GoalNode";
         /// <summary>原子</summary>
         public static readonly string TAG_NAME_ATOMS = "Atoms";
+        /// <summary>接触判定</summary>
+        public static readonly string TAG_NAME_TOUCH_TRIGGER = "TouchTrigger";
     }
 }

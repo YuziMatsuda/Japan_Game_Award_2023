@@ -23,6 +23,8 @@ namespace Main.Model
         private bool _inputBan;
         /// <summary>操作禁止フラグ</summary>
         public bool InputBan => _inputBan;
+        /// <summary>移動制御禁止フラグ</summary>
+        private readonly BoolReactiveProperty _isBanMoveVelocity = new BoolReactiveProperty();
         /// <summary>ブレーキ</summary>
         [SerializeField] private float brake = 5f;
         /// <summary>移動速度挙動</summary>
@@ -124,16 +126,21 @@ namespace Main.Model
             this.FixedUpdateAsObservable()
                 .Subscribe(_ =>
                 {
-                    // 歩く走る挙動
-                    rigidbody.AddForce(moveVelocity.Value * (forceMode.Equals(ForceMode2D.Force) ? 1f : Time.fixedDeltaTime), forceMode);
-                    // Axis指定がゼロなら位置移動の減衰値を高めて止まり安くする
-                    rigidbody.drag = !_isPlayingAction.Value &&
-                        0f < moveVelocity.Value.magnitude &&
-                        !CheckDrift(moveVelocity.Value, rigidbody.velocity, inputAngleFrontal) ?
-                        0f : brake;
-                    // 移動方向に合わせて向きを変える
-                    if (0f < moveVelocity.Value.magnitude)
-                        transform.rotation = GetQuaternionDirection(movementDirectionMode, transform, _onTurn, toDirectionLast);
+                    if (!_isBanMoveVelocity.Value)
+                    {
+                        // 歩く走る挙動
+                        rigidbody.AddForce(moveVelocity.Value * (forceMode.Equals(ForceMode2D.Force) ? 1f : Time.fixedDeltaTime), forceMode);
+                        // Axis指定がゼロなら位置移動の減衰値を高めて止まり安くする
+                        rigidbody.drag = !_isPlayingAction.Value &&
+                            0f < moveVelocity.Value.magnitude &&
+                            !CheckDrift(moveVelocity.Value, rigidbody.velocity, inputAngleFrontal) ?
+                            0f : brake;
+                        // 移動方向に合わせて向きを変える
+                        if (0f < moveVelocity.Value.magnitude)
+                            transform.rotation = GetQuaternionDirection(movementDirectionMode, transform, _onTurn, toDirectionLast);
+                    }
+                    else
+                        rigidbody.velocity = Vector3.zero;
                 });
         }
 
@@ -360,6 +367,20 @@ namespace Main.Model
             }
         }
 
+        public bool SetIsBanMoveVelocity(bool unactive)
+        {
+            try
+            {
+                _isBanMoveVelocity.Value = unactive;
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
         /// <summary>
         /// 移動向きモード
         /// </summary>
@@ -407,5 +428,12 @@ namespace Main.Model
         /// <param name="enabled">有効</param>
         /// <returns>成功／失敗</returns>
         public bool SetOnTrurn(bool enabled);
+
+        /// <summary>
+        /// 移動禁止禁止フラグをセット
+        /// </summary>
+        /// <param name="unactive">許可／禁止</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetIsBanMoveVelocity(bool unactive);
     }
 }

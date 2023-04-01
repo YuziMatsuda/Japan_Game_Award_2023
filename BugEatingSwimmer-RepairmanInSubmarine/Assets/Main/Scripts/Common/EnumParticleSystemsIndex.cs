@@ -13,5 +13,6 @@ namespace Main.Common
         DustConnectSignalSmall,
         ParticlesOfLightGatherAround,
         Explosion,
+        CorrectOrWrong,
     }
 }

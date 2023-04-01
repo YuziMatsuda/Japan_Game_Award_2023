@@ -10,6 +10,7 @@ TagManager:
   - StartNode
   - GoalNode
   - Atoms
+  - TouchTrigger
   layers:
   - Default
   - TransparentFX

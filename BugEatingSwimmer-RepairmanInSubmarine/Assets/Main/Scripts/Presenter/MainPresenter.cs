@@ -809,7 +809,18 @@ namespace Main.Presenter
                                                             {
                                                                 item[EnumMainSceneStagesModulesState.Fixed] = ConstGeneric.DIGITFORM_TRUE;
                                                             }
-                                                            isGoalReached.Value = true;
+                                                            if (!playerModel.SetInputBan(true))
+                                                                Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
+                                                            if (!playerModel.SetIsBanMoveVelocity(true))
+                                                                Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
+                                                            if (!bug.GetComponent<BugView>().PlayCorrectOrWrong())
+                                                                Debug.LogError("バグ消失パーティクルを再生呼び出しの失敗");
+                                                            Observable.FromCoroutine<bool>(observer => bug.GetComponent<BugView>().PlayFadeAnimation(observer))
+                                                                .Subscribe(_ =>
+                                                                {
+                                                                    isGoalReached.Value = true;
+                                                                })
+                                                                .AddTo(gameObject);
                                                         }
                                                     });
                                             });

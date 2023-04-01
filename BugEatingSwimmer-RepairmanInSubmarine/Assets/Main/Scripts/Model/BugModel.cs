@@ -16,7 +16,7 @@ namespace Main.Model
     public class BugModel : MonoBehaviour
     {
         /// <summary>接触対象のオブジェクトタグ</summary>
-        [SerializeField] private string[] tags = { ConstTagNames.TAG_NAME_ATTACK_TRIGGER };
+        [SerializeField] private string[] tags = { ConstTagNames.TAG_NAME_TOUCH_TRIGGER };
         /// <summary>食べられたフラグ</summary>
         private readonly BoolReactiveProperty _isEated = new BoolReactiveProperty();
         /// <summary>食べられたフラグ</summary>

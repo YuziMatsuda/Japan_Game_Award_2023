@@ -32,10 +32,13 @@ namespace Main.Common
             try
             {
                 var particle = GetParticleSystems(instanceID, index);
-                particle.transform.position = position;
-                if (!particle.transform.gameObject.activeSelf)
-                    particle.transform.gameObject.SetActive(true);
-                particle.Play();
+                particle.position = position;
+                if (!particle.gameObject.activeSelf)
+                    particle.gameObject.SetActive(true);
+                if (particle.GetComponent<ParticleSystem>() != null)
+                    particle.GetComponent<ParticleSystem>().Play();
+                else if (particle.GetComponent<ParticleSystemParent>() != null)
+                    particle.GetComponent<ParticleSystemParent>().Play();
 
                 return true;
             }
@@ -57,9 +60,14 @@ namespace Main.Common
             {
                 var particle = GetParticleSystems(instanceID, index);
                 if (!stopImmediately)
-                    particle.Stop();
+                {
+                    if (particle.GetComponent<ParticleSystem>() != null)
+                        particle.GetComponent<ParticleSystem>().Stop();
+                    else if (particle.GetComponent<ParticleSystemParent>() != null)
+                        particle.GetComponent<ParticleSystemParent>().Play();
+                }
                 else
-                    particle.transform.gameObject.SetActive(false);
+                    particle.gameObject.SetActive(false);
 
                 return true;
             }
@@ -71,20 +79,20 @@ namespace Main.Common
         }
 
         /// <summary>
-        /// SFXのキーから対象のパーティクルシステムを取得する
+        /// SFXのキーから対象のパーティクルシステムを持つオブジェクトを取得する
         /// </summary>
         /// <param name="instanceID">オブジェクト識別ID</param>
         /// <param name="index">パーティクルシステムのインデックス</param>
         /// <returns>パーティクルシステム</returns>
-        private ParticleSystem GetParticleSystems(int instanceID, EnumParticleSystemsIndex index)
+        private Transform GetParticleSystems(int instanceID, EnumParticleSystemsIndex index)
         {
             if (!_particleSystemsIdxDictionary.ContainsKey($"{instanceID + index}"))
             {
                 var sfx = Instantiate(particleSystems[(int)index], _transform);
                 _particleSystemsIdxDictionary.Add($"{instanceID + index}", _transform.childCount - 1);
-                return sfx.GetComponent<ParticleSystem>();
+                return sfx;
             }
-            return _transform.GetChild(_particleSystemsIdxDictionary[$"{instanceID + index}"]).GetComponent<ParticleSystem>();
+            return _transform.GetChild(_particleSystemsIdxDictionary[$"{instanceID + index}"]);
         }
     }
 

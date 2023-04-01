@@ -20,7 +20,7 @@ namespace Main.View
 
         private void Reset()
         {
-            halos = transform.GetChild(2).GetComponent<Halos>();
+            halos = transform.GetChild(3).GetComponent<Halos>();
             bodySpritePlayer = transform.GetChild(0).GetComponent<BodySpritePlayer>();
         }
 
