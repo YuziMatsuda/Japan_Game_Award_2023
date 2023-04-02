@@ -83,6 +83,16 @@ namespace Main.Template
         }
 
         /// <summary>
+        /// 準委任帳票をオブジェクトへ一時セット
+        /// </summary>
+        /// <param name="datas">二次元配列の文字列データ</param>
+        /// <returns>格納オブジェクト配列</returns>
+        public Dictionary<EnumQuasiAssignmentForm, string>[] GetQuasiAssignmentForm(List<string[]> datas)
+        {
+            return new MainResourcesAccessory().GetQuasiAssignmentForm(datas);
+        }
+
+        /// <summary>
         /// システムオプション設定をCSVデータへ保存
         /// </summary>
         /// <param name="resourcesLoadName">リソースCSVファイル名</param>
@@ -113,6 +123,17 @@ namespace Main.Template
         public bool SaveDatasCSVOfMainSceneStagesModulesState(string resourcesLoadName, Dictionary<EnumMainSceneStagesModulesState, string>[] configMaps)
         {
             return new MainResourcesAccessory().SaveDatasCSVOfMainSceneStagesModulesState(resourcesLoadName, configMaps);
+        }
+
+        /// <summary>
+        /// 準委任帳票をCSVデータへ保存
+        /// </summary>
+        /// <param name="resourcesLoadName">リソースCSVファイル名</param>
+        /// <param name="configMaps">格納オブジェクト配列</param>
+        /// <returns>成功／失敗</returns>
+        public bool SaveDatasCSVOfQuasiAssignmentForm(string resourcesLoadName, Dictionary<EnumQuasiAssignmentForm, string>[] configMaps)
+        {
+            return new MainResourcesAccessory().SaveDatasCSVOfQuasiAssignmentForm(resourcesLoadName, configMaps);
         }
     }
 }

@@ -77,6 +77,8 @@ namespace Main.Presenter
         [SerializeField] private PlayerModel playerModel;
         /// <summary>移動先にポインタ表示のビュー</summary>
         [SerializeField] private TargetPointerView targetPointerView;
+        /// <summary>準委任帳票のビュー</summary>
+        [SerializeField] private AssignedSeastarCountView assignedSeastarCountView;
 
         private void Reset()
         {
@@ -115,6 +117,7 @@ namespace Main.Presenter
             jumpGuideView = GameObject.Find("JumpGuide").GetComponent<JumpGuideView>();
             fadeImageView = GameObject.Find("FadeImage").GetComponent<FadeImageView>();
             fadeImageModel = GameObject.Find("FadeImage").GetComponent<FadeImageModel>();
+            assignedSeastarCountView = GameObject.Find("AssignedSeastarCount").GetComponent<AssignedSeastarCountView>();
         }
 
         public void OnStart()
@@ -133,6 +136,8 @@ namespace Main.Presenter
             moveGuideView.gameObject.SetActive(false);
             jumpGuideView.SetAlpha(EnumFadeState.Close);
             jumpGuideView.gameObject.SetActive(false);
+            if (!assignedSeastarCountView.SetCounterText(MainGameManager.Instance.GimmickOwner.GetAssinedCounter()))
+                Debug.LogError("ヒトデ総配属人数をセット呼び出しの失敗");
 
             MainGameManager.Instance.AudioOwner.OnStartAndPlayBGM();
             // T.B.D ステージ開始演出
@@ -254,6 +259,10 @@ namespace Main.Presenter
                             Debug.LogError("クリア済みデータ保存呼び出しの失敗");
                         if (!MainGameManager.Instance.SceneOwner.SaveMainSceneStagesModulesState(mainSceneStagesModulesState))
                             Debug.LogError("ステージクリア条件の保存呼び出しの失敗");
+                        if (!MainGameManager.Instance.GimmickOwner.SaveAssigned())
+                            Debug.LogError("アサインを保存呼び出しの失敗");
+                        if (!assignedSeastarCountView.SetCounterText(MainGameManager.Instance.GimmickOwner.GetAssinedCounter()))
+                            Debug.LogError("ヒトデ総配属人数をセット呼び出しの失敗");
                         // 初期処理
                         clearView.gameObject.SetActive(true);
                         stageClearView.gameObject.SetActive(true);
@@ -697,6 +706,37 @@ namespace Main.Presenter
                                         });
                                 }
                             });
+                        // ヒトデ
+                        List<SeastarModel> seastarModels = new List<SeastarModel>();
+                        List<SeastarView> seastarViews = new List<SeastarView>();
+                        foreach (var item in GameObject.FindGameObjectsWithTag(ConstTagNames.TAG_NAME_SEASTAR)
+                            .Where(q => q != null)
+                            .Select(q => q))
+                        {
+                            seastarViews.Add(item.GetComponent<SeastarView>());
+                            seastarModels.Add(item.GetComponent<SeastarModel>());
+                        }
+                        for (var i = 0; i < seastarModels.Count; i++)
+                        {
+                            var idx = i;
+                            seastarModels[idx].IsAssigned.ObserveEveryValueChanged(x => x.Value)
+                                .Subscribe(x =>
+                                {
+                                    if (!MainGameManager.Instance.GimmickOwner.SetAssignState(seastarModels[idx].transform.GetComponent<SeastarConfig>().EnumSeastarID, x))
+                                        Debug.LogError("アサイン呼び出しの失敗");
+                                    if (x)
+                                    {
+                                        if (!seastarViews[idx].SetColorAssigned())
+                                            Debug.LogError("アサイン済みのカラー設定呼び出しの失敗");
+                                    }
+                                    else
+                                    {
+                                        if (!seastarViews[idx].SetColorUnAssign())
+                                            Debug.LogError("未アサイン状態のカラー設定呼び出しの失敗");
+                                    }
+                                });
+
+                        }
                         // Getプロセスの実行状態（false:初期状態／停止、true:実行中）
                         var isGetProcessStart = new BoolReactiveProperty();
                         // スタートノード
@@ -902,6 +942,9 @@ namespace Main.Presenter
                                                         // 一度全てをリセット
                                                         if (!common.ResetAllPostingState(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted))
                                                             Debug.LogError("POSTのリセット呼び出しの失敗");
+                                                        foreach (var item in seastarModels)
+                                                            if (!item.ResetIsAssigned())
+                                                                Debug.LogError("アサイン情報をリセット呼び出しの失敗");
                                                     })
                                                     .AddTo(gameObject);
                                             }
@@ -1017,6 +1060,9 @@ namespace Main.Presenter
                                                     Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
                                                 if (!common.ResetAllPostingState(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted))
                                                     Debug.LogError("POSTのリセット呼び出しの失敗");
+                                                foreach (var item in seastarModels)
+                                                    if (!item.ResetIsAssigned())
+                                                        Debug.LogError("アサイン情報をリセット呼び出しの失敗");
                                             });
                                     }
                                 }
@@ -1037,6 +1083,9 @@ namespace Main.Presenter
                                         {
                                             if (!common.ResetAllPostingState(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted))
                                                 Debug.LogError("POSTのリセット呼び出しの失敗");
+                                            foreach (var item in seastarModels)
+                                                if (!item.ResetIsAssigned())
+                                                    Debug.LogError("アサイン情報をリセット呼び出しの失敗");
                                         }
                                         else
                                         {
@@ -1049,6 +1098,9 @@ namespace Main.Presenter
                                                         Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
                                                     if (!common.ResetAllPostingState(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted))
                                                         Debug.LogError("POSTのリセット呼び出しの失敗");
+                                                    foreach (var item in seastarModels)
+                                                        if (!item.ResetIsAssigned())
+                                                            Debug.LogError("アサイン情報をリセット呼び出しの失敗");
                                                 });
                                         }
                                     }

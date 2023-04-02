@@ -11,6 +11,8 @@ TagManager:
   - GoalNode
   - Atoms
   - TouchTrigger
+  - Seastar
+  - DustConnectSignal
   layers:
   - Default
   - TransparentFX
@@ -23,7 +25,7 @@ TagManager:
   - GoalNode
   - Atoms
   - StartNode
-  - 
+  - Seastar
   - 
   - 
   - 
