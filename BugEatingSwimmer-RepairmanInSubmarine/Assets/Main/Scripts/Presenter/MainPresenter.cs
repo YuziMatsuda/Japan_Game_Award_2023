@@ -786,13 +786,15 @@ namespace Main.Presenter
                                     if (x)
                                     {
                                         Debug.Log($"GET実行中:[{startNode.name}]");
+                                        // ※※※GETがスタートノードまで到達しないため、未到達処理？※※※
                                         if (!MainGameManager.Instance.AlgorithmOwner.AddHistorySignalsGeted(startNode.transform))
                                             Debug.LogError("信号が送信された履歴へ追加呼び出しの失敗");
-                                        if (!MainGameManager.Instance.AlgorithmOwner.MergeHistorySignalsGetedToPosted())
-                                            Debug.LogError("信号が受信された履歴の配列を信号が送信された履歴の配列へマージ呼び出しの失敗");
-                                        var goalNode = MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Where(q => q.GetComponent<GoalNodeModel>() != null).Select(q => q).ToArray()[0];
-                                        if (!goalNode.GetComponent<GoalNodeModel>().GetSignal())
-                                            Debug.LogError("シグナル受信呼び出しの失敗");
+                                        if (MainGameManager.Instance.AlgorithmOwner.MergeHistorySignalsGetedToPosted())
+                                        {
+                                            var goalNode = MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Where(q => q.GetComponent<GoalNodeModel>() != null).Select(q => q).ToArray()[0];
+                                            if (!goalNode.GetComponent<GoalNodeModel>().GetSignal())
+                                                Debug.LogError("シグナル受信呼び出しの失敗");
+                                        }
                                     }
                                     else
                                         Debug.Log($"GET実行停止:[{startNode.name}]");
@@ -1016,10 +1018,16 @@ namespace Main.Presenter
                                                     Debug.LogError("シグナル受信呼び出しの失敗");
                                             }
                                         }
-                                        else if (x == 0 &&
-                                            !MainGameManager.Instance.AlgorithmOwner.GetGetProcessState(codeObjs))
+                                        else if (x == 0)
                                         {
-                                            isGetProcessStart.Value = false;
+                                            if (MainGameManager.Instance.AlgorithmOwner.MergeHistorySignalsGetedToPosted())
+                                            {
+                                                var goalNode = MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Where(q => q.GetComponent<GoalNodeModel>() != null).Select(q => q).ToArray()[0];
+                                                if (!goalNode.GetComponent<GoalNodeModel>().GetSignal())
+                                                    Debug.LogError("シグナル受信呼び出しの失敗");
+                                            }
+                                            else
+                                                isGetProcessStart.Value = false;
                                         }
                                         else
                                         {

@@ -141,6 +141,7 @@ MonoBehaviour:
   enumDirectionModeDefault: 0
   enumAtomicMode: 0
   enumNodeCodeId: 0
+  errorDirections: 
 --- !u!114 &2177946357393909634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,7 +159,7 @@ MonoBehaviour:
   rayDistance: 3
   rayLayerMask:
     serializedVersion: 2
-    m_Bits: 1408
+    m_Bits: 1920
   vectorDirectionModes:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: -90}
@@ -167,6 +168,8 @@ MonoBehaviour:
   isSpinDirectionMode: 1
   shadowCodeCell: {fileID: 0}
   lightCodeCell: {fileID: 0}
+  notLetPassTags:
+  - DustConnectSignal
 --- !u!114 &2688145068106797634
 MonoBehaviour:
   m_ObjectHideFlags: 0

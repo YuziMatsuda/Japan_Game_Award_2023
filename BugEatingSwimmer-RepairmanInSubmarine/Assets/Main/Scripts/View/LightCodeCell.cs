@@ -163,5 +163,33 @@ namespace Main.View
                 return false;
             }
         }
+
+        public IEnumerator PlayErrorLightFlashAnimation(IObserver<bool> observer)
+        {
+            // 支点・ヘッドは対象外
+            var idx = 0; idx++; idx++;
+            // セル
+            lightCodeCellSprites[idx].SetAlphaOff();
+            Observable.FromCoroutine<bool>(observer => lightCodeCellSprites[idx++].PlayErrorLightFlashAnimation(observer))
+                .Subscribe(_ => { })
+                .AddTo(gameObject);
+            // セル
+            lightCodeCellSprites[idx].SetAlphaOff();
+            Observable.FromCoroutine<bool>(observer => lightCodeCellSprites[idx++].PlayErrorLightFlashAnimation(observer))
+                .Subscribe(_ => { })
+                .AddTo(gameObject);
+            // セル
+            lightCodeCellSprites[idx].SetAlphaOff();
+            Observable.FromCoroutine<bool>(observer => lightCodeCellSprites[idx++].PlayErrorLightFlashAnimation(observer))
+                .Subscribe(_ => { })
+                .AddTo(gameObject);
+            // セル
+            lightCodeCellSprites[idx].SetAlphaOff();
+            Observable.FromCoroutine<bool>(observer => lightCodeCellSprites[idx++].PlayErrorLightFlashAnimation(observer))
+                .Subscribe(_ => observer.OnNext(true))
+                .AddTo(gameObject);
+
+            yield return null;
+        }
     }
 }

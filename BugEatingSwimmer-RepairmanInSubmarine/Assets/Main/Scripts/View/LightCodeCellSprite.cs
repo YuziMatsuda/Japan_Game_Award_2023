@@ -22,6 +22,17 @@ namespace Main.View
         [SerializeField] private float offFade = 0f;
         /// <summary>フェード値（明）</summary>
         [SerializeField] private float onFade = 1f;
+        /// <summary>コードセルのパターン</summary>
+        [SerializeField] private Sprite[] codeCellsPattern;
+        /// <summary>点滅アニメーション終了時間</summary>
+        [SerializeField] private float flashDuration = .75f;
+        /// <summary>点滅アニメーションループ回数</summary>
+        [SerializeField] private int loops = 2;
+        /// <summary>
+        /// エラーのTween
+        /// 見た目のみの挙動のため、他のアニメーションが再生されたら即終了させてもよい想定
+        /// </summary>
+        private Tweener _errorTweener;
 
         public bool InitializeLight(EnumDirectionMode enumDirectionMode)
         {
@@ -40,6 +51,30 @@ namespace Main.View
                 Debug.LogError(e);
                 return false;
             }
+        }
+
+        public IEnumerator PlayErrorLightFlashAnimation(IObserver<bool> observer)
+        {
+            // スプライトをエラーへ変更
+            // イメージの点滅アニメーション
+            // アニメーション完了時にスプライトを戻す
+            if (_spriteRenderer == null)
+                _spriteRenderer = GetComponent<SpriteRenderer>();
+            _spriteRenderer.sprite = codeCellsPattern[1];
+            _errorTweener = _spriteRenderer.DOFade(endValue: onFade, flashDuration)
+                .SetUpdate(true)
+                .SetEase(Ease.OutBounce)
+                .SetLoops(loops, LoopType.Yoyo)
+                .OnComplete(() =>
+                {
+                    _spriteRenderer.sprite = codeCellsPattern[0];
+                    var color = _spriteRenderer.color;
+                    color.a = onFade;
+                    _spriteRenderer.color = color;
+                    observer.OnNext(true);
+                });
+
+            yield return null;
         }
 
         public IEnumerator PlayLightAnimation(IObserver<bool> observer, EnumDirectionMode enumDirectionMode)
@@ -64,6 +99,10 @@ namespace Main.View
             {
                 if (_spriteRenderer == null)
                     _spriteRenderer = GetComponent<SpriteRenderer>();
+                if (_errorTweener != null &&
+                    _errorTweener.IsActive() &&
+                    _errorTweener.IsPlaying())
+                    _errorTweener.Complete();
                 var color = _spriteRenderer.color;
                 color.a = offFade;
                 _spriteRenderer.color = color;

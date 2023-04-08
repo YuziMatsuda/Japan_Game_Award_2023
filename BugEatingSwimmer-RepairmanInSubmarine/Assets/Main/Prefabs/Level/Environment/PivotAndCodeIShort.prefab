@@ -385,6 +385,11 @@ MonoBehaviour:
   duration: 0.05
   offFade: 0
   onFade: 1
+  codeCellsPattern:
+  - {fileID: 21300000, guid: d7b298f99374a2d40b853d2f5862e9c5, type: 3}
+  - {fileID: 21300000, guid: 03255f9e9b86d704683492a35325d229, type: 3}
+  flashDuration: 0.75
+  loops: 2
 --- !u!1 &2130950150695343405
 GameObject:
   m_ObjectHideFlags: 0
@@ -485,6 +490,11 @@ MonoBehaviour:
   duration: 0.05
   offFade: 0
   onFade: 1
+  codeCellsPattern:
+  - {fileID: 21300000, guid: d7b298f99374a2d40b853d2f5862e9c5, type: 3}
+  - {fileID: 21300000, guid: 03255f9e9b86d704683492a35325d229, type: 3}
+  flashDuration: 0.75
+  loops: 2
 --- !u!1 &2205896950024728716
 GameObject:
   m_ObjectHideFlags: 0
@@ -837,6 +847,11 @@ MonoBehaviour:
   duration: 0.05
   offFade: 0
   onFade: 1
+  codeCellsPattern:
+  - {fileID: 21300000, guid: d7b298f99374a2d40b853d2f5862e9c5, type: 3}
+  - {fileID: 21300000, guid: 03255f9e9b86d704683492a35325d229, type: 3}
+  flashDuration: 0.75
+  loops: 2
 --- !u!1 &3051477559943020964
 GameObject:
   m_ObjectHideFlags: 0
@@ -1411,6 +1426,9 @@ MonoBehaviour:
   duration: 0.05
   offFade: 0
   onFade: 1
+  codeCellsPattern: []
+  flashDuration: 0.75
+  loops: 2
 --- !u!1 &5495360833579652552
 GameObject:
   m_ObjectHideFlags: 0
@@ -2056,6 +2074,11 @@ MonoBehaviour:
   duration: 0.05
   offFade: 0
   onFade: 1
+  codeCellsPattern:
+  - {fileID: 21300000, guid: d7b298f99374a2d40b853d2f5862e9c5, type: 3}
+  - {fileID: 21300000, guid: 03255f9e9b86d704683492a35325d229, type: 3}
+  flashDuration: 0.75
+  loops: 2
 --- !u!1 &7756236807545280070
 GameObject:
   m_ObjectHideFlags: 0
@@ -2324,6 +2347,9 @@ MonoBehaviour:
   duration: 0.05
   offFade: 0
   onFade: 1
+  codeCellsPattern: []
+  flashDuration: 0.75
+  loops: 2
 --- !u!1 &9100314283150743484
 GameObject:
   m_ObjectHideFlags: 0
@@ -2464,7 +2490,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2177946357393909634, guid: 20a18ae11e16e2740a184885331be827, type: 3}
       propertyPath: rayLayerMask.m_Bits
-      value: 1408
+      value: 1920
       objectReference: {fileID: 0}
     - target: {fileID: 3861951771426835073, guid: 20a18ae11e16e2740a184885331be827, type: 3}
       propertyPath: m_Name

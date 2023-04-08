@@ -23,5 +23,9 @@ namespace Main.Model
         [SerializeField] private EnumNodeCodeID enumNodeCodeId = EnumNodeCodeID.StartNode_1;
         /// <summary>ノードコードの識別ID</summary>
         public EnumNodeCodeID EnumNodeCodeID => enumNodeCodeId;
+        /// <summary>エラー方角モードの配列</summary>
+        [SerializeField] private EnumDirectionMode[] errorDirections;
+        /// <summary>エラー方角モードの配列</summary>
+        public EnumDirectionMode[] ErrorDirections => errorDirections;
     }
 }

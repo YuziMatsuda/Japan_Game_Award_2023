@@ -178,7 +178,8 @@ namespace Main.Common
                         if (pivotModel == null && goalNodeModel == null)
                             throw new System.Exception($"PivotModelまたはGoalNodeModelのコンポーネント無し:[{pivotModel}][{goalNodeModel}]");
                         if (pivotModel != null &&
-                            pivotModel.IsPosting.Value)
+                            (
+                            pivotModel.IsGetting.Value))
                             // 送信済みは対象に含まない（逆流＆ループ対策）
                             continue;
                         destinationList.Add(pivotModel != null ? pivotModel.transform : goalNodeModel.transform);
@@ -360,59 +361,40 @@ namespace Main.Common
 
         public bool MergeHistorySignalsGetedToPosted()
         {
-            try
+            if (_history.historySignalsPosted == null)
+                throw new System.Exception("信号を送信した履歴データ無し");
+            if (_historySignalsGeted == null)
+                throw new System.Exception("信号が受信された履歴データ無し");
+            // DistinctしてStartNodeが入っている配列のみ取得
+            var historySignalsGeted = _historySignalsGeted.Distinct();
+            List<Transform> historySignalsGetedChild = new List<Transform>();
+            foreach (var item in historySignalsGeted)
             {
-                if (_history.historySignalsPosted == null)
-                    throw new System.Exception("信号を送信した履歴データ無し");
-                if (_historySignalsGeted == null)
-                    throw new System.Exception("信号が受信された履歴データ無し");
-                // DistinctしてStartNodeが入っている配列のみ取得
-                var historySignalsGeted = _historySignalsGeted.Distinct();
-                List<Transform> historySignalsGetedChild = new List<Transform>();
-                foreach (var item in historySignalsGeted)
-                {
-                    if (0 < item.Where(q => q.CompareTag(ConstTagNames.TAG_NAME_STARTNODE))
-                        .Select(q => q)
-                        .ToArray()
-                        .Length)
-                    {
-                        historySignalsGetedChild.AddRange(item.AsEnumerable()
-                        .Reverse());
-                        // StartNodeが格納されているルートは一つのみの想定
-                        break;
-                    }
-                }
-                if (historySignalsGetedChild.Count < 1)
-                    throw new System.Exception("信号受信リスト整形の失敗");
+                historySignalsGetedChild.AddRange(item.AsEnumerable()
+                .Reverse());
+                // StartNodeが格納されているルートは一つのみの想定
+                break;
+            }
+            if (historySignalsGetedChild.Count < 1)
+                throw new System.Exception("信号受信リスト整形の失敗");
 
-                var historySignalsPosted = new List<Transform>();
-                for (var i = 0; i < historySignalsGetedChild.Count; i++)
-                {
-                    if (i < _history.historySignalsPosted.Length)
-                    {
-                        //Debug.Log($"[{i}]番目 送信:[{_historySignalsPosted[i]}]_受信:[{historySignalsGetedChild[i]}]");
-                        if (historySignalsGetedChild[i].Equals(_history.historySignalsPosted[i]))
-                        {
-                            historySignalsPosted.Add(_history.historySignalsPosted[i]);
-                        }
-                        else
-                            throw new System.Exception($"[{i}]番目不一致エラー 送信:[{_history.historySignalsPosted[i]}]_受信:[{historySignalsGetedChild[i]}]");
-                    }
-                    else
-                    {
-                        //Debug.Log($"[{i}]番目 受信:[{historySignalsGetedChild[i]}]");
-                        historySignalsPosted.Add(historySignalsGetedChild[i]);
-                    }
-                }
-                _history.historySignalsPosted = historySignalsGetedChild.ToArray();
+            var historySignalsPosted = new List<Transform>();
+            if (historySignalsGetedChild[0].Equals(_history.historySignalsPosted[_history.historySignalsPosted.Length - 1]))
+            {
+                // POST要素の最後以外を格納
+                historySignalsPosted.AddRange(_history.historySignalsPosted.Select((p, i) => new { Content = p, Index = i })
+                    .Where(q => q.Index < _history.historySignalsPosted.Length - 1)
+                    .Select(q => q.Content)
+                    .ToArray());
+                // GET要素を格納
+                historySignalsPosted.AddRange(historySignalsGetedChild);
+                _history.historySignalsPosted = historySignalsPosted.ToArray();
 
                 return true;
             }
-            catch (System.Exception e)
-            {
-                Debug.LogError(e);
+            else
+                // マージなし
                 return false;
-            }
         }
 
         public IEnumerator PlayRunLightningSignal(System.IObserver<bool> observer)
@@ -445,6 +427,21 @@ namespace Main.Common
             }
 
             yield return null;
+        }
+
+        public Transform GetHistorySignalsPostedLasted(Transform nodeCode)
+        {
+            if (_history.historySignalsPosted == null)
+                throw new System.Exception("信号が送信された履歴データ無し");
+
+            if (0 < _history.historySignalsPosted.Length)
+            {
+                return _history.historySignalsPosted[_history.historySignalsPosted.Length - 1];
+            }
+            else
+            {
+                throw new System.Exception("信号が送信された履歴データ無し");
+            }
         }
     }
 
@@ -558,6 +555,12 @@ namespace Main.Common
         /// <returns>実行中／停止</returns>
         public bool GetGetProcessState(GameObject[] codeObjs);
         /// <summary>
+        /// 信号が送信された履歴の配列から対象の一つ前のノードコードを取得
+        /// </summary>
+        /// <param name="nodeCode">ノードコード</param>
+        /// <returns>ノードコード（履歴から一つ前）</returns>
+        public Transform GetHistorySignalsPostedLasted(Transform nodeCode);
+        /// <summary>
         /// 信号が受信された履歴の配列から対象の一つ前のノードコードを取得
         /// </summary>
         /// <param name="nodeCode">ノードコード</param>
@@ -567,7 +570,7 @@ namespace Main.Common
         /// 信号が受信された履歴の配列を
         /// 信号が送信された履歴の配列へマージ
         /// </summary>
-        /// <returns>成功／失敗</returns>
+        /// <returns>マージあり／マージなし</returns>
         public bool MergeHistorySignalsGetedToPosted();
 
         /// <summary>

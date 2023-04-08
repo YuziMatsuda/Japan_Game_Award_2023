@@ -44,6 +44,11 @@ namespace Main.View
         {
             throw new NotImplementedException();
         }
+
+        public IEnumerator PlayErrorLightFlashAnimation(IObserver<bool> observer)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>
@@ -87,5 +92,12 @@ namespace Main.View
         /// </summary>
         /// <returns>成功／失敗</returns>
         public bool SetAlphaOff();
+
+        /// <summary>
+        /// エラーライト点滅アニメーション
+        /// </summary>
+        /// <param name="observer">バインド</param>
+        /// <returns>コルーチン</returns>
+        public IEnumerator PlayErrorLightFlashAnimation(System.IObserver<bool> observer);
     }
 }
