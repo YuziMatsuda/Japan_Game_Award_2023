@@ -313,6 +313,7 @@ GameObject:
   - component: {fileID: 390680244}
   - component: {fileID: 390680246}
   - component: {fileID: 390680245}
+  - component: {fileID: 390680247}
   m_Layer: 5
   m_Name: Robot_RightArmsImage_1
   m_TagString: Untagged
@@ -378,6 +379,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 390680243}
   m_CullTransparentMesh: 1
+--- !u!114 &390680247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 390680243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4f3a68a30cbb424baa66354bd1bf72e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pos: {x: 1130, y: 250, z: 0}
+  rotate: {x: 0, y: 0, z: 180}
 --- !u!1 &449235419
 GameObject:
   m_ObjectHideFlags: 0
@@ -576,6 +591,97 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 656128471}
   m_CullTransparentMesh: 1
+--- !u!1 &668194138
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 668194139}
+  - component: {fileID: 668194142}
+  - component: {fileID: 668194141}
+  - component: {fileID: 668194140}
+  m_Layer: 5
+  m_Name: Robot_Core
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &668194139
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 668194138}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 972171043}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 960, y: -540}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &668194140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 668194138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4f3a68a30cbb424baa66354bd1bf72e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pos: {x: 1000, y: 280, z: 0}
+  rotate: {x: 0, y: 0, z: 0}
+--- !u!114 &668194141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 668194138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 919157c67cda4254da1b9fd0e3eea21f, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &668194142
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 668194138}
+  m_CullTransparentMesh: 1
 --- !u!1 &793908412
 GameObject:
   m_ObjectHideFlags: 0
@@ -747,6 +853,7 @@ GameObject:
   - component: {fileID: 825896357}
   - component: {fileID: 825896359}
   - component: {fileID: 825896358}
+  - component: {fileID: 825896360}
   m_Layer: 5
   m_Name: Robot_HeadImage
   m_TagString: Untagged
@@ -812,6 +919,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 825896356}
   m_CullTransparentMesh: 1
+--- !u!114 &825896360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 825896356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4f3a68a30cbb424baa66354bd1bf72e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pos: {x: 960, y: 480, z: 0}
+  rotate: {x: 0, y: 0, z: 0}
 --- !u!1 &841295510
 GameObject:
   m_ObjectHideFlags: 0
@@ -898,6 +1019,7 @@ GameObject:
   m_Component:
   - component: {fileID: 972171043}
   - component: {fileID: 972171044}
+  - component: {fileID: 972171045}
   m_Layer: 5
   m_Name: RobotPanel
   m_TagString: Untagged
@@ -921,6 +1043,7 @@ RectTransform:
   - {fileID: 825896357}
   - {fileID: 1133231858}
   - {fileID: 390680244}
+  - {fileID: 668194139}
   m_Father: {fileID: 223334693}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -937,6 +1060,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 972171042}
   m_CullTransparentMesh: 1
+--- !u!114 &972171045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 972171042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02da5103f193e37448d9bd43b9a6334e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  robot_UnitImages:
+  - {fileID: 1565012617}
+  - {fileID: 825896360}
+  - {fileID: 1133231861}
+  - {fileID: 390680247}
+  - {fileID: 668194140}
 --- !u!1 &1048119290
 GameObject:
   m_ObjectHideFlags: 0
@@ -1024,6 +1165,7 @@ GameObject:
   - component: {fileID: 1133231858}
   - component: {fileID: 1133231860}
   - component: {fileID: 1133231859}
+  - component: {fileID: 1133231861}
   m_Layer: 5
   m_Name: Robot_LeftArmsImage
   m_TagString: Untagged
@@ -1089,6 +1231,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1133231857}
   m_CullTransparentMesh: 1
+--- !u!114 &1133231861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1133231857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4f3a68a30cbb424baa66354bd1bf72e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pos: {x: 790, y: 250, z: 0}
+  rotate: {x: 0, y: 0, z: 0}
 --- !u!1 &1210049209
 GameObject:
   m_ObjectHideFlags: 0
@@ -1252,6 +1408,7 @@ GameObject:
   - component: {fileID: 1565012614}
   - component: {fileID: 1565012616}
   - component: {fileID: 1565012615}
+  - component: {fileID: 1565012617}
   m_Layer: 5
   m_Name: Robot_BodyImage
   m_TagString: Untagged
@@ -1317,6 +1474,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1565012613}
   m_CullTransparentMesh: 1
+--- !u!114 &1565012617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1565012613}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4f3a68a30cbb424baa66354bd1bf72e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pos: {x: 960, y: 240, z: 0}
+  rotate: {x: 0, y: 0, z: 0}
 --- !u!1 &1679022713
 GameObject:
   m_ObjectHideFlags: 0
