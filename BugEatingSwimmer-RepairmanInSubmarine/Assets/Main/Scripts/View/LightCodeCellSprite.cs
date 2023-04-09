@@ -88,6 +88,11 @@ namespace Main.View
             yield return null;
         }
 
+        public IEnumerator PlayLockSpinAnimation(IObserver<bool> observer)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerator PlaySpinAnimation(IObserver<bool> observer, Vector3 vectorDirectionMode)
         {
             throw new NotImplementedException();
@@ -117,6 +122,11 @@ namespace Main.View
         }
 
         public bool SetSpinDirection(Vector3 vectorDirectionMode)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool SetSprite(EnumPivotDynamic index)
         {
             throw new NotImplementedException();
         }

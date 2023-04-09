@@ -17,6 +17,8 @@ namespace Main.View
         [SerializeField] private LightCodeCellSprite[] lightCodeCellSprites;
         /// <summary>コード</summary>
         [SerializeField] private ShadowCode shadowCode;
+        /// <summary>支点ライトの見た目</summary>
+        [SerializeField] private PivotDynamic pivotDynamic;
 
         private void Reset()
         {
@@ -29,6 +31,7 @@ namespace Main.View
             }
             lightCodeCellSprites = lightCodeCellSpriteList.ToArray();
             shadowCode = transform.parent.GetChild(0).GetComponent<ShadowCode>();
+            pivotDynamic = transform.GetChild(0).GetComponent<PivotDynamic>();
         }
 
         /// <summary>
@@ -190,6 +193,16 @@ namespace Main.View
                 .AddTo(gameObject);
 
             yield return null;
+        }
+
+        public bool SetSprite(EnumPivotDynamic index)
+        {
+            return pivotDynamic.SetSprite(index);
+        }
+
+        public IEnumerator PlayLockSpinAnimation(IObserver<bool> observer)
+        {
+            throw new NotImplementedException();
         }
     }
 }

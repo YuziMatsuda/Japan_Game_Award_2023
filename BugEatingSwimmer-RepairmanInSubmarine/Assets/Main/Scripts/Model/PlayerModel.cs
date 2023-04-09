@@ -61,6 +61,8 @@ namespace Main.Model
         [SerializeField] bool isPowerDemo;
         /// <summary>パワー状態</summary>
         private readonly BoolReactiveProperty _isPower = new BoolReactiveProperty();
+        /// <summary>パワー状態</summary>
+        public IReactiveProperty<bool> IsPower => _isPower;
         /// <summary>パワーチャージ時間</summary>
         private readonly FloatReactiveProperty _inputPowerChargeTime = new FloatReactiveProperty();
         /// <summary>パワーチャージ時間</summary>

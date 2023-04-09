@@ -14,6 +14,10 @@ namespace Main.View
     {
         /// <summary>ターンアニメーション時間</summary>
         [SerializeField] private float turnDuration = .35f;
+        /// <summary>ターンロックアニメーション角度</summary>
+        [SerializeField] private Vector3 lockDirection = new Vector3(0f, 0f, -15f);
+        /// <summary>ターンロックアニメーションループ回数</summary>
+        [SerializeField] private int lockLoopCount = 4;
 
         public IEnumerator PlayLightAnimation(IObserver<bool> observer, EnumDirectionMode enumDirectionMode)
         {
@@ -48,6 +52,23 @@ namespace Main.View
         public IEnumerator PlayErrorLightFlashAnimation(IObserver<bool> observer)
         {
             throw new NotImplementedException();
+        }
+
+        public bool SetSprite(EnumPivotDynamic index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerator PlayLockSpinAnimation(IObserver<bool> observer)
+        {
+            if (_transform == null)
+                _transform = transform;
+            var defaultDirection = _transform.localEulerAngles;
+            _transform.DOLocalRotate(defaultDirection + lockDirection, turnDuration)
+                .SetLoops(lockLoopCount, LoopType.Yoyo)
+                .OnComplete(() => observer.OnNext(true));
+
+            yield return null;
         }
     }
 
@@ -99,5 +120,19 @@ namespace Main.View
         /// <param name="observer">バインド</param>
         /// <returns>コルーチン</returns>
         public IEnumerator PlayErrorLightFlashAnimation(System.IObserver<bool> observer);
+
+        /// <summary>
+        /// スプライトをセット
+        /// </summary>
+        /// <param name="index">インデックス</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetSprite(EnumPivotDynamic index);
+
+        /// <summary>
+        /// 回転ロックアニメーション
+        /// </summary>
+        /// <param name="observer">バインド</param>
+        /// <returns>コルーチン</returns>
+        public IEnumerator PlayLockSpinAnimation(System.IObserver<bool> observer);
     }
 }

@@ -815,8 +815,15 @@ namespace Main.Presenter
                                     if (x)
                                     {
                                         Debug.Log($"POST実行中:[{goalNode.name}]");
-                                        if (!MainGameManager.Instance.AlgorithmOwner.AddHistorySignalsPosted(goalNode.transform))
-                                            Debug.LogError("信号が送信された履歴へ追加呼び出しの失敗");
+                                        // ゴールノードが既に格納済みなら格納しない
+                                        if (MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Where(q => q.Equals(goalNode.transform))
+                                            .Select(q => q)
+                                            .ToArray()
+                                            .Length < 0)
+                                        {
+                                            if (!MainGameManager.Instance.AlgorithmOwner.AddHistorySignalsPosted(goalNode.transform))
+                                                Debug.LogError("信号が送信された履歴へ追加呼び出しの失敗");
+                                        }
 
                                         if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, true))
                                             Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");

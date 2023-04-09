@@ -100,6 +100,9 @@ MonoBehaviour:
   duration: 0.05
   offFade: 0
   onFade: 1
+  codeCellsPattern: []
+  flashDuration: 0.75
+  loops: 2
 --- !u!1 &230660444909176913
 GameObject:
   m_ObjectHideFlags: 0
@@ -200,6 +203,9 @@ MonoBehaviour:
   duration: 0.05
   offFade: 0
   onFade: 1
+  codeCellsPattern: []
+  flashDuration: 0.75
+  loops: 2
 --- !u!1 &450626780191487026
 GameObject:
   m_ObjectHideFlags: 0
@@ -367,6 +373,9 @@ MonoBehaviour:
   duration: 0.05
   offFade: 0
   onFade: 1
+  codeCellsPattern: []
+  flashDuration: 0.75
+  loops: 2
 --- !u!1 &8563385546034748868
 GameObject:
   m_ObjectHideFlags: 0
@@ -467,6 +476,9 @@ MonoBehaviour:
   duration: 0.05
   offFade: 0
   onFade: 1
+  codeCellsPattern: []
+  flashDuration: 0.75
+  loops: 2
 --- !u!1001 &1843190065584126941
 PrefabInstance:
   m_ObjectHideFlags: 0

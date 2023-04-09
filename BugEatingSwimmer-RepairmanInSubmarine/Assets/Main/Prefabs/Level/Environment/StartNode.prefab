@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 2c96a232a0774d34ea180e523ebee21a, type: 3}
-  m_Color: {r: 0, g: 1, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -151,6 +151,8 @@ MonoBehaviour:
   enumDirectionModeDefault: 0
   enumAtomicMode: 0
   enumNodeCodeId: 0
+  errorDirections: 
+  readonlyCodeMode: 0
 --- !u!114 &2758591331888471047
 MonoBehaviour:
   m_ObjectHideFlags: 0

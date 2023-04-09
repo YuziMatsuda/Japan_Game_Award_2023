@@ -39,6 +39,8 @@ namespace Main.Model
         private bool _onTriggerEnter2DDisabled;
         /// <summary>通さない接触対象オブジェクトタグ</summary>
         [SerializeField] private string[] notLetPassTags = { ConstTagNames.TAG_NAME_DUSTCONNECTSIGNAL };
+        /// <summary>読み取り専用フラグ</summary>
+        private bool _readonlyCodeMode;
 
         protected override void Reset()
         {
@@ -70,6 +72,9 @@ namespace Main.Model
                 if (!lightCodeCell.InitializeLight((EnumDirectionMode)_enumDirectionMode.Value))
                     Debug.LogError("アルファ値をセット呼び出しの失敗");
             }
+            // サン（ゴ）ショウコードであるかの状態をセット
+            // ピボット側では動的な値として扱う
+            _readonlyCodeMode = GetComponent<PivotConfig>().ReadonlyCodeMode;
         }
 
         protected override void OnTriggerEnter2D(Collider2D collision)
@@ -81,27 +86,57 @@ namespace Main.Model
                 lightCodeCell != null &&
                 !_isTurning.Value)
             {
-                _isTurning.Value = true;
-                var turnValue = GetTurnValue(_transform, collision.ClosestPoint(_transform.position), isSpinDirectionMode);
-                if (turnValue == 0)
-                    Debug.LogError("ターン加算値の取得呼び出しの失敗");
-                _enumDirectionMode.Value = (int)_algorithmCommon.GetAjustedEnumDirectionMode((EnumDirectionMode)_enumDirectionMode.Value, turnValue);
-                // 回転アニメーション
-                if (!lightCodeCell.SetAlphaOff())
-                    Debug.LogError("アルファ値をセット呼び出しの失敗");
-                Observable.FromCoroutine<bool>(observer => shadowCodeCell.PlaySpinAnimation(observer, vectorDirectionModes[_enumDirectionMode.Value]))
-                    .Subscribe(_ =>
-                    {
-                        if (!lightCodeCell.SetSpinDirection(vectorDirectionModes[_enumDirectionMode.Value]))
-                            Debug.LogError("回転方角セット呼び出しの失敗");
-                        Observable.FromCoroutine<bool>(observer => lightCodeCell.PlayLightAnimation(observer, (EnumDirectionMode)_enumDirectionMode.Value))
-                            .Subscribe(_ =>
-                            {
-                                _isTurning.Value = false;
-                            })
-                            .AddTo(gameObject);
-                    })
-                    .AddTo(gameObject);
+                // プレイヤーがパワー状態か
+                var trigger = collision.GetComponent<AttackTrigger>();
+                if (_readonlyCodeMode &&
+                    trigger != null &&
+                    trigger.IsPower.Value)
+                {
+                    _readonlyCodeMode = false;
+                    // T.B.D パワー解除時に演出をつける？
+                    if (!lightCodeCell.SetSprite(EnumPivotDynamic.PivotLight))
+                        Debug.LogError("スプライトをセット呼び出しの失敗");
+                }
+
+                if (!_readonlyCodeMode)
+                {
+                    // 通常コードの振る舞い
+                    _isTurning.Value = true;
+                    var turnValue = GetTurnValue(_transform, collision.ClosestPoint(_transform.position), isSpinDirectionMode);
+                    if (turnValue == 0)
+                        Debug.LogError("ターン加算値の取得呼び出しの失敗");
+                    _enumDirectionMode.Value = (int)_algorithmCommon.GetAjustedEnumDirectionMode((EnumDirectionMode)_enumDirectionMode.Value, turnValue);
+                    // 回転アニメーション
+                    if (!lightCodeCell.SetAlphaOff())
+                        Debug.LogError("アルファ値をセット呼び出しの失敗");
+                    Observable.FromCoroutine<bool>(observer => shadowCodeCell.PlaySpinAnimation(observer, vectorDirectionModes[_enumDirectionMode.Value]))
+                        .Subscribe(_ =>
+                        {
+                            if (!lightCodeCell.SetSpinDirection(vectorDirectionModes[_enumDirectionMode.Value]))
+                                Debug.LogError("回転方角セット呼び出しの失敗");
+                            Observable.FromCoroutine<bool>(observer => lightCodeCell.PlayLightAnimation(observer, (EnumDirectionMode)_enumDirectionMode.Value))
+                                .Subscribe(_ =>
+                                {
+                                    _isTurning.Value = false;
+                                })
+                                .AddTo(gameObject);
+                        })
+                        .AddTo(gameObject);
+                }
+                else
+                {
+                    // サン（ゴ）ショウコードとしての振る舞い
+                    // 回転アニメーション
+                    if (!lightCodeCell.SetAlphaOff())
+                        Debug.LogError("アルファ値をセット呼び出しの失敗");
+                    Observable.FromCoroutine<bool>(observer => shadowCodeCell.PlayLockSpinAnimation(observer))
+                        .Subscribe(_ =>
+                        {
+                            if (!lightCodeCell.InitializeLight((EnumDirectionMode)_enumDirectionMode.Value))
+                                Debug.LogError("アルファ値をセット呼び出しの失敗");
+                        })
+                        .AddTo(gameObject);
+                }
             }
             else if (0 < notLetPassTags.Where(q => collision.CompareTag(q)).Select(q => q).ToArray().Length &&
                 lightCodeCell != null)

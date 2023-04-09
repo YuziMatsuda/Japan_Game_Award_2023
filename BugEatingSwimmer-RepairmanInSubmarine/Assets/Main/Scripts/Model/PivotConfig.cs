@@ -27,5 +27,9 @@ namespace Main.Model
         [SerializeField] private EnumDirectionMode[] errorDirections;
         /// <summary>エラー方角モードの配列</summary>
         public EnumDirectionMode[] ErrorDirections => errorDirections;
+        /// <summary>サン（ゴ）ショウコードであるか</summary>
+        [SerializeField] private bool readonlyCodeMode;
+        /// <summary>サン（ゴ）ショウコードであるか</summary>
+        public bool ReadonlyCodeMode => readonlyCodeMode;
     }
 }

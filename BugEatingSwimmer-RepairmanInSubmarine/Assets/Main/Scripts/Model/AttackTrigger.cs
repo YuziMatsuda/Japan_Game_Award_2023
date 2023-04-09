@@ -14,6 +14,8 @@ namespace Main.Model
     {
         /// <summary>コライダー</summary>
         [SerializeField] CircleCollider2D circleCollider;
+        /// <summary>パワー状態</summary>
+        public IReactiveProperty<bool> IsPower => transform.parent.GetComponent<PlayerModel>().IsPower;
 
         public bool SetColliderEnabled(bool enabled)
         {
