@@ -14,10 +14,19 @@ namespace Main.View
     {
         /// <summary>ターンアニメーション時間</summary>
         [SerializeField] private float turnDuration = .35f;
+        /// <summary>ターンロックアニメーション時間</summary>
+        [SerializeField] private float lockDuration = .1f;
         /// <summary>ターンロックアニメーション角度</summary>
         [SerializeField] private Vector3 lockDirection = new Vector3(0f, 0f, -15f);
         /// <summary>ターンロックアニメーションループ回数</summary>
         [SerializeField] private int lockLoopCount = 4;
+        /// <summary>支点ライトの見た目</summary>
+        [SerializeField] private PivotDynamic pivotDynamic;
+
+        private void Reset()
+        {
+            pivotDynamic = transform.GetChild(0).GetComponent<PivotDynamic>();
+        }
 
         public IEnumerator PlayLightAnimation(IObserver<bool> observer, EnumDirectionMode enumDirectionMode)
         {
@@ -56,7 +65,7 @@ namespace Main.View
 
         public bool SetSprite(EnumPivotDynamic index)
         {
-            throw new NotImplementedException();
+            return pivotDynamic.SetSprite(index);
         }
 
         public IEnumerator PlayLockSpinAnimation(IObserver<bool> observer)
@@ -64,9 +73,13 @@ namespace Main.View
             if (_transform == null)
                 _transform = transform;
             var defaultDirection = _transform.localEulerAngles;
-            _transform.DOLocalRotate(defaultDirection + lockDirection, turnDuration)
+            _transform.DOLocalRotate(defaultDirection + lockDirection, lockDuration)
                 .SetLoops(lockLoopCount, LoopType.Yoyo)
-                .OnComplete(() => observer.OnNext(true));
+                .OnComplete(() =>
+                {
+                    _transform.localEulerAngles = defaultDirection;
+                    observer.OnNext(true);
+                });
 
             yield return null;
         }

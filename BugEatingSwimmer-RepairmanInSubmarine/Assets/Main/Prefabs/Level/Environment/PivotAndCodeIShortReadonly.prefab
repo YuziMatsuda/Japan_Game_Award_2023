@@ -59,6 +59,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 5002bc2a87abefa47a92aa3ec6369c00, type: 3}
+    - target: {fileID: 6891070265990513128, guid: afa4cab702f079d48b393b735256967e, type: 3}
+      propertyPath: lockDuration
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 8192992673611742254, guid: afa4cab702f079d48b393b735256967e, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -67,5 +71,17 @@ PrefabInstance:
       propertyPath: readonlyCodeMode
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8251454376550168470, guid: afa4cab702f079d48b393b735256967e, type: 3}
+      propertyPath: coralParts.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8251454376550168470, guid: afa4cab702f079d48b393b735256967e, type: 3}
+      propertyPath: coralParts.Array.data[0]
+      value: 
+      objectReference: {fileID: 5835734986254865178, guid: 6c9a649a3b684a64cb2c8a9fe1af7183, type: 3}
+    - target: {fileID: 8251454376550168470, guid: afa4cab702f079d48b393b735256967e, type: 3}
+      propertyPath: coralParts.Array.data[1]
+      value: 
+      objectReference: {fileID: 259524657158371392, guid: 158041eefdd54b74fadab41a21b81956, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: afa4cab702f079d48b393b735256967e, type: 3}

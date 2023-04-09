@@ -31,5 +31,9 @@ namespace Main.Model
         [SerializeField] private bool readonlyCodeMode;
         /// <summary>サン（ゴ）ショウコードであるか</summary>
         public bool ReadonlyCodeMode => readonlyCodeMode;
+        /// <summary>サン（ゴ）ショウコード破片</summary>
+        [SerializeField] private Transform[] coralParts;
+        /// <summary>サン（ゴ）ショウコード破片</summary>
+        public Transform[] CoralParts => coralParts;
     }
 }

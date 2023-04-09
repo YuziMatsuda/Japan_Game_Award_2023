@@ -93,9 +93,16 @@ namespace Main.Model
                     trigger.IsPower.Value)
                 {
                     _readonlyCodeMode = false;
-                    // T.B.D パワー解除時に演出をつける？
+                    // パワー解除時にサン（ゴ）ショウコードの破片がとぶ
+                    foreach (var item in GetComponent<PivotConfig>().CoralParts)
+                        Instantiate(item, _transform.position, Quaternion.identity, _transform);
                     if (!lightCodeCell.SetSprite(EnumPivotDynamic.PivotLight))
                         Debug.LogError("スプライトをセット呼び出しの失敗");
+                    if (!shadowCodeCell.SetSprite(EnumPivotDynamic.PivotLight))
+                        Debug.LogError("スプライトをセット呼び出しの失敗");
+                    // プレイヤーのパワー状態を解除
+                    if (!trigger.SetIsPower(false))
+                        Debug.LogError("パワー状態をセット呼び出しの失敗");
                 }
 
                 if (!_readonlyCodeMode)

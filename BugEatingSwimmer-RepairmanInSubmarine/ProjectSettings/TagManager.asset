@@ -13,6 +13,7 @@ TagManager:
   - TouchTrigger
   - Seastar
   - DustConnectSignal
+  - PowerShell
   layers:
   - Default
   - TransparentFX

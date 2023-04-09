@@ -234,6 +234,7 @@ GameObject:
   - component: {fileID: 1075325078529999368}
   - component: {fileID: 8530329674911153026}
   - component: {fileID: 3872541446688736714}
+  - component: {fileID: 2826609972054992417}
   m_Layer: 0
   m_Name: GimmickOwner
   m_TagString: Untagged
@@ -269,6 +270,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seastarLeader: {fileID: 3872541446688736714}
+  powerShellLeader: {fileID: 2826609972054992417}
 --- !u!114 &3872541446688736714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -279,6 +281,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b2a758e0376bae543892b6c2951a2fc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2826609972054992417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1007139339746972686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 917e6a81467c756428a662f06d0ea874, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1369696454595932813

@@ -58,8 +58,6 @@ namespace Main.Model
         /// <summary>正面と判断する入力角度</summary>
         [SerializeField, Range(0f, 180f)] private float inputAngleFrontal = 60f;
         /// <summary>パワー状態</summary>
-        [SerializeField] bool isPowerDemo;
-        /// <summary>パワー状態</summary>
         private readonly BoolReactiveProperty _isPower = new BoolReactiveProperty();
         /// <summary>パワー状態</summary>
         public IReactiveProperty<bool> IsPower => _isPower;
@@ -113,8 +111,6 @@ namespace Main.Model
             this.UpdateAsObservable()
                 .Subscribe(_ =>
                 {
-                    // T.B.D パワーシェル実装時は消す
-                    _isPower.Value = isPowerDemo;
 
                     if (!_inputBan)
                     {
@@ -344,7 +340,7 @@ namespace Main.Model
         {
             try
             {
-                // T.B.D パワーシェル実装時に使用する
+                // パワーシェル実装時に使用する
                 _isPower.Value = enabled;
                 return true;
             }

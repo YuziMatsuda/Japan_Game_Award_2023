@@ -201,6 +201,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   turnDuration: 0.35
+  lockDirection: {x: 0, y: 0, z: -15}
+  lockLoopCount: 4
+  pivotDynamic: {fileID: 8013500890118136724}
 --- !u!1 &1583663474529918968
 GameObject:
   m_ObjectHideFlags: 0
@@ -505,6 +508,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9056486774171082381}
   - component: {fileID: 2757362609506867707}
+  - component: {fileID: 8013500890118136724}
   m_Layer: 7
   m_Name: PivotDynamic
   m_TagString: Untagged
@@ -579,6 +583,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &8013500890118136724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2205896950024728716}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: befc8221f7390204d90876e23583a115, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprites:
+  - {fileID: 21300000, guid: 9aab73762fa31384daf79b112bb14023, type: 3}
+  - {fileID: 21300000, guid: 5002bc2a87abefa47a92aa3ec6369c00, type: 3}
 --- !u!1 &2324341344815753889
 GameObject:
   m_ObjectHideFlags: 0

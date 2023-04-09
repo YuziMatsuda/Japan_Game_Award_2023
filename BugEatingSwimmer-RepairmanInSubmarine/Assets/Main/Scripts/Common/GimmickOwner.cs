@@ -8,19 +8,24 @@ namespace Main.Common
     /// ギミックのオーナー
     /// </summary>
     [RequireComponent(typeof(SeastarLeader))]
+    [RequireComponent(typeof(PowerShellLeader))]
     public class GimmickOwner : MonoBehaviour, IMainGameManager, ISeastarLeader
     {
         /// <summary>ヒトデのリーダー</summary>
         [SerializeField] private SeastarLeader seastarLeader;
+        /// <summary>パワーシェルのリーダー</summary>
+        [SerializeField] private PowerShellLeader powerShellLeader;
 
         private void Reset()
         {
             seastarLeader = GetComponent<SeastarLeader>();
+            powerShellLeader = GetComponent<PowerShellLeader>();
         }
 
         public void OnStart()
         {
             seastarLeader.OnStart();
+            powerShellLeader.OnStart();
         }
 
         public bool IsAssigned(EnumSeastarID enumSeastarID)
