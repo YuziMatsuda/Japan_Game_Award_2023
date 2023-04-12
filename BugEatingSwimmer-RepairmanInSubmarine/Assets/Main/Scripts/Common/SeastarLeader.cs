@@ -18,15 +18,13 @@ namespace Main.Common
         {
             try
             {
-                foreach (var idx in GetIndexes())
+                foreach (var item in _quasiAssignForm.Where(q => q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex].Equals($"{GetStageId()}") &&
+                    q[EnumQuasiAssignmentForm.SeastarID].Equals($"{enumSeastarID}") &&
+                    q[EnumQuasiAssignmentForm.AssignedDefault].Equals(ConstGeneric.DIGITFORM_FALSE)))
                 {
-                    foreach (var item in _quasiAssignForm.Where(q => q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex].Equals($"{idx}") &&
-                        q[EnumQuasiAssignmentForm.SeastarID].Equals($"{enumSeastarID}") &&
-                        q[EnumQuasiAssignmentForm.AssignedDefault].Equals(ConstGeneric.DIGITFORM_FALSE)))
-                    {
-                        item[EnumQuasiAssignmentForm.Assigned] = assignState ? ConstGeneric.DIGITFORM_TRUE : ConstGeneric.DIGITFORM_FALSE;
-                    }
+                    item[EnumQuasiAssignmentForm.Assigned] = assignState ? ConstGeneric.DIGITFORM_TRUE : ConstGeneric.DIGITFORM_FALSE;
                 }
+
 
                 return true;
             }
@@ -39,33 +37,21 @@ namespace Main.Common
 
         public bool IsAssigned(EnumSeastarID enumSeastarID)
         {
-            foreach (var idx in GetIndexes())
-            {
-                if (0 < _quasiAssignForm.Where(q => q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex].Equals($"{idx}") &&
-                    q[EnumQuasiAssignmentForm.SeastarID].Equals($"{enumSeastarID}") &&
-                    q[EnumQuasiAssignmentForm.AssignedDefault].Equals(ConstGeneric.DIGITFORM_TRUE))
-                    .ToArray()
-                    .Length)
-                    return true;
-            }
+            if (0 < _quasiAssignForm.Where(q => q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex].Equals($"{GetStageId()}") &&
+                q[EnumQuasiAssignmentForm.SeastarID].Equals($"{enumSeastarID}") &&
+                q[EnumQuasiAssignmentForm.AssignedDefault].Equals(ConstGeneric.DIGITFORM_TRUE))
+                .ToArray()
+                .Length)
+                return true;
+
             return false;
         }
 
-        /// <summary>
-        /// インデックス配列を取得
-        /// </summary>
-        /// <returns>インデックス配列</returns>
-        private int[] GetIndexes()
+        private int GetStageId()
         {
             // ステージIDの取得
             var currentStageDic = MainGameManager.Instance.SceneOwner.GetSystemCommonCash();
-            // ステージクリア条件
-            var mainSceneStagesModulesState = MainGameManager.Instance.SceneOwner.GetMainSceneStagesModulesState();
-
-            return mainSceneStagesModulesState.Select((p, i) => new { Content = p, Index = i })
-                .Where(q => q.Content[EnumMainSceneStagesModulesState.SceneId].Equals($"{currentStageDic[EnumSystemCommonCash.SceneId]}"))
-                .Select(q => q.Index)
-                .ToArray();
+            return currentStageDic[EnumSystemCommonCash.SceneId];
         }
 
         public void OnStart()

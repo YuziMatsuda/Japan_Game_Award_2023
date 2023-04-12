@@ -4,6 +4,7 @@ using UnityEngine;
 using Main.Model;
 using Main.Common;
 using Main.View;
+using UniRx;
 
 namespace Main.Presenter
 {
@@ -89,6 +90,76 @@ namespace Main.Presenter
                 return false;
             }
         }
+
+        public bool SetCounterBetweenAndFillAmount(SeastarGageView seastarGageView, IntReactiveProperty seastarGageCount)
+        {
+            return SetCounterBetweenAndFillAmount(seastarGageView, seastarGageCount, -1);
+        }
+
+        public bool SetCounterBetweenAndFillAmount(SeastarGageView seastarGageView, IntReactiveProperty seastarGageCount, int addCountValue)
+        {
+            try
+            {
+                if (seastarGageView != null)
+                {
+                    if (addCountValue == 1)
+                        seastarGageCount.Value += addCountValue;
+                    else if (addCountValue == 0)
+                        seastarGageCount.Value = addCountValue;
+                    else
+                    {
+                        // 更新なし
+                    }
+                    if (!seastarGageView.SetCounterBetween(seastarGageCount.Value))
+                        throw new System.Exception("カウンターをセット呼び出しの失敗");
+                    float seastarGageCountValue = (float)seastarGageCount.Value;
+                    if (!seastarGageView.SetFillAmount(seastarGageCountValue))
+                        throw new System.Exception("フィルターゲージの値をセット呼び出しの失敗");
+                }
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool PlayCounterBetweenAndFillAmountAnimation(SeastarGageView seastarGageView, IntReactiveProperty seastarGageCount)
+        {
+            return PlayCounterBetweenAndFillAmountAnimation(seastarGageView, seastarGageCount, -1);
+        }
+
+        public bool PlayCounterBetweenAndFillAmountAnimation(SeastarGageView seastarGageView, IntReactiveProperty seastarGageCount, int addCountValue)
+        {
+            try
+            {
+                if (seastarGageView != null)
+                {
+                    if (addCountValue == 1)
+                        seastarGageCount.Value += addCountValue;
+                    else if (addCountValue == 0)
+                        seastarGageCount.Value = addCountValue;
+                    else
+                    {
+                        // 更新なし
+                    }
+                    if (!seastarGageView.PlayCounterBetweenAnimation(seastarGageCount.Value))
+                        throw new System.Exception("カウンターをセット呼び出しの失敗");
+                    float seastarGageCountValue = (float)seastarGageCount.Value;
+                    if (!seastarGageView.PlayFillAmountAnimation(seastarGageCountValue))
+                        throw new System.Exception("フィルターゲージの値をセット呼び出しの失敗");
+                }
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
     }
 
     /// <summary>
@@ -119,5 +190,35 @@ namespace Main.Presenter
         /// <param name="onTriggerEnter2DDisabled">無効とするか</param>
         /// <returns>成功／失敗</returns>
         public bool SetDisableAllNodeCode(Transform[] transforms, bool onTriggerEnter2DDisabled);
+        /// <summary>
+        /// ヒトデゲージのカウンターとフィルターカウンターを更新
+        /// </summary>
+        /// <param name="seastarGageView">ヒトデゲージのビュー</param>
+        /// <param name="seastarGageCount">ヒトデカウンター</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetCounterBetweenAndFillAmount(SeastarGageView seastarGageView, IntReactiveProperty seastarGageCount);
+        /// <summary>
+        /// ヒトデゲージのカウンターとフィルターカウンターを更新
+        /// </summary>
+        /// <param name="seastarGageView">ヒトデゲージのビュー</param>
+        /// <param name="seastarGageCount">ヒトデカウンター</param>
+        /// <param name="addCountValue">カウンター値（1は加算、0はリセット、-1は更新なし）</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetCounterBetweenAndFillAmount(SeastarGageView seastarGageView, IntReactiveProperty seastarGageCount, int addCountValue);
+        /// <summary>
+        /// ヒトデゲージのカウンターとフィルターカウンターを更新アニメーション
+        /// </summary>
+        /// <param name="seastarGageView">ヒトデゲージのビュー</param>
+        /// <param name="seastarGageCount">ヒトデカウンター</param>
+        /// <returns>成功／失敗</returns>
+        public bool PlayCounterBetweenAndFillAmountAnimation(SeastarGageView seastarGageView, IntReactiveProperty seastarGageCount);
+        /// <summary>
+        /// ヒトデゲージのカウンターとフィルターカウンターを更新アニメーション
+        /// </summary>
+        /// <param name="seastarGageView">ヒトデゲージのビュー</param>
+        /// <param name="seastarGageCount">ヒトデカウンター</param>
+        /// <param name="addCountValue">カウンター値（1は加算、0はリセット、-1は更新なし）</param>
+        /// <returns>成功／失敗</returns>
+        public bool PlayCounterBetweenAndFillAmountAnimation(SeastarGageView seastarGageView, IntReactiveProperty seastarGageCount, int addCountValue);
     }
 }

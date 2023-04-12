@@ -14,6 +14,7 @@ TagManager:
   - Seastar
   - DustConnectSignal
   - PowerShell
+  - SeastarGage
   layers:
   - Default
   - TransparentFX

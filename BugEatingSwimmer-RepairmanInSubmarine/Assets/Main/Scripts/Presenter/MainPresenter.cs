@@ -716,6 +716,11 @@ namespace Main.Presenter
                             seastarViews.Add(item.GetComponent<SeastarView>());
                             seastarModels.Add(item.GetComponent<SeastarModel>());
                         }
+                        var seastarGageCount = new IntReactiveProperty(0);
+                        var seastarGage = GameObject.FindGameObjectWithTag(ConstTagNames.TAG_NAME_SEASTARGAGE);
+                        var seastarGageView = seastarGage == null ? null : seastarGage.GetComponent<SeastarGageView>();
+                        if (!common.SetCounterBetweenAndFillAmount(seastarGageView, seastarGageCount))
+                            Debug.LogError("ヒトデゲージのカウンターとフィルターカウンターを更新呼び出しの失敗");
                         for (var i = 0; i < seastarModels.Count; i++)
                         {
                             var idx = i;
@@ -735,7 +740,22 @@ namespace Main.Presenter
                                             Debug.LogError("未アサイン状態のカラー設定呼び出しの失敗");
                                     }
                                 });
-
+                            seastarModels[idx].IsAssignedLocal.ObserveEveryValueChanged(x => x.Value)
+                                .Subscribe(x =>
+                                {
+                                    if (x)
+                                    {
+                                        if (!common.SetCounterBetweenAndFillAmount(seastarGageView, seastarGageCount, 1))
+                                            Debug.LogError("ヒトデゲージのカウンターとフィルターカウンターを更新呼び出しの失敗");
+                                    }
+                                    else
+                                    {
+                                        // リセットした時のみtrue⇒falseへ変化
+                                        // カウンターもリセットさせる
+                                        if (!common.PlayCounterBetweenAndFillAmountAnimation(seastarGageView, seastarGageCount, 0))
+                                            Debug.LogError("ヒトデゲージのカウンターとフィルターカウンターを更新呼び出しの失敗");
+                                    }
+                                });
                         }
                         // Getプロセスの実行状態（false:初期状態／停止、true:実行中）
                         var isGetProcessStart = new BoolReactiveProperty();
@@ -830,48 +850,63 @@ namespace Main.Presenter
                                         Observable.FromCoroutine<bool>(observer => MainGameManager.Instance.AlgorithmOwner.PlayRunLightningSignal(observer))
                                             .Subscribe(_ =>
                                             {
-                                                if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, false))
-                                                    Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
-                                                // スタートからゴールまで繋がっている状態ならリセットしない
-                                                //Debug.Log($"クリア条件:{string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray())}");
-                                                var isBugFixed = false;
-                                                // HistorySignalsPostedからノードコードの組み合わせを参照
-                                                foreach (var item in mainSceneStagesModulesState.Where(q => q[EnumMainSceneStagesModulesState.SceneId].Equals(currentStageDic[EnumSystemCommonCash.SceneId] + "") &&
-                                                    q[EnumMainSceneStagesModulesState.Terms].Equals(string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray()))).Select(q => q))
+                                                if (seastarGageView == null ||
+                                                    (seastarGageView != null &&
+                                                    !seastarGageView.IsCounting))
                                                 {
-                                                    isBugFixed = item[EnumMainSceneStagesModulesState.Fixed].Equals(ConstGeneric.DIGITFORM_TRUE);
-                                                }
-                                                // 取り出したバグのモデルを監視
-                                                if (!goalNode.GetComponent<GoalNodeView>().bugfix())
-                                                    Debug.LogError("バグフィックス呼び出しの失敗");
-                                                var bug = goalNode.GetComponent<GoalNodeView>().InstanceBug;
-                                                if (!bug.GetComponent<BugView>().SetColorCleared(isBugFixed))
-                                                    Debug.LogError("カラーを設定呼び出しの失敗");
-                                                bug.GetComponent<BugModel>().IsEated.ObserveEveryValueChanged(x => x.Value)
-                                                    .Subscribe(x =>
+                                                    if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, false))
+                                                        Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
+                                                    // スタートからゴールまで繋がっている状態ならリセットしない
+                                                    //Debug.Log($"クリア条件:{string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray())}");
+                                                    var isBugFixed = false;
+                                                    // HistorySignalsPostedからノードコードの組み合わせを参照
+                                                    foreach (var item in mainSceneStagesModulesState.Where(q => q[EnumMainSceneStagesModulesState.SceneId].Equals(currentStageDic[EnumSystemCommonCash.SceneId] + "") &&
+                                                        q[EnumMainSceneStagesModulesState.Terms].Equals(string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray()))).Select(q => q))
                                                     {
-                                                        if (x)
+                                                        isBugFixed = item[EnumMainSceneStagesModulesState.Fixed].Equals(ConstGeneric.DIGITFORM_TRUE);
+                                                    }
+                                                    // 取り出したバグのモデルを監視
+                                                    if (!goalNode.GetComponent<GoalNodeView>().bugfix())
+                                                        Debug.LogError("バグフィックス呼び出しの失敗");
+                                                    var bug = goalNode.GetComponent<GoalNodeView>().InstanceBug;
+                                                    if (!bug.GetComponent<BugView>().SetColorCleared(isBugFixed))
+                                                        Debug.LogError("カラーを設定呼び出しの失敗");
+                                                    bug.GetComponent<BugModel>().IsEated.ObserveEveryValueChanged(x => x.Value)
+                                                        .Subscribe(x =>
                                                         {
+                                                            if (x)
+                                                            {
                                                             // HistorySignalsPostedの内容を保存する
                                                             foreach (var item in mainSceneStagesModulesState.Where(q => q[EnumMainSceneStagesModulesState.SceneId].Equals(currentStageDic[EnumSystemCommonCash.SceneId] + "") &&
-                                                                q[EnumMainSceneStagesModulesState.Terms].Equals(string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray()))).Select(q => q))
-                                                            {
-                                                                item[EnumMainSceneStagesModulesState.Fixed] = ConstGeneric.DIGITFORM_TRUE;
-                                                            }
-                                                            if (!playerModel.SetInputBan(true))
-                                                                Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
-                                                            if (!playerModel.SetIsBanMoveVelocity(true))
-                                                                Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
-                                                            if (!bug.GetComponent<BugView>().PlayCorrectOrWrong())
-                                                                Debug.LogError("バグ消失パーティクルを再生呼び出しの失敗");
-                                                            Observable.FromCoroutine<bool>(observer => bug.GetComponent<BugView>().PlayFadeAnimation(observer))
-                                                                .Subscribe(_ =>
+                                                                    q[EnumMainSceneStagesModulesState.Terms].Equals(string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray()))).Select(q => q))
                                                                 {
-                                                                    isGoalReached.Value = true;
-                                                                })
-                                                                .AddTo(gameObject);
-                                                        }
-                                                    });
+                                                                    item[EnumMainSceneStagesModulesState.Fixed] = ConstGeneric.DIGITFORM_TRUE;
+                                                                }
+                                                                if (!playerModel.SetInputBan(true))
+                                                                    Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
+                                                                if (!playerModel.SetIsBanMoveVelocity(true))
+                                                                    Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
+                                                                if (!bug.GetComponent<BugView>().PlayCorrectOrWrong())
+                                                                    Debug.LogError("バグ消失パーティクルを再生呼び出しの失敗");
+                                                                Observable.FromCoroutine<bool>(observer => bug.GetComponent<BugView>().PlayFadeAnimation(observer))
+                                                                    .Subscribe(_ =>
+                                                                    {
+                                                                        isGoalReached.Value = true;
+                                                                    })
+                                                                    .AddTo(gameObject);
+                                                            }
+                                                        });
+                                                }
+                                                else
+                                                {
+                                                    if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, false))
+                                                        Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
+                                                    if (!common.ResetAllPostingState(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted))
+                                                        Debug.LogError("POSTのリセット呼び出しの失敗");
+                                                    foreach (var item in seastarModels)
+                                                        if (!item.ResetIsAssigned())
+                                                            Debug.LogError("アサイン情報をリセット呼び出しの失敗");
+                                                }
                                             });
                                     }
                                     else
@@ -978,12 +1013,14 @@ namespace Main.Presenter
                                         {
                                             foreach (var child in codeObjs[idx].GetComponent<PivotModel>().ToList)
                                             {
-                                                if (child.GetComponent<PivotModel>() != null &&
-                                                    !child.GetComponent<PivotModel>().GetSignal())
-                                                    Debug.LogError("シグナル受信呼び出しの失敗");
-                                                if (child.GetComponent<GoalNodeModel>() != null &&
-                                                    !child.GetComponent<GoalNodeModel>().GetSignal())
-                                                    Debug.LogError("シグナル受信呼び出しの失敗");
+                                                if (child.GetComponent<PivotModel>() != null)
+                                                    if (!child.GetComponent<PivotModel>().GetSignal())
+                                                        Debug.LogError("シグナル受信呼び出しの失敗");
+                                                if (child.GetComponent<GoalNodeModel>() != null)
+                                                {
+                                                    if (!child.GetComponent<GoalNodeModel>().GetSignal())
+                                                        Debug.LogError("シグナル受信呼び出しの失敗");
+                                                }
                                             }
                                         }
                                         else if (x == 0)

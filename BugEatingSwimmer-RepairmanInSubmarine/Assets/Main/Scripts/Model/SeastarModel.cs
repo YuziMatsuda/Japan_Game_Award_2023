@@ -20,6 +20,10 @@ namespace Main.Model
         private readonly BoolReactiveProperty _isAssigned = new BoolReactiveProperty();
         /// <summary>アサインされたか</summary>
         public IReactiveProperty<bool> IsAssigned => _isAssigned;
+        /// <summary>アサインされたか（ローカルカウント）</summary>
+        private readonly BoolReactiveProperty _isAssignedLocal = new BoolReactiveProperty();
+        /// <summary>アサインされたか（ローカルカウント）</summary>
+        public IReactiveProperty<bool> IsAssignedLocal => _isAssignedLocal;
         /// <summary>ヒトデ管理設定</summary>
         [SerializeField] private SeastarConfig seastarConfig;
         /// <summary>接触対象のオブジェクトタグ</summary>
@@ -40,6 +44,7 @@ namespace Main.Model
             if (0 < tags.Where(q => collision.CompareTag(q)).Select(q => q).ToArray().Length)
             {
                 _isAssigned.Value = true;
+                _isAssignedLocal.Value = true;
             }
         }
 
@@ -63,6 +68,7 @@ namespace Main.Model
             try
             {
                 _isAssigned.Value = MainGameManager.Instance.GimmickOwner.IsAssigned(seastarConfig.EnumSeastarID);
+                _isAssignedLocal.Value = false;
 
                 return true;
             }
