@@ -79,6 +79,8 @@ namespace Main.Presenter
         [SerializeField] private TargetPointerView targetPointerView;
         /// <summary>準委任帳票のビュー</summary>
         [SerializeField] private AssignedSeastarCountView assignedSeastarCountView;
+        /// <summary>CinemachineVirtualCameraのビュー</summary>
+        [SerializeField] private CinemachineVirtualCameraView cinemachineVirtualCameraView;
 
         private void Reset()
         {
@@ -118,6 +120,7 @@ namespace Main.Presenter
             fadeImageView = GameObject.Find("FadeImage").GetComponent<FadeImageView>();
             fadeImageModel = GameObject.Find("FadeImage").GetComponent<FadeImageModel>();
             assignedSeastarCountView = GameObject.Find("AssignedSeastarCount").GetComponent<AssignedSeastarCountView>();
+            cinemachineVirtualCameraView = GameObject.Find("CinemachineVirtualCamera").GetComponent<CinemachineVirtualCameraView>();
         }
 
         public void OnStart()
@@ -613,6 +616,10 @@ namespace Main.Presenter
                                         {
                                             if (x)
                                             {
+                                                if (!cinemachineVirtualCameraView.SetFollow(playerModel.transform))
+                                                    Debug.LogError("フォローをセット呼び出しの失敗");
+                                                if (!cinemachineVirtualCameraView.SetBodyTrackedObjectOffsets(EnumBodyTrackedObjectOffsetIndex.PlayerTracked))
+                                                    Debug.LogError("カメラのオフセットをセット呼び出しの失敗");
                                                 targetPointerView = playerModel.TargetPointer.GetComponent<TargetPointerView>();
                                                 playerModel.MoveVelocityReactiveProperty.ObserveEveryValueChanged(x => x.Value)
                                                     .Subscribe(x =>
