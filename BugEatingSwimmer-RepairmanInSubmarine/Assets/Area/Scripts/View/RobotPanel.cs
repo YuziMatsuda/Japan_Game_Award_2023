@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
 
 namespace Area.View
 {
@@ -21,23 +22,25 @@ namespace Area.View
         [SerializeField] private EnumRobotPanel enumrobotpanel;
 
 
-        void Update()
+        void Start()
+        {
+            SetPositionAndEulerAngle();
+        }
+
+        public void SetPositionAndEulerAngle()
         {
             switch (enumrobotpanel)
             {
                 case EnumRobotPanel.FallingApart:
-                    robot_UnitImages[4].SetImageAltha(false);
                     break;
                 case EnumRobotPanel.ConnectedBody:
                     robot_UnitImages[0].SetPositionAndEulerAngle();
                     robot_UnitImages[1].SetPositionAndEulerAngle();
-                    robot_UnitImages[4].SetImageAltha(false);
                     break;
                 case EnumRobotPanel.ConnectedLeftarm:
                     robot_UnitImages[0].SetPositionAndEulerAngle();
                     robot_UnitImages[1].SetPositionAndEulerAngle();
                     robot_UnitImages[2].SetPositionAndEulerAngle();
-                    robot_UnitImages[4].SetImageAltha(false);
                     break;
                 case EnumRobotPanel.ConnectedRightarm:
                     robot_UnitImages[0].SetPositionAndEulerAngle();
@@ -45,7 +48,6 @@ namespace Area.View
                     robot_UnitImages[2].SetPositionAndEulerAngle();
                     robot_UnitImages[3].SetPositionAndEulerAngle();
                     robot_UnitImages[4].SetPositionAndEulerAngle();
-                    robot_UnitImages[4].SetImageAltha(false);
                     break;
                 case EnumRobotPanel.Full:
                     robot_UnitImages[0].SetPositionAndEulerAngle();
@@ -53,7 +55,12 @@ namespace Area.View
                     robot_UnitImages[2].SetPositionAndEulerAngle();
                     robot_UnitImages[3].SetPositionAndEulerAngle();
                     robot_UnitImages[4].SetPositionAndEulerAngle();
-                    robot_UnitImages[4].SetImageAltha(true);
+                    // シーン読み込み時のアニメーション
+                    Observable.FromCoroutine<bool>(observer => robot_UnitImages[4].PlayFadeAnimation(observer, true))
+                        .Subscribe(_ =>
+                        {
+                        })
+                        .AddTo(gameObject);
                     break;
                 default:
 
