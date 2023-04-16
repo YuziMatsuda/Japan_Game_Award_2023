@@ -10,7 +10,7 @@ namespace Select.View
     /// ロゴカーソル
     /// </summary>
     [RequireComponent(typeof(Image))]
-    public class LogoCursorView : MonoBehaviour
+    public class LogoCursorView : MonoBehaviour, ILogoCursorView
     {
         /// <summary>イメージ</summary>
         [SerializeField] private Image image;
@@ -20,11 +20,6 @@ namespace Select.View
             image = GetComponent<Image>();
         }
 
-        /// <summary>
-        /// イメージのステータスを変更
-        /// </summary>
-        /// <param name="isEnabled">有効／無効</param>
-        /// <returns>成功／失敗</returns>
         public bool SetImageEnabled(bool isEnabled)
         {
             try
@@ -38,5 +33,20 @@ namespace Select.View
                 return false;
             }
         }
+    }
+
+    /// <summary>
+    /// ビュー
+    /// ロゴカーソル
+    /// インターフェース
+    /// </summary>
+    public interface ILogoCursorView
+    {
+        /// <summary>
+        /// イメージのステータスを変更
+        /// </summary>
+        /// <param name="isEnabled">有効／無効</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetImageEnabled(bool isEnabled);
     }
 }

@@ -12,7 +12,7 @@ namespace Select.View
     /// プレイヤー
     /// </summary>
     [RequireComponent(typeof(Image))]
-    public class PlayerView : SelectStageFrameViewParent, ISelectStageFrameView
+    public class PlayerView : SelectStageFrameViewParent, ISelectStageFrameView, INavigationCursor
     {
         /// <summary>一つ前の位置</summary>
         private Vector3 _prevPosition;
@@ -30,6 +30,13 @@ namespace Select.View
         private readonly BoolReactiveProperty _isPlaying = new BoolReactiveProperty();
         /// <summary>アニメーション再生</summary>
         public IReactiveProperty<bool> IsPlaying => _isPlaying;
+        /// <summary>ステージ選択のカーソルナビゲーション表示</summary>
+        [SerializeField] private NavigationCursor navigationCursor;
+
+        private void Reset()
+        {
+            navigationCursor = GetComponentInChildren<NavigationCursor>();
+        }
 
         protected override void Start()
         {
@@ -38,32 +45,27 @@ namespace Select.View
             _prevTarget = defaultTarget;
         }
 
-        public bool MoveSelectPlayer(Vector3 targetPosition, Transform currentTarget)
+        public IEnumerator MoveSelectPlayer(Vector3 targetPosition, Transform currentTarget, System.IObserver<bool> observer)
         {
-            try
+            if (!_isPlaying.Value)
             {
-                if (!_isPlaying.Value)
-                {
-                    _isPlaying.Value = true;
-                    if (_transform == null)
-                        _transform = transform;
+                _isPlaying.Value = true;
+                if (_transform == null)
+                    _transform = transform;
 
-                    var scale = _transform.localScale;
-                    scale.x = _prevPosition.x <= targetPosition.x ? 1f : -1f;
-                    _transform.localScale = scale;
-                    _transform.DOMove(targetPosition, duration)
-                        .OnComplete(() => _isPlaying.Value = false);
-                    _prevPosition = targetPosition;
-                    _prevTarget = currentTarget;
-                }
-
-                return true;
+                var scale = _transform.localScale;
+                scale.x = _prevPosition.x <= targetPosition.x ? 1f : -1f;
+                _transform.localScale = scale;
+                _transform.DOMove(targetPosition, duration)
+                    .OnComplete(() =>
+                    {
+                        _isPlaying.Value = false;
+                        observer.OnNext(true);
+                    });
+                _prevPosition = targetPosition;
+                _prevTarget = currentTarget;
             }
-            catch (System.Exception e)
-            {
-                Debug.LogError(e);
-                return false;
-            }
+            yield return null;
         }
 
         public bool MoveSelectStageFrame(Vector3 targetPosition, Vector2 sizeDelta)
@@ -125,6 +127,16 @@ namespace Select.View
                 Debug.LogError(e);
                 return false;
             }
+        }
+
+        public bool RedererCursorDirection(Navigation navigation)
+        {
+            return ((INavigationCursor)navigationCursor).RedererCursorDirection(navigation);
+        }
+
+        public bool RedererCursorDirection(Navigation navigation, bool isIgnoreScaleImpact)
+        {
+            return ((INavigationCursor)navigationCursor).RedererCursorDirection(navigation, isIgnoreScaleImpact);
         }
     }
 }

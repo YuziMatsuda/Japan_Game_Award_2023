@@ -249,8 +249,14 @@ namespace Select.Presenter
                             case EnumEventCommand.Selected:
                                 // 選択SEを再生
                                 SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_select);
-                                if (!playerView.MoveSelectPlayer(logoStageViews[child.Index].transform.position, logoStageViews[child.Index].transform))
-                                    Debug.LogError("ステージ選択のプレイヤーを移動して選択させる呼び出しの失敗");
+                                // シーン読み込み時のアニメーション
+                                Observable.FromCoroutine<bool>(observer => playerView.MoveSelectPlayer(logoStageViews[child.Index].transform.position, logoStageViews[child.Index].transform, observer))
+                                    .Subscribe(_ =>
+                                    {
+                                        if (!playerView.RedererCursorDirection(child.Button.navigation, true))
+                                            Debug.LogError("ナビゲーションの状態によってカーソル表示を変更呼び出しの失敗");
+                                    })
+                                    .AddTo(gameObject);
                                 stageIndex.Value = child.Index;
                                 break;
                             case EnumEventCommand.DeSelected:
@@ -432,8 +438,14 @@ namespace Select.Presenter
                             case EnumEventCommand.Selected:
                                 // 選択SEを再生
                                 SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_select);
-                                if (!playerView.MoveSelectPlayer(pivotAndCodeIShortUIViews[idx].transform.position, pivotAndCodeIShortUIViews[idx].transform))
-                                    Debug.LogError("ステージ選択のプレイヤーを移動して選択させる呼び出しの失敗");
+                                // シーン読み込み時のアニメーション
+                                Observable.FromCoroutine<bool>(observer => playerView.MoveSelectPlayer(pivotAndCodeIShortUIViews[idx].transform.position, pivotAndCodeIShortUIViews[idx].transform, observer))
+                                    .Subscribe(_ =>
+                                    {
+                                        if (!playerView.RedererCursorDirection(pivotAndCodeIShortUIModels[idx].Button.navigation, true))
+                                            Debug.LogError("ナビゲーションの状態によってカーソル表示を変更呼び出しの失敗");
+                                    })
+                                    .AddTo(gameObject);
                                 break;
                             case EnumEventCommand.DeSelected:
                                 // 処理無し
