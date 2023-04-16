@@ -39,6 +39,16 @@ namespace Select.Accessory
             {
                 using (File.Create($"{GetHomePath()}{ConstResorcesNames.SYSTEM_CONFIG}.csv")) { }
             }
+            // 準委任帳票が存在しない場合は作成
+            if (!File.Exists($"{GetHomePath()}{ConstResorcesNames.QUASI_ASSIGNMENT_FORM}.csv"))
+            {
+                using (File.Create($"{GetHomePath()}{ConstResorcesNames.QUASI_ASSIGNMENT_FORM}.csv")) { }
+            }
+            // エリアユニットファイルが存在しない場合は作成
+            if (!File.Exists($"{GetHomePath()}{ConstResorcesNames.AREA_UNITS}.csv"))
+            {
+                using (File.Create($"{GetHomePath()}{ConstResorcesNames.AREA_UNITS}.csv")) { }
+            }
         }
 
         /// <summary>
@@ -221,6 +231,74 @@ namespace Select.Accessory
         }
 
         /// <summary>
+        /// 準委任帳票へ一時セット
+        /// </summary>
+        /// <param name="datas">二次元配列の文字列データ</param>
+        /// <returns>格納オブジェクト配列</returns>
+        public Dictionary<EnumQuasiAssignmentForm, string>[] GetQuasiAssignmentForm(List<string[]> datas)
+        {
+            try
+            {
+                var configMapList = new List<Dictionary<EnumQuasiAssignmentForm, string>>();
+                for (var i = 0; i < datas.Count; i++)
+                {
+                    if (i == 0)
+                        // 一行目はカラム名なのでスキップ
+                        continue;
+                    var child = datas[i];
+                    var configMap = new Dictionary<EnumQuasiAssignmentForm, string>();
+                    for (var j = 0; j < child.Length; j++)
+                    {
+                        configMap[(EnumQuasiAssignmentForm)j] = child[j];
+                    }
+                    // 読み込み時にデフォルトを設定
+                    configMap[EnumQuasiAssignmentForm.AssignedDefault] = configMap[EnumQuasiAssignmentForm.Assigned];
+                    configMapList.Add(configMap);
+                }
+
+                return configMapList.ToArray();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// エリアユニットファイルへ一時セット
+        /// </summary>
+        /// <param name="datas">二次元配列の文字列データ</param>
+        /// <returns>格納オブジェクト配列</returns>
+        public Dictionary<EnumAreaUnits, int>[] GetAreaUnits(List<string[]> datas)
+        {
+            try
+            {
+                var configMapList = new List<Dictionary<EnumAreaUnits, int>>();
+                for (var i = 0; i < datas.Count; i++)
+                {
+                    if (i == 0)
+                        // 一行目はカラム名なのでスキップ
+                        continue;
+                    var child = datas[i];
+                    var configMap = new Dictionary<EnumAreaUnits, int>();
+                    for (var j = 0; j < child.Length; j++)
+                    {
+                        configMap[(EnumAreaUnits)j] = int.Parse(child[j]);
+                    }
+                    configMapList.Add(configMap);
+                }
+
+                return configMapList.ToArray();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return null;
+            }
+        }
+
+        /// <summary>
         /// システム設定キャッシュをCSVデータへ保存
         /// </summary>
         /// <param name="resourcesLoadName">リソースCSVファイル名</param>
@@ -253,6 +331,46 @@ namespace Select.Accessory
         }
 
         /// <summary>
+        /// 準委任帳票をCSVデータへ保存
+        /// </summary>
+        /// <param name="resourcesLoadName">リソースCSVファイル名</param>
+        /// <param name="configMaps">格納オブジェクト配列</param>
+        /// <returns>成功／失敗</returns>
+        public bool SaveDatasCSVOfQuasiAssignmentForm(string resourcesLoadName, Dictionary<EnumQuasiAssignmentForm, string>[] configMaps)
+        {
+            try
+            {
+                var path = GetHomePath();
+                // 一度ファイル内のデータを削除
+                using (var fileStream = new FileStream($"{path}{resourcesLoadName}.csv", FileMode.Open))
+                {
+                    fileStream.SetLength(0);
+                }
+                // 設定内容を保存
+                using (var sw = new StreamWriter($"{path}{resourcesLoadName}.csv", true, Encoding.GetEncoding("UTF-8")))
+                {
+                    for (var i = 0; i < configMaps.Length; i++)
+                    {
+                        // デフォルト値は保存不要のため削除
+                        configMaps[i].Remove(EnumQuasiAssignmentForm.AssignedDefault);
+                        if (i == 0)
+                        {
+                            sw.WriteLine(string.Join(",", GetKeysRecord(configMaps[i])));
+                        }
+                        sw.WriteLine(string.Join(",", GetValuesRecord(configMaps[i])));
+                    }
+                }
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        /// <summary>
         /// キーのレコードを取得
         /// </summary>
         /// <param name="configMap">格納オブジェクト</param>
@@ -263,11 +381,31 @@ namespace Select.Accessory
         }
 
         /// <summary>
+        /// キーのレコードを取得
+        /// </summary>
+        /// <param name="configMap">格納オブジェクト</param>
+        /// <returns>CSVのタイトル箇所</returns>
+        private string[] GetKeysRecord(Dictionary<EnumQuasiAssignmentForm, string> configMap)
+        {
+            return configMap.Select(q => q.Key + "").ToArray();
+        }
+
+        /// <summary>
         /// Valueのレコードを取得
         /// </summary>
         /// <param name="configMap">格納オブジェクト</param>
         /// <returns>一行分のレコード</returns>
         private string[] GetValuesRecord(Dictionary<EnumSystemCommonCash, int> configMap)
+        {
+            return configMap.Select(q => q.Value + "").ToArray();
+        }
+
+        /// <summary>
+        /// Valueのレコードを取得
+        /// </summary>
+        /// <param name="configMap">格納オブジェクト</param>
+        /// <returns>一行分のレコード</returns>
+        private string[] GetValuesRecord(Dictionary<EnumQuasiAssignmentForm, string> configMap)
         {
             return configMap.Select(q => q.Value + "").ToArray();
         }

@@ -39,12 +39,14 @@ namespace Select.Presenter
         [SerializeField] private FadeImageModel fadeImageModel;
         /// <summary>1ページあたりのコンテンツ数</summary>
         [SerializeField] private int contentsCountInPage = 5;
-        /// <summary>ステージ選択のフレームのビュー</summary>
-        [SerializeField] private SelectStageFrameView selectStageFrameView;
         /// <summary>プレイヤーのフレームのビュー</summary>
         [SerializeField] private PlayerView playerView;
         /// <summary>ロゴステージの統括パネルのビュー</summary>
         [SerializeField] private LogoStagesView logoStagesView;
+        /// <summary>準委任帳票のビュー</summary>
+        [SerializeField] private AssignedSeastarCountView assignedSeastarCountView;
+        /// <summary>ヒトデゲージのビュー</summary>
+        [SerializeField] private SeastarGageView[] seastarGageViews;
 
         private void Reset()
         {
@@ -104,13 +106,20 @@ namespace Select.Presenter
             fadeImageView = GameObject.Find("FadeImage").GetComponent<FadeImageView>();
             fadeImageModel = GameObject.Find("FadeImage").GetComponent<FadeImageModel>();
 
-            selectStageFrameView = GameObject.Find("SelectStageFrame").GetComponent<SelectStageFrameView>();
             playerView = GameObject.Find("Player").GetComponent<PlayerView>();
             logoStagesView = GameObject.Find("LogoStages").GetComponent<LogoStagesView>();
+            List<SeastarGageView> seastarGageViewList = new List<SeastarGageView>();
+            foreach (Transform item in logoStagesView.transform)
+            {
+                seastarGageViewList.Add(item.GetComponent<PageView>() != null ? item.GetComponentInChildren<SeastarGageView>() : null);
+            }
+            seastarGageViews = seastarGageViewList.ToArray();
+            assignedSeastarCountView = GameObject.Find("AssignedSeastarCount").GetComponent<AssignedSeastarCountView>();
         }
 
         public void OnStart()
         {
+            var common = new SelectPresenterCommon();
             // 初期設定
             foreach (var child in logoStageModels)
                 if (child != null)
@@ -123,8 +132,13 @@ namespace Select.Presenter
             foreach (var child in pageViews)
                 if (child != null)
                     child.SetVisible(false);
+            // シーンIDに紐づくキャプションかつ、そのキャプション内にもつSeastarIDをもつオブジェクトを抽出
+            if (!common.SetIsAssignedAllCaption(captionStageModels))
+                Debug.LogError("全ステージキャプションのアサイン情報をセット呼び出しの失敗");
             foreach (var item in captionStageModels.Where(q => q != null).Select(q => q))
                 item.gameObject.SetActive(false);
+            if (!assignedSeastarCountView.SetCounterText(SelectGameManager.Instance.GimmickOwner.GetAssinedCounter()))
+                Debug.LogError("ヒトデ総配属人数をセット呼び出しの失敗");
 
             SelectGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_select);
             // シーン読み込み時のアニメーション
@@ -138,6 +152,8 @@ namespace Select.Presenter
                             child.SetButtonEnabled(true);
                             child.SetEventTriggerEnabled(true);
                         }
+                    if (!common.SetCounterBetweenAndFillAmountAllGage(seastarGageViews))
+                        Debug.LogError("全ヒトデゲージのカウンターとフィルターをセット呼び出しの失敗");
                 })
                 .AddTo(gameObject);
 
@@ -192,58 +208,30 @@ namespace Select.Presenter
                         if (!pageViews[i].SetVisible(i == pageIdx))
                             Debug.LogError("アルファ値切り替え処理の失敗");
                     }
-                    if (!selectStageFrameView.MoveSelectStageFrame(logoStageViews[x].transform.position, (logoStageViews[x].transform as RectTransform).sizeDelta))
-                        Debug.LogError("ステージ選択のフレームを移動して選択させる呼び出しの失敗");
-                    if (!playerView.MoveSelectPlayer(logoStageViews[x].transform.position, logoStageViews[x].transform))
-                        Debug.LogError("ステージ選択のプレイヤーを移動して選択させる呼び出しの失敗");
                 });
 
             playerView.IsPlaying.ObserveEveryValueChanged(x => x.Value)
                 .Subscribe(x =>
                 {
-                    if (x && playerView.HookContent != null)
+                    if (x)
                     {
-                        var l = playerView.HookContent.GetComponent<LogoStageModel>();
-                        if (l != null)
+                        foreach (var item in logoStageModels.Where(q => q != null))
                         {
-                            if (!l.SetButtonEnabled(false))
+                            if (!item.SetButtonEnabled(false))
                                 Debug.LogError("ボタンのステータスを変更呼び出しの失敗");
-                            if (!l.SetEventTriggerEnabled(false))
-                                Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
-
-                        }
-                        var p = playerView.HookContent.GetComponent<PivotAndCodeIShortUIModel>();
-                        if (p != null)
-                        {
-                            if (!p.SetButtonEnabled(false))
-                                Debug.LogError("ボタンのステータスを変更呼び出しの失敗");
-                            if (!p.SetEventTriggerEnabled(false))
-                                Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
-                        }
-                    }
-                    else if (!x && playerView.HookContent != null)
-                    {
-                        var l = playerView.HookContent.GetComponent<LogoStageModel>();
-                        if (l != null)
-                        {
-                            if (!l.SetButtonEnabled(true))
-                                Debug.LogError("ボタンのステータスを変更呼び出しの失敗");
-                            if (!l.SetEventTriggerEnabled(true))
-                                Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
-
-                        }
-                        var p = playerView.HookContent.GetComponent<PivotAndCodeIShortUIModel>();
-                        if (p != null)
-                        {
-                            if (!p.SetButtonEnabled(true))
-                                Debug.LogError("ボタンのステータスを変更呼び出しの失敗");
-                            if (!p.SetEventTriggerEnabled(true))
+                            if (!item.SetEventTriggerEnabled(false))
                                 Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
                         }
                     }
                     else
                     {
-                        // 例外ケース
+                        foreach (var item in logoStageModels.Where(q => q != null))
+                        {
+                            if (!item.SetButtonEnabled(true))
+                                Debug.LogError("ボタンのステータスを変更呼び出しの失敗");
+                            if (!item.SetEventTriggerEnabled(true))
+                                Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
+                        }
                     }
                 });
 
@@ -261,6 +249,8 @@ namespace Select.Presenter
                             case EnumEventCommand.Selected:
                                 // 選択SEを再生
                                 SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_select);
+                                if (!playerView.MoveSelectPlayer(logoStageViews[child.Index].transform.position, logoStageViews[child.Index].transform))
+                                    Debug.LogError("ステージ選択のプレイヤーを移動して選択させる呼び出しの失敗");
                                 stageIndex.Value = child.Index;
                                 break;
                             case EnumEventCommand.DeSelected:
@@ -320,8 +310,6 @@ namespace Select.Presenter
                             Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
                         // デフォルト選択
                         captionStageModels[stageIndex.Value].SetSelectedGameObject();
-                        if (!selectStageFrameView.SetColorAlpha(0f))
-                            Debug.LogError("透明度をセット呼び出しの失敗");
                         if (!playerView.SetColorAlpha(0f))
                             Debug.LogError("透明度をセット呼び出しの失敗");
                     }
@@ -340,8 +328,6 @@ namespace Select.Presenter
                                         Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
                                     // デフォルト選択
                                     logoStageModels[stageIndex.Value].SetSelectedGameObject();
-                                    if (!selectStageFrameView.SetColorAlpha(255f))
-                                        Debug.LogError("透明度をセット呼び出しの失敗");
                                     if (!playerView.SetColorAlpha(255f))
                                         Debug.LogError("透明度をセット呼び出しの失敗");
                                 })
@@ -351,9 +337,28 @@ namespace Select.Presenter
                 });
 
             // キャプションの状態管理
-            foreach (var item in captionStageModels.Where(q => q != null).Select(q => q))
+            foreach (var item in captionStageModels.Select((p, i) => new { Content = p, Index = i })
+                .Where(q => 0 < q.Index))
             {
-                item.EventState.ObserveEveryValueChanged(x => x.Value)
+                foreach (var itemChild in item.Content.IsAssigned.Where(q => q != null)
+                    .Select((p, i) => new { Content = p, Index = i }))
+                {
+                    itemChild.Content.ObserveEveryValueChanged(x => x.Value)
+                        .Subscribe(x =>
+                        {
+                            if (x)
+                            {
+                                if (!captionStageViews[item.Index].SetColorAssigned(itemChild.Index))
+                                    Debug.LogError("アサイン済みのカラー設定呼び出しの失敗");
+                            }
+                            else
+                            {
+                                if (!captionStageViews[item.Index].SetColorUnAssign(itemChild.Index))
+                                    Debug.LogError("アサイン済みのカラー設定呼び出しの失敗");
+                            }
+                        });
+                }
+                item.Content.EventState.ObserveEveryValueChanged(x => x.Value)
                     .Subscribe(x =>
                     {
                         switch ((EnumEventCommand)x)
@@ -427,8 +432,6 @@ namespace Select.Presenter
                             case EnumEventCommand.Selected:
                                 // 選択SEを再生
                                 SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_select);
-                                if (!selectStageFrameView.MoveSelectStageFrame(pivotAndCodeIShortUIViews[idx].transform.position, (pivotAndCodeIShortUIViews[idx].transform as RectTransform).sizeDelta))
-                                    Debug.LogError("ステージ選択のフレームを移動して選択させる呼び出しの失敗");
                                 if (!playerView.MoveSelectPlayer(pivotAndCodeIShortUIViews[idx].transform.position, pivotAndCodeIShortUIViews[idx].transform))
                                     Debug.LogError("ステージ選択のプレイヤーを移動して選択させる呼び出しの失敗");
                                 break;

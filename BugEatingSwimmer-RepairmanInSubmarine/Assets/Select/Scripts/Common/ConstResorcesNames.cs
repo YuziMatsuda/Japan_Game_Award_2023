@@ -19,5 +19,9 @@ namespace Select.Common
         public static readonly string MAIN_SCENE_STAGES_STATE = "MainSceneStagesState";
         /// <summary>システム設定</summary>
         public static readonly string SYSTEM_CONFIG = "SystemConfig";
+        /// <summary>準委任帳票</summary>
+        public static readonly string QUASI_ASSIGNMENT_FORM = "QuasiAssignmentForm";
+        /// <summary>エリアユニット</summary>
+        public static readonly string AREA_UNITS = "AreaUnits";
     }
 }

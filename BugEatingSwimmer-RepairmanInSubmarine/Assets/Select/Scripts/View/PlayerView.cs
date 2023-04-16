@@ -30,10 +30,6 @@ namespace Select.View
         private readonly BoolReactiveProperty _isPlaying = new BoolReactiveProperty();
         /// <summary>アニメーション再生</summary>
         public IReactiveProperty<bool> IsPlaying => _isPlaying;
-        /// <summary>実行中に操作禁止にする対象</summary>
-        private Transform _hookContent;
-        /// <summary>実行中に操作禁止にする対象</summary>
-        public Transform HookContent => _hookContent;
 
         protected override void Start()
         {
@@ -49,30 +45,12 @@ namespace Select.View
                 if (!_isPlaying.Value)
                 {
                     _isPlaying.Value = true;
-                    _hookContent = currentTarget;
                     if (_transform == null)
                         _transform = transform;
 
                     var scale = _transform.localScale;
                     scale.x = _prevPosition.x <= targetPosition.x ? 1f : -1f;
                     _transform.localScale = scale;
-                    // 一つ前のターゲット位置と次のターゲット位置を調整（コードのみ）
-                    if (froms.Length == tos.Length &&
-                        tos.Length == toPositionCrrection.Length)
-                    {
-                        for (var i = 0; i < froms.Length; i++)
-                        {
-                            if (froms[i].Equals(_prevTarget) &&
-                                tos[i].Equals(currentTarget))
-                            {
-                                targetPosition += toPositionCrrection[i];
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"格納数の不一致 from:[{froms.Length}]_to:[{tos.Length}]_toPositionCrrection:[{toPositionCrrection.Length}]");
-                    }
                     _transform.DOMove(targetPosition, duration)
                         .OnComplete(() => _isPlaying.Value = false);
                     _prevPosition = targetPosition;
