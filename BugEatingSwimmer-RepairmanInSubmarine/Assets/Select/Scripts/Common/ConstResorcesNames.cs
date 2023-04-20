@@ -23,5 +23,7 @@ namespace Select.Common
         public static readonly string QUASI_ASSIGNMENT_FORM = "QuasiAssignmentForm";
         /// <summary>エリアユニット</summary>
         public static readonly string AREA_UNITS = "AreaUnits";
+        /// <summary>エリア解放・結合テスト</summary>
+        public static readonly string AREA_OPENED_AND_IT_STATE = "AreaOpenedAndITState";
     }
 }

@@ -161,6 +161,11 @@ namespace Select.Presenter
             var sysCommonCash = SelectGameManager.Instance.SceneOwner.GetSystemCommonCash();
             var stageIndex = new IntReactiveProperty(sysCommonCash[EnumSystemCommonCash.SceneId]);
             logoStageModels[stageIndex.Value].SetSelectedGameObject();
+            if (!playerView.SelectPlayer(logoStageViews[stageIndex.Value].transform.position, logoStageViews[stageIndex.Value].transform))
+                Debug.LogError("ステージ選択のプレイヤーを移動して選択させる呼び出しの失敗");
+            if (!playerView.RedererCursorDirectionAndDistance(logoStageModels[stageIndex.Value].Button.navigation, EnumCursorDistance.Long))
+                Debug.LogError("ナビゲーションの状態によってカーソル表示を変更呼び出しの失敗");
+
             // クリア済みマークの表示
             for (var i = 0; i < logoStageModels.Length; i++)
             {
@@ -182,6 +187,8 @@ namespace Select.Presenter
                                 break;
                             case 1:
                                 // 選択可
+                                if (!logoStageViews[idx].RenderEnabled())
+                                    Debug.LogError("選択可表示呼び出しの失敗");
                                 break;
                             case 2:
                                 if (!logoStageViews[idx].RenderClearMark())
@@ -249,11 +256,15 @@ namespace Select.Presenter
                             case EnumEventCommand.Selected:
                                 // 選択SEを再生
                                 SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_select);
-                                // シーン読み込み時のアニメーション
+                                // ステージ選択のプレイヤーを移動して選択させる
+                                if (!playerView.SetImageEnabled(false))
+                                    Debug.LogError("イメージのステータスを変更呼び出しの失敗");
                                 Observable.FromCoroutine<bool>(observer => playerView.MoveSelectPlayer(logoStageViews[child.Index].transform.position, logoStageViews[child.Index].transform, observer))
                                     .Subscribe(_ =>
                                     {
-                                        if (!playerView.RedererCursorDirection(child.Button.navigation, true))
+                                        if (!playerView.SetImageEnabled(true))
+                                            Debug.LogError("イメージのステータスを変更呼び出しの失敗");
+                                        if (!playerView.RedererCursorDirectionAndDistance(child.Button.navigation, EnumCursorDistance.Long))
                                             Debug.LogError("ナビゲーションの状態によってカーソル表示を変更呼び出しの失敗");
                                     })
                                     .AddTo(gameObject);
@@ -438,11 +449,14 @@ namespace Select.Presenter
                             case EnumEventCommand.Selected:
                                 // 選択SEを再生
                                 SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_select);
-                                // シーン読み込み時のアニメーション
+                                if (!playerView.SetImageEnabled(false))
+                                    Debug.LogError("イメージのステータスを変更呼び出しの失敗");
                                 Observable.FromCoroutine<bool>(observer => playerView.MoveSelectPlayer(pivotAndCodeIShortUIViews[idx].transform.position, pivotAndCodeIShortUIViews[idx].transform, observer))
                                     .Subscribe(_ =>
                                     {
-                                        if (!playerView.RedererCursorDirection(pivotAndCodeIShortUIModels[idx].Button.navigation, true))
+                                        if (!playerView.SetImageEnabled(true))
+                                            Debug.LogError("イメージのステータスを変更呼び出しの失敗");
+                                        if (!playerView.RedererCursorDirectionAndDistance(pivotAndCodeIShortUIModels[idx].Button.navigation, EnumCursorDistance.Short))
                                             Debug.LogError("ナビゲーションの状態によってカーソル表示を変更呼び出しの失敗");
                                     })
                                     .AddTo(gameObject);

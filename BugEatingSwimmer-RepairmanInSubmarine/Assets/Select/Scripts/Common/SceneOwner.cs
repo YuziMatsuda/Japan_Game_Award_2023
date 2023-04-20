@@ -9,7 +9,7 @@ namespace Select.Common
     /// <summary>
     /// シーンオーナー
     /// </summary>
-    public class SceneOwner : MonoBehaviour, ISelectGameManager
+    public class SceneOwner : MonoBehaviour, ISelectGameManager, ISceneOwner
     {
         /// <summary>次のシーン名</summary>
         [SerializeField] private string nextSceneName = "MainScene";
@@ -43,10 +43,6 @@ namespace Select.Common
             }
         }
 
-        /// <summary>
-        /// ステージクリア済みデータを取得
-        /// </summary>
-        /// <returns>ステージクリア済みデータ</returns>
         public Dictionary<EnumMainSceneStagesState, int>[] GetMainSceneStagesState()
         {
             try
@@ -102,5 +98,60 @@ namespace Select.Common
         {
             SceneManager.LoadScene(nextSceneName);
         }
+
+        public Dictionary<EnumAreaOpenedAndITState, string>[] GetAreaOpenedAndITState()
+        {
+            try
+            {
+                var tSResources = new SelectTemplateResourcesAccessory();
+                var datas = tSResources.LoadSaveDatasCSV(ConstResorcesNames.AREA_OPENED_AND_IT_STATE);
+                if (datas == null)
+                    throw new System.Exception("リソース読み込みの失敗");
+
+                return tSResources.GetAreaOpenedAndITState(datas);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return null;
+            }
+        }
+
+        public Dictionary<EnumAreaUnits, int>[] GetAreaUnits()
+        {
+            try
+            {
+                var tSResources = new SelectTemplateResourcesAccessory();
+                var datas = tSResources.LoadSaveDatasCSV(ConstResorcesNames.AREA_UNITS);
+                if (datas == null)
+                    throw new System.Exception("リソース読み込みの失敗");
+
+                return tSResources.GetAreaUnits(datas);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return null;
+            }
+        }
+    }
+
+    public interface ISceneOwner
+    {
+        /// <summary>
+        /// ステージクリア済みデータを取得
+        /// </summary>
+        /// <returns>ステージクリア済みデータ</returns>
+        public Dictionary<EnumMainSceneStagesState, int>[] GetMainSceneStagesState();
+        /// <summary>
+        /// エリア解放・結合テスト済みデータを取得
+        /// </summary>
+        /// <returns>エリア解放・結合テスト済みデータ</returns>
+        public Dictionary<EnumAreaOpenedAndITState, string>[] GetAreaOpenedAndITState();
+        /// <summary>
+        /// エリアユニットファイルデータを取得
+        /// </summary>
+        /// <returns>エリアユニットファイルデータ</returns>
+        public Dictionary<EnumAreaUnits, int>[] GetAreaUnits();
     }
 }

@@ -11,7 +11,7 @@ namespace Select.Common
     {
         /// <summary>エリアID</summary>
         UnitID,
-        /// <summary>ステージのステータス（0：選択不可、1：選択可、2：結合テスト済み、3：クリア済み、-1：ダミー）</summary>
+        /// <summary>ステージのステータス（0：選択不可、1：選択可、2：クリア済み、3：結合テスト済み、-1：ダミー）</summary>
         State,
     }
 }

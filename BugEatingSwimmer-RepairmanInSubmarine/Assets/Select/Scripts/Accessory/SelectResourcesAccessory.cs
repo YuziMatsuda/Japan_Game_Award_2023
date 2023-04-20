@@ -318,12 +318,12 @@ namespace Select.Accessory
                         // 一行目はカラム名なのでスキップ
                         continue;
                     var child = datas[i];
+                    var configMap = new Dictionary<EnumAreaOpenedAndITState, string>();
                     for (var j = 0; j < child.Length; j++)
                     {
-                        var configMap = new Dictionary<EnumAreaOpenedAndITState, string>();
                         configMap[(EnumAreaOpenedAndITState)j] = child[j];
-                        configMapList.Add(configMap);
                     }
+                    configMapList.Add(configMap);
                 }
 
                 return configMapList.ToArray();
