@@ -36,6 +36,10 @@ namespace Select.Common
         [SerializeField] private GimmickOwner gimmickOwner;
         /// <summary>ギミックのオーナー</summary>
         public GimmickOwner GimmickOwner => gimmickOwner;
+        /// <summary>アルゴリズムのオーナー</summary>
+        [SerializeField] private AlgorithmOwner algorithmOwner;
+        /// <summary>アルゴリズムのオーナー</summary>
+        public AlgorithmOwner AlgorithmOwner => algorithmOwner;
 
         private void Reset()
         {
@@ -44,6 +48,7 @@ namespace Select.Common
             sceneOwner = GameObject.Find("SceneOwner").GetComponent<SceneOwner>();
             cursorVisible = GameObject.Find("CursorVisible").GetComponent<CursorVisible>();
             gimmickOwner = GameObject.Find("GimmickOwner").GetComponent<GimmickOwner>();
+            algorithmOwner = GameObject.Find("AlgorithmOwner").GetComponent<AlgorithmOwner>();
         }
 
         private void Awake()

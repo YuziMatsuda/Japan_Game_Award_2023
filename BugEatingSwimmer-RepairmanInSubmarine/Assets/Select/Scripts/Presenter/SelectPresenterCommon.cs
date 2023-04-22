@@ -14,10 +14,17 @@ namespace Select.Common
     /// </summary>
     public class SelectPresenterCommon : ISelectPresenterCommon
     {
+        public Dictionary<EnumAreaOpenedAndITState, string>[] LoadSaveDatasCSVAndGetAreaOpenedAndITState()
+        {
+            var tResourcesAccessory = new SelectTemplateResourcesAccessory();
+            var quasiAssignFormResources = tResourcesAccessory.LoadSaveDatasCSV(ConstResorcesNames.AREA_OPENED_AND_IT_STATE);
+            return tResourcesAccessory.GetAreaOpenedAndITState(quasiAssignFormResources);
+        }
+
         public Dictionary<EnumAreaUnits, int>[] LoadSaveDatasCSVAndGetAreaUnits()
         {
             var tResourcesAccessory = new SelectTemplateResourcesAccessory();
-            var quasiAssignFormResources = tResourcesAccessory.LoadSaveDatasCSV(ConstResorcesNames.MAIN_SCENE_STAGES_STATE);
+            var quasiAssignFormResources = tResourcesAccessory.LoadSaveDatasCSV(ConstResorcesNames.AREA_UNITS);
             return tResourcesAccessory.GetAreaUnits(quasiAssignFormResources);
         }
 
@@ -130,5 +137,10 @@ namespace Select.Common
         /// </summary>
         /// <returns>格納オブジェクト配列</returns>
         public Dictionary<EnumAreaUnits, int>[] LoadSaveDatasCSVAndGetAreaUnits();
+        /// <summary>
+        /// エリア解放・結合テスト済みデータをオブジェクトへ一時セット
+        /// </summary>
+        /// <returns>格納オブジェクト配列</returns>
+        public Dictionary<EnumAreaOpenedAndITState, string>[] LoadSaveDatasCSVAndGetAreaOpenedAndITState();
     }
 }

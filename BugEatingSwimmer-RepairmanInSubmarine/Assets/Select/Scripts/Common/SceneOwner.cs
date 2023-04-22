@@ -61,11 +61,6 @@ namespace Select.Common
             }
         }
 
-        /// <summary>
-        /// シーンIDを更新
-        /// </summary>
-        /// <param name="configMap">シーン設定</param>
-        /// <returns>成功／失敗</returns>
         public bool SetSystemCommonCash(Dictionary<EnumSystemCommonCash, int> configMap)
         {
             try
@@ -134,6 +129,23 @@ namespace Select.Common
                 return null;
             }
         }
+
+        public bool SetAreaOpenedAndITState(Dictionary<EnumAreaOpenedAndITState, string>[] configMaps)
+        {
+            try
+            {
+                var tSResources = new SelectTemplateResourcesAccessory();
+                if (!tSResources.SaveDatasCSVOfAreaOpenedAndITState(ConstResorcesNames.AREA_OPENED_AND_IT_STATE, configMaps))
+                    Debug.LogError("CSV保存呼び出しの失敗");
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
     }
 
     public interface ISceneOwner
@@ -153,5 +165,17 @@ namespace Select.Common
         /// </summary>
         /// <returns>エリアユニットファイルデータ</returns>
         public Dictionary<EnumAreaUnits, int>[] GetAreaUnits();
+        /// <summary>
+        /// シーンIDを更新
+        /// </summary>
+        /// <param name="configMap">シーン設定</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetSystemCommonCash(Dictionary<EnumSystemCommonCash, int> configMap);
+        /// <summary>
+        /// エリア解放・結合テスト済みデータを更新
+        /// </summary>
+        /// <param name="configMap">格納オブジェクト配列</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetAreaOpenedAndITState(Dictionary<EnumAreaOpenedAndITState, string>[] configMaps);
     }
 }

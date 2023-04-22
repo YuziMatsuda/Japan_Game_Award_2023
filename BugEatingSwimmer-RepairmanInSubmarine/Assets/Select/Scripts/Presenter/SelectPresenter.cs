@@ -139,6 +139,10 @@ namespace Select.Presenter
                 item.gameObject.SetActive(false);
             if (!assignedSeastarCountView.SetCounterText(SelectGameManager.Instance.GimmickOwner.GetAssinedCounter()))
                 Debug.LogError("ヒトデ総配属人数をセット呼び出しの失敗");
+            foreach (var item in pivotAndCodeIShortUIViews)
+                item.OnStart();
+            if (SelectGameManager.Instance.AlgorithmOwner.SetPivotAndCodeIShortUIs(pivotAndCodeIShortUIViews.Select(q => q.transform).ToArray()) < 1)
+                Debug.LogError("支点とコード配列をセット呼び出しの失敗");
 
             SelectGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_select);
             // シーン読み込み時のアニメーション
@@ -157,6 +161,8 @@ namespace Select.Presenter
                 })
                 .AddTo(gameObject);
 
+            // エリア解放・結合テスト済みデータ
+            var areaOpenedAndITState = SelectGameManager.Instance.SceneOwner.GetAreaOpenedAndITState();
             // ステージ番号を取得する処理を追加する
             var sysCommonCash = SelectGameManager.Instance.SceneOwner.GetSystemCommonCash();
             var stageIndex = new IntReactiveProperty(sysCommonCash[EnumSystemCommonCash.SceneId]);
@@ -487,6 +493,32 @@ namespace Select.Presenter
                             case EnumEventCommand.Submited:
                                 // 決定SEを再生
                                 SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_decided);
+                                if (!pivotAndCodeIShortUIViews[idx].SetAsSemiLastSibling())
+                                    Debug.LogError("SetSiblingIndexでparent配下の子オブジェクト数-1へ配置呼び出しの失敗");
+                                Observable.FromCoroutine<bool>(observer => pivotAndCodeIShortUIViews[idx].PlaySpinAnimationAndUpdateTurnValue(observer))
+                                    .Subscribe(_ =>
+                                    {
+                                        pivotAndCodeIShortUIModels[idx].Selected();
+
+                                        var result = SelectGameManager.Instance.AlgorithmOwner.CheckIT();
+                                        if (0 < result)
+                                        {
+                                            // 各エリア情報の更新
+                                            areaOpenedAndITState/*Work*/.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == result)
+                                                .Select(q => q)
+                                                .ToArray()[0][EnumAreaOpenedAndITState.State] = $"{(int)EnumAreaOpenedAndITStateState.ITFixed}";
+                                            if (!SelectGameManager.Instance.SceneOwner.SetAreaOpenedAndITState(areaOpenedAndITState))
+                                                Debug.LogError("エリア解放・結合テスト済みデータを更新呼び出しの失敗");
+                                            // T.B.D IT演出（フェードアウトしてエリアセレクトシーンへ遷移する？）
+                                        }
+                                        else if (-1 < result)
+                                        {
+                                            // 更新済み
+                                        }
+                                        else
+                                            Debug.LogError("IT実施呼び出しの失敗");
+                                    })
+                                    .AddTo(gameObject);
 
                                 break;
                             default:

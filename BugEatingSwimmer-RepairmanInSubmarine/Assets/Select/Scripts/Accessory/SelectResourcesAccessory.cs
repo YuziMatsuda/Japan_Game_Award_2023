@@ -309,9 +309,6 @@ namespace Select.Accessory
             {
                 var configMapList = new List<Dictionary<EnumAreaOpenedAndITState, string>>();
                 // 配列のインデックスとステージIDを揃えるため、0番目はダミーデータを格納
-                var dummy = new Dictionary<EnumAreaOpenedAndITState, string>();
-                dummy[EnumAreaOpenedAndITState.State] = $"{(int)EnumAreaOpenedAndITStateState.Dummy}";
-                configMapList.Add(dummy);
                 for (var i = 0; i < datas.Count; i++)
                 {
                     if (i == 0)

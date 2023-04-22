@@ -1,8 +1,6 @@
 fileFormatVersion: 2
-guid: 1d344df362bd8ff4f9e5fff1b5a543dd
-labels:
-- SaveData
-TextScriptImporter:
+guid: 22bbbae53df5bac4290cb3420c7a6c9e
+DefaultImporter:
   externalObjects: {}
   userData: 
   assetBundleName: 
