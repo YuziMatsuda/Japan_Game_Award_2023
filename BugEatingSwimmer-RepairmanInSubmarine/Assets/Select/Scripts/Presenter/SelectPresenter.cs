@@ -261,7 +261,8 @@ namespace Select.Presenter
                                 break;
                             case EnumEventCommand.Selected:
                                 // 選択SEを再生
-                                SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_select);
+                                if (!playerView.IsSkipMode)
+                                    SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_select);
                                 // ステージ選択のプレイヤーを移動して選択させる
                                 if (!playerView.SetImageEnabled(false))
                                     Debug.LogError("イメージのステータスを変更呼び出しの失敗");
@@ -272,6 +273,9 @@ namespace Select.Presenter
                                             Debug.LogError("イメージのステータスを変更呼び出しの失敗");
                                         if (!playerView.RedererCursorDirectionAndDistance(child.Button.navigation, EnumCursorDistance.Long))
                                             Debug.LogError("ナビゲーションの状態によってカーソル表示を変更呼び出しの失敗");
+                                        if (playerView.IsSkipMode)
+                                            if (!playerView.SetSkipMode(false))
+                                                Debug.LogError("スキップモードのセット呼び出しの失敗");
                                     })
                                     .AddTo(gameObject);
                                 stageIndex.Value = child.Index;
@@ -335,6 +339,10 @@ namespace Select.Presenter
                         captionStageModels[stageIndex.Value].SetSelectedGameObject();
                         if (!playerView.SetColorAlpha(0f))
                             Debug.LogError("透明度をセット呼び出しの失敗");
+                        if (!playerView.SetImageEnabled(false))
+                            Debug.LogError("透明度をセット呼び出しの失敗");
+                        if (!playerView.SetSkipMode(true))
+                            Debug.LogError("透明度をセット呼び出しの失敗");
                     }
                     else
                     {
@@ -352,6 +360,8 @@ namespace Select.Presenter
                                     // デフォルト選択
                                     logoStageModels[stageIndex.Value].SetSelectedGameObject();
                                     if (!playerView.SetColorAlpha(255f))
+                                        Debug.LogError("透明度をセット呼び出しの失敗");
+                                    if (!playerView.SetImageEnabled(true))
                                         Debug.LogError("透明度をセット呼び出しの失敗");
                                 })
                                 .AddTo(gameObject);
@@ -454,7 +464,8 @@ namespace Select.Presenter
                                 break;
                             case EnumEventCommand.Selected:
                                 // 選択SEを再生
-                                SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_select);
+                                if (!playerView.IsSkipMode)
+                                    SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_select);
                                 if (!playerView.SetImageEnabled(false))
                                     Debug.LogError("イメージのステータスを変更呼び出しの失敗");
                                 Observable.FromCoroutine<bool>(observer => playerView.MoveSelectPlayer(pivotAndCodeIShortUIViews[idx].transform.position, pivotAndCodeIShortUIViews[idx].transform, observer))
@@ -464,6 +475,9 @@ namespace Select.Presenter
                                             Debug.LogError("イメージのステータスを変更呼び出しの失敗");
                                         if (!playerView.RedererCursorDirectionAndDistance(pivotAndCodeIShortUIModels[idx].Button.navigation, EnumCursorDistance.Short))
                                             Debug.LogError("ナビゲーションの状態によってカーソル表示を変更呼び出しの失敗");
+                                        if (playerView.IsSkipMode)
+                                            if (!playerView.SetSkipMode(false))
+                                                Debug.LogError("スキップモードのセット呼び出しの失敗");
                                     })
                                     .AddTo(gameObject);
                                 break;
@@ -498,13 +512,15 @@ namespace Select.Presenter
                                 Observable.FromCoroutine<bool>(observer => pivotAndCodeIShortUIViews[idx].PlaySpinAnimationAndUpdateTurnValue(observer))
                                     .Subscribe(_ =>
                                     {
+                                        if (!playerView.SetSkipMode(true))
+                                            Debug.LogError("透明度をセット呼び出しの失敗");
                                         pivotAndCodeIShortUIModels[idx].Selected();
 
                                         var result = SelectGameManager.Instance.AlgorithmOwner.CheckIT();
                                         if (0 < result)
                                         {
                                             // 各エリア情報の更新
-                                            areaOpenedAndITState/*Work*/.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == result)
+                                            areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == result)
                                                 .Select(q => q)
                                                 .ToArray()[0][EnumAreaOpenedAndITState.State] = $"{(int)EnumAreaOpenedAndITStateState.ITFixed}";
                                             if (!SelectGameManager.Instance.SceneOwner.SetAreaOpenedAndITState(areaOpenedAndITState))

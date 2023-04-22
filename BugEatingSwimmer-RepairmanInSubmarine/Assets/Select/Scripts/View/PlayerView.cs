@@ -12,7 +12,7 @@ namespace Select.View
     /// ビュー
     /// プレイヤー
     /// </summary>
-    public class PlayerView : SelectStageFrameViewParent, ISelectStageFrameView, INavigationCursor, ILogoCursorView
+    public class PlayerView : SelectStageFrameViewParent, ISelectStageFrameView, INavigationCursor, ILogoCursorView, IPlayerView
     {
         /// <summary>一つ前の位置</summary>
         private Vector3 _prevPosition;
@@ -29,6 +29,10 @@ namespace Select.View
         [SerializeField] private NavigationCursor navigationCursor;
         /// <summary>ボディのイメージ</summary>
         [SerializeField] private BodyImage bodyImage;
+        /// <summary>スキップモード（キャプション選択のキャンセル）</summary>
+        private bool _isSkipMode;
+        /// <summary>スキップモード（キャプション選択のキャンセル）</summary>
+        public bool IsSkipMode => _isSkipMode;
 
         private void Reset()
         {
@@ -45,6 +49,13 @@ namespace Select.View
 
         public IEnumerator MoveSelectPlayer(Vector3 targetPosition, Transform currentTarget, System.IObserver<bool> observer)
         {
+            if (_isSkipMode)
+            {
+                observer.OnNext(true);
+                // ステージのキャプション選択／コードを突いた後にSEを鳴らさない
+                yield return null;
+            }
+
             if (!_isPlaying.Value)
             {
                 _isPlaying.Value = true;
@@ -101,6 +112,9 @@ namespace Select.View
 
         public bool SetImageEnabled(bool isEnabled)
         {
+            if (_isSkipMode)
+                // ステージのキャプション選択／コードを突いた後にSEを鳴らさない
+                return true;
             return ((ILogoCursorView)navigationCursor).SetImageEnabled(isEnabled);
         }
 
@@ -113,5 +127,34 @@ namespace Select.View
         {
             return ((ISelectStageFrameView)bodyImage).SetColorAlpha(alpha);
         }
+
+        public bool SetSkipMode(bool isSkipMode)
+        {
+            try
+            {
+                _isSkipMode = isSkipMode;
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// ビュー
+    /// プレイヤー
+    /// インターフェース
+    /// </summary>
+    public interface IPlayerView
+    {
+        /// <summary>
+        /// スキップモードのセット
+        /// </summary>
+        /// <param name="isSkipMode">スキップモード</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetSkipMode(bool isSkipMode);
     }
 }
