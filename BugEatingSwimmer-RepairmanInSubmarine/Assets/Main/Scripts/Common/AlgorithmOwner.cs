@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Main.Model;
+using DG.Tweening;
 
 namespace Main.Common
 {
@@ -28,15 +29,29 @@ namespace Main.Common
         /// <summary>モジュール構造体</summary>
         private Module[] _modules;
         /// <summary>信号が送信された履歴</summary>
-        private Transform[] _historySignalsPosted;
-        /// <summary>信号が送信された履歴</summary>
-        public Transform[] HistorySignalsPosted => _historySignalsPosted;
+        public Transform[] HistorySignalsPosted => _history.historySignalsPosted;
+        /// <summary>
+        /// 送信履歴構造体
+        /// </summary>
+        private struct History
+        {
+            /// <summary>信号が送信された履歴</summary>
+            public Transform[] historySignalsPosted;
+            /// <summary>バグフィックス</summary>
+            public bool isBugFixed;
+        }
+        /// <summary>送信履歴構造体</summary>
+        private History _history = new History();
         /// <summary>信号が受信された履歴</summary>
         private Transform[][] _historySignalsGeted;
         /// <summary>信号が受信された履歴</summary>
         public Transform[][] HistorySignalsGeted => _historySignalsGeted;
         /// <summary>アルゴリズムの共通処理</summary>
         private AlgorithmCommon _algorithmCommon = new AlgorithmCommon();
+        /// <summary>Historyに入っているルートに電流を走らせる処理の実行中</summary>
+        private bool _isPlaingRunLightningSignal;
+        /// <summary>電流を走らせる処理の終了時間</summary>
+        [SerializeField] private float pathDuration = .15f;
 
         public void OnStart()
         {
@@ -58,7 +73,17 @@ namespace Main.Common
 
         public bool SetBugFixed(bool isBugFixed)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                _history.isBugFixed = isBugFixed;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
         }
 
         public bool AddHistorySignalsPosted(Transform nodeCode)
@@ -71,10 +96,12 @@ namespace Main.Common
             try
             {
                 if (isReset)
-                    _historySignalsPosted = null;
-                var historySignalsPostedList = _historySignalsPosted == null || (_historySignalsPosted != null && _historySignalsPosted.Length == 0) ? new List<Transform>() : _historySignalsPosted.ToList();
+                {
+                    _history.historySignalsPosted = null;
+                }
+                var historySignalsPostedList = _history.historySignalsPosted == null || (_history.historySignalsPosted != null && _history.historySignalsPosted.Length == 0) ? new List<Transform>() : _history.historySignalsPosted.ToList();
                 historySignalsPostedList.Add(nodeCode);
-                _historySignalsPosted = historySignalsPostedList.ToArray();
+                _history.historySignalsPosted = historySignalsPostedList.ToArray();
 
                 return true;
             }
@@ -89,7 +116,7 @@ namespace Main.Common
         {
             try
             {
-                _historySignalsPosted = nodeCodes;
+                _history.historySignalsPosted = nodeCodes;
 
                 return true;
             }
@@ -140,13 +167,21 @@ namespace Main.Common
                     }
 
                     var hits = Physics2D.RaycastAll(transform.position, rayDirection, direction, layerMask);
-                    // ヒットしたオブジェクトの内、コライダーを持つかつ、オブジェクト自身は対象に含まない
-                    foreach (var hit in hits.Where(q => q.collider != null && !q.transform.Equals(transform)).Select(q => q))
+                    // ヒットしたオブジェクトの内、コライダーを持つかつ、オブジェクト自身は対象に含まないかつ、スタートノードは対象に含まない
+                    foreach (var hit in hits.Where(q => q.collider != null &&
+                        !q.transform.Equals(transform) &&
+                        q.transform.GetComponent<StartNodeModel>() == null)
+                        .Select(q => q))
                     {
                         var pivotModel = hit.transform.GetComponent<PivotModel>();
                         var goalNodeModel = hit.transform.GetComponent<GoalNodeModel>();
                         if (pivotModel == null && goalNodeModel == null)
                             throw new System.Exception($"PivotModelまたはGoalNodeModelのコンポーネント無し:[{pivotModel}][{goalNodeModel}]");
+                        if (pivotModel != null &&
+                            (
+                            pivotModel.IsGetting.Value))
+                            // 送信済みは対象に含まない（逆流＆ループ対策）
+                            continue;
                         destinationList.Add(pivotModel != null ? pivotModel.transform : goalNodeModel.transform);
                     }
                 }
@@ -326,58 +361,86 @@ namespace Main.Common
 
         public bool MergeHistorySignalsGetedToPosted()
         {
-            try
+            if (_history.historySignalsPosted == null)
+                throw new System.Exception("信号を送信した履歴データ無し");
+            if (_historySignalsGeted == null)
+                throw new System.Exception("信号が受信された履歴データ無し");
+            // DistinctしてStartNodeが入っている配列のみ取得
+            var historySignalsGeted = _historySignalsGeted.Distinct();
+            List<Transform> historySignalsGetedChild = new List<Transform>();
+            foreach (var item in historySignalsGeted)
             {
-                if (_historySignalsPosted == null)
-                    throw new System.Exception("信号を送信した履歴データ無し");
-                if (_historySignalsGeted == null)
-                    throw new System.Exception("信号が受信された履歴データ無し");
-                // DistinctしてStartNodeが入っている配列のみ取得
-                var historySignalsGeted = _historySignalsGeted.Distinct();
-                List<Transform> historySignalsGetedChild = new List<Transform>();
-                foreach (var item in historySignalsGeted)
-                {
-                    if (0 < item.Where(q => q.CompareTag(ConstTagNames.TAG_NAME_STARTNODE))
-                        .Select(q => q)
-                        .ToArray()
-                        .Length)
-                    {
-                        historySignalsGetedChild.AddRange(item.AsEnumerable()
-                        .Reverse());
-                        // StartNodeが格納されているルートは一つのみの想定
-                        break;
-                    }
-                }
-                if (historySignalsGetedChild.Count < 1)
-                    throw new System.Exception("信号受信リスト整形の失敗");
+                historySignalsGetedChild.AddRange(item.AsEnumerable()
+                .Reverse());
+                // StartNodeが格納されているルートは一つのみの想定
+                break;
+            }
+            if (historySignalsGetedChild.Count < 1)
+                throw new System.Exception("信号受信リスト整形の失敗");
 
-                var historySignalsPosted = new List<Transform>();
-                for (var i = 0; i < historySignalsGetedChild.Count; i++)
-                {
-                    if (i < _historySignalsPosted.Length)
-                    {
-                        //Debug.Log($"[{i}]番目 送信:[{_historySignalsPosted[i]}]_受信:[{historySignalsGetedChild[i]}]");
-                        if (historySignalsGetedChild[i].Equals(_historySignalsPosted[i]))
-                        {
-                            historySignalsPosted.Add(_historySignalsPosted[i]);
-                        }
-                        else
-                            throw new System.Exception($"[{i}]番目不一致エラー 送信:[{_historySignalsPosted[i]}]_受信:[{historySignalsGetedChild[i]}]");
-                    }
-                    else
-                    {
-                        //Debug.Log($"[{i}]番目 受信:[{historySignalsGetedChild[i]}]");
-                        historySignalsPosted.Add(historySignalsGetedChild[i]);
-                    }
-                }
-                _historySignalsPosted = historySignalsGetedChild.ToArray();
+            var historySignalsPosted = new List<Transform>();
+            if (historySignalsGetedChild[0].Equals(_history.historySignalsPosted[_history.historySignalsPosted.Length - 1]))
+            {
+                // POST要素の最後以外を格納
+                historySignalsPosted.AddRange(_history.historySignalsPosted.Select((p, i) => new { Content = p, Index = i })
+                    .Where(q => q.Index < _history.historySignalsPosted.Length - 1)
+                    .Select(q => q.Content)
+                    .ToArray());
+                // GET要素を格納
+                historySignalsPosted.AddRange(historySignalsGetedChild);
+                _history.historySignalsPosted = historySignalsPosted.ToArray();
 
                 return true;
             }
-            catch (System.Exception e)
-            {
-                Debug.LogError(e);
+            else
+                // マージなし
                 return false;
+        }
+
+        public IEnumerator PlayRunLightningSignal(System.IObserver<bool> observer)
+        {
+            // 信号送信済みでないかつ、信号送信中でない
+            if (!_isPlaingRunLightningSignal &&
+                _history.historySignalsPosted != null)
+            {
+                _isPlaingRunLightningSignal = true;
+
+                var root = _history.historySignalsPosted.Select(q => q.position).ToArray();
+                if (!MainGameManager.Instance.ParticleSystemsOwner.PlayParticleSystems(GetInstanceID(), EnumParticleSystemsIndex.DustConnectSignal, root[0]))
+                    Debug.LogError("指定されたパーティクルシステムを再生する呼び出しの失敗");
+                var signal = MainGameManager.Instance.ParticleSystemsOwner.GetParticleSystemsTransform(GetInstanceID(), EnumParticleSystemsIndex.DustConnectSignal);
+                var doPathRoot = root.Select((p, i) => new { Content = p, Index = i })
+                    .Where(q => 0 < q.Index)
+                    .Select(q => q.Content).ToArray();
+                signal.DOPath(doPathRoot, pathDuration * doPathRoot.Length)
+                    .OnComplete(() =>
+                    {
+                        if (!MainGameManager.Instance.ParticleSystemsOwner.StopParticleSystems(GetInstanceID(), EnumParticleSystemsIndex.DustConnectSignal))
+                            Debug.LogError("指定されたパーティクルシステムを停止する呼び出しの失敗");
+                        _isPlaingRunLightningSignal = false;
+                        observer.OnNext(true);
+                    });
+            }
+            else
+            {
+                // 実行中
+            }
+
+            yield return null;
+        }
+
+        public Transform GetHistorySignalsPostedLasted(Transform nodeCode)
+        {
+            if (_history.historySignalsPosted == null)
+                throw new System.Exception("信号が送信された履歴データ無し");
+
+            if (0 < _history.historySignalsPosted.Length)
+            {
+                return _history.historySignalsPosted[_history.historySignalsPosted.Length - 1];
+            }
+            else
+            {
+                throw new System.Exception("信号が送信された履歴データ無し");
             }
         }
     }
@@ -492,6 +555,12 @@ namespace Main.Common
         /// <returns>実行中／停止</returns>
         public bool GetGetProcessState(GameObject[] codeObjs);
         /// <summary>
+        /// 信号が送信された履歴の配列から対象の一つ前のノードコードを取得
+        /// </summary>
+        /// <param name="nodeCode">ノードコード</param>
+        /// <returns>ノードコード（履歴から一つ前）</returns>
+        public Transform GetHistorySignalsPostedLasted(Transform nodeCode);
+        /// <summary>
         /// 信号が受信された履歴の配列から対象の一つ前のノードコードを取得
         /// </summary>
         /// <param name="nodeCode">ノードコード</param>
@@ -501,7 +570,13 @@ namespace Main.Common
         /// 信号が受信された履歴の配列を
         /// 信号が送信された履歴の配列へマージ
         /// </summary>
-        /// <returns>成功／失敗</returns>
+        /// <returns>マージあり／マージなし</returns>
         public bool MergeHistorySignalsGetedToPosted();
+
+        /// <summary>
+        /// Historyに入っているルートに電流を走らせる
+        /// </summary>
+        /// <returns>コルーチン</returns>
+        public IEnumerator PlayRunLightningSignal(System.IObserver<bool> observer);
     }
 }

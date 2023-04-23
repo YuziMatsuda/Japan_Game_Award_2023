@@ -10,6 +10,11 @@ TagManager:
   - StartNode
   - GoalNode
   - Atoms
+  - TouchTrigger
+  - Seastar
+  - DustConnectSignal
+  - PowerShell
+  - SeastarGage
   layers:
   - Default
   - TransparentFX
@@ -22,7 +27,7 @@ TagManager:
   - GoalNode
   - Atoms
   - StartNode
-  - 
+  - Seastar
   - 
   - 
   - 

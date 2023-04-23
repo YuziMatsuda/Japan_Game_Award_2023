@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using UniRx;
+using Select.Common;
 
 namespace Select.View
 {
@@ -11,8 +12,7 @@ namespace Select.View
     /// ビュー
     /// プレイヤー
     /// </summary>
-    [RequireComponent(typeof(Image))]
-    public class PlayerView : SelectStageFrameViewParent, ISelectStageFrameView
+    public class PlayerView : SelectStageFrameViewParent, ISelectStageFrameView, INavigationCursor, ILogoCursorView, IPlayerView
     {
         /// <summary>一つ前の位置</summary>
         private Vector3 _prevPosition;
@@ -21,19 +21,24 @@ namespace Select.View
         /// <summary>一つ前のターゲット（デフォルト）</summary>
         [SerializeField] private Transform defaultTarget;
         /// <summary>移動元オブジェクトリスト</summary>
-        [SerializeField] private Transform[] froms;
-        /// <summary>移動先オブジェクトリスト</summary>
-        [SerializeField] private Transform[] tos;
-        /// <summary>移動先の位置補正</summary>
-        [SerializeField] private Vector3[] toPositionCrrection;
         /// <summary>アニメーション再生</summary>
         private readonly BoolReactiveProperty _isPlaying = new BoolReactiveProperty();
         /// <summary>アニメーション再生</summary>
         public IReactiveProperty<bool> IsPlaying => _isPlaying;
-        /// <summary>実行中に操作禁止にする対象</summary>
-        private Transform _hookContent;
-        /// <summary>実行中に操作禁止にする対象</summary>
-        public Transform HookContent => _hookContent;
+        /// <summary>ステージ選択のカーソルナビゲーション表示</summary>
+        [SerializeField] private NavigationCursor navigationCursor;
+        /// <summary>ボディのイメージ</summary>
+        [SerializeField] private BodyImage bodyImage;
+        /// <summary>スキップモード（キャプション選択のキャンセル）</summary>
+        private bool _isSkipMode;
+        /// <summary>スキップモード（キャプション選択のキャンセル）</summary>
+        public bool IsSkipMode => _isSkipMode;
+
+        private void Reset()
+        {
+            navigationCursor = GetComponentInChildren<NavigationCursor>();
+            bodyImage = GetComponentInChildren<BodyImage>();
+        }
 
         protected override void Start()
         {
@@ -42,50 +47,33 @@ namespace Select.View
             _prevTarget = defaultTarget;
         }
 
-        public bool MoveSelectPlayer(Vector3 targetPosition, Transform currentTarget)
+        public IEnumerator MoveSelectPlayer(Vector3 targetPosition, Transform currentTarget, System.IObserver<bool> observer)
         {
-            try
+            if (_isSkipMode)
             {
-                if (!_isPlaying.Value)
-                {
-                    _isPlaying.Value = true;
-                    _hookContent = currentTarget;
-                    if (_transform == null)
-                        _transform = transform;
-
-                    var scale = _transform.localScale;
-                    scale.x = _prevPosition.x <= targetPosition.x ? 1f : -1f;
-                    _transform.localScale = scale;
-                    // 一つ前のターゲット位置と次のターゲット位置を調整（コードのみ）
-                    if (froms.Length == tos.Length &&
-                        tos.Length == toPositionCrrection.Length)
-                    {
-                        for (var i = 0; i < froms.Length; i++)
-                        {
-                            if (froms[i].Equals(_prevTarget) &&
-                                tos[i].Equals(currentTarget))
-                            {
-                                targetPosition += toPositionCrrection[i];
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"格納数の不一致 from:[{froms.Length}]_to:[{tos.Length}]_toPositionCrrection:[{toPositionCrrection.Length}]");
-                    }
-                    _transform.DOMove(targetPosition, duration)
-                        .OnComplete(() => _isPlaying.Value = false);
-                    _prevPosition = targetPosition;
-                    _prevTarget = currentTarget;
-                }
-
-                return true;
+                observer.OnNext(true);
+                // ステージのキャプション選択／コードを突いた後にSEを鳴らさない
+                yield return null;
             }
-            catch (System.Exception e)
+
+            if (!_isPlaying.Value)
             {
-                Debug.LogError(e);
-                return false;
+                _isPlaying.Value = true;
+                if (_transform == null)
+                    _transform = transform;
+
+                if (!bodyImage.SetLocalScaleX(_prevPosition.x <= targetPosition.x ? 1f : -1f))
+                    throw new System.Exception("ローカルスケールをセット呼び出しの失敗");
+                _transform.DOMove(targetPosition, duration)
+                    .OnComplete(() =>
+                    {
+                        _isPlaying.Value = false;
+                        observer.OnNext(true);
+                    });
+                _prevPosition = targetPosition;
+                _prevTarget = currentTarget;
             }
+            yield return null;
         }
 
         public bool MoveSelectStageFrame(Vector3 targetPosition, Vector2 sizeDelta)
@@ -93,23 +81,11 @@ namespace Select.View
             throw new System.NotImplementedException();
         }
 
-        public bool SetColorAlpha(float alpha)
-        {
-            try
-            {
-                if (_image == null)
-                    _image = GetComponent<Image>();
-                var color = _image.color;
-                color.a = alpha;
-                _image.color = color;
 
-                return true;
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError(e);
-                return false;
-            }
+
+        public bool RedererCursorDirectionAndDistance(Navigation navigation, EnumCursorDistance enumCursorDistance)
+        {
+            return ((INavigationCursor)navigationCursor).RedererCursorDirectionAndDistance(navigation, enumCursorDistance);
         }
 
         public bool SelectPlayer(Vector3 targetPosition, Transform currentTarget)
@@ -119,24 +95,9 @@ namespace Select.View
                 if (_transform == null)
                     _transform = transform;
 
-                // T.B.D 一つ前のターゲット位置と次のターゲット位置を調整（コードのみ）
-                if (froms.Length == tos.Length &&
-                    tos.Length == toPositionCrrection.Length)
-                {
-                    for (var i = 0; i < froms.Length; i++)
-                    {
-                        if (froms[i].Equals(_prevTarget) &&
-                            tos[i].Equals(currentTarget))
-                        {
-                            targetPosition += toPositionCrrection[i];
-                        }
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning($"格納数の不一致 from:[{froms.Length}]_to:[{tos.Length}]_toPositionCrrection:[{toPositionCrrection.Length}]");
-                }
-                _transform.localPosition = targetPosition;
+                if (!bodyImage.SetLocalScaleX(_prevPosition.x <= targetPosition.x ? 1f : -1f))
+                    throw new System.Exception("ローカルスケールをセット呼び出しの失敗");
+                _transform.position = targetPosition;
                 _prevPosition = targetPosition;
                 _prevTarget = currentTarget;
 
@@ -148,5 +109,52 @@ namespace Select.View
                 return false;
             }
         }
+
+        public bool SetImageEnabled(bool isEnabled)
+        {
+            if (_isSkipMode)
+                // ステージのキャプション選択／コードを突いた後にSEを鳴らさない
+                return true;
+            return ((ILogoCursorView)navigationCursor).SetImageEnabled(isEnabled);
+        }
+
+        public bool SetCursorDistance(EnumCursorDistance enumCursorDistance)
+        {
+            return ((ILogoCursorView)navigationCursor).SetCursorDistance(enumCursorDistance);
+        }
+
+        public bool SetColorAlpha(float alpha)
+        {
+            return ((ISelectStageFrameView)bodyImage).SetColorAlpha(alpha);
+        }
+
+        public bool SetSkipMode(bool isSkipMode)
+        {
+            try
+            {
+                _isSkipMode = isSkipMode;
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// ビュー
+    /// プレイヤー
+    /// インターフェース
+    /// </summary>
+    public interface IPlayerView
+    {
+        /// <summary>
+        /// スキップモードのセット
+        /// </summary>
+        /// <param name="isSkipMode">スキップモード</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetSkipMode(bool isSkipMode);
     }
 }

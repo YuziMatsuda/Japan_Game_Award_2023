@@ -23,5 +23,17 @@ namespace Main.Model
         [SerializeField] private EnumNodeCodeID enumNodeCodeId = EnumNodeCodeID.StartNode_1;
         /// <summary>ノードコードの識別ID</summary>
         public EnumNodeCodeID EnumNodeCodeID => enumNodeCodeId;
+        /// <summary>エラー方角モードの配列</summary>
+        [SerializeField] private EnumDirectionMode[] errorDirections;
+        /// <summary>エラー方角モードの配列</summary>
+        public EnumDirectionMode[] ErrorDirections => errorDirections;
+        /// <summary>サン（ゴ）ショウコードであるか</summary>
+        [SerializeField] private bool readonlyCodeMode;
+        /// <summary>サン（ゴ）ショウコードであるか</summary>
+        public bool ReadonlyCodeMode => readonlyCodeMode;
+        /// <summary>サン（ゴ）ショウコード破片</summary>
+        [SerializeField] private Transform[] coralParts;
+        /// <summary>サン（ゴ）ショウコード破片</summary>
+        public Transform[] CoralParts => coralParts;
     }
 }

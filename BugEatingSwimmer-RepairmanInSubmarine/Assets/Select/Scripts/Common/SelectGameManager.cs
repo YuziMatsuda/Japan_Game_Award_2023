@@ -32,6 +32,14 @@ namespace Select.Common
         [SerializeField] private CursorVisible cursorVisible;
         /// <summary>カーソル表示</summary>
         public CursorVisible CursorVisible => cursorVisible;
+        /// <summary>ギミックのオーナー</summary>
+        [SerializeField] private GimmickOwner gimmickOwner;
+        /// <summary>ギミックのオーナー</summary>
+        public GimmickOwner GimmickOwner => gimmickOwner;
+        /// <summary>アルゴリズムのオーナー</summary>
+        [SerializeField] private AlgorithmOwner algorithmOwner;
+        /// <summary>アルゴリズムのオーナー</summary>
+        public AlgorithmOwner AlgorithmOwner => algorithmOwner;
 
         private void Reset()
         {
@@ -39,6 +47,8 @@ namespace Select.Common
             audioOwner = GameObject.Find("AudioOwner").GetComponent<AudioOwner>();
             sceneOwner = GameObject.Find("SceneOwner").GetComponent<SceneOwner>();
             cursorVisible = GameObject.Find("CursorVisible").GetComponent<CursorVisible>();
+            gimmickOwner = GameObject.Find("GimmickOwner").GetComponent<GimmickOwner>();
+            algorithmOwner = GameObject.Find("AlgorithmOwner").GetComponent<AlgorithmOwner>();
         }
 
         private void Awake()
@@ -53,6 +63,7 @@ namespace Select.Common
             presenter.OnStart();
             cursorVisible.OnStart();
             sceneOwner.OnStart();
+            gimmickOwner.OnStart();
         }
     }
 

@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using Main.Common;
+using System;
 
 namespace Main.View
 {
@@ -9,32 +11,17 @@ namespace Main.View
     /// ビュー
     /// スタートノード
     /// </summary>
-    public class StartNodeView : MonoBehaviour, IStartNodeView
+    public class StartNodeView : ShadowCodeCellParent, IStartNodeView
     {
-        /// <summary>信号発生アニメーション時間</summary>
-        [SerializeField] private float postDuration = .5f;
         /// <summary>信号発生アニメーション時間</summary>
         private bool _isRuning;
 
-        public IEnumerator PlayLightAnimation(System.IObserver<bool> observer)
+        public IEnumerator PlayLightAnimation(IObserver<bool> observer)
         {
-            if (!_isRuning)
-            {
-                _isRuning = true;
-
-                DOVirtual.DelayedCall(postDuration, () =>
-                {
-                    // T.B.D 信号発生演出
-                    Debug.Log($"T.B.D 信号発生演出:{name}");
-                }).OnComplete(() =>
-                {
-                    observer.OnNext(true);
-                    _isRuning = false;
-                });
-            }
-
-            yield return null;
+            throw new NotImplementedException();
         }
+
+
 
         public bool SetIsRuning(bool isRuning)
         {

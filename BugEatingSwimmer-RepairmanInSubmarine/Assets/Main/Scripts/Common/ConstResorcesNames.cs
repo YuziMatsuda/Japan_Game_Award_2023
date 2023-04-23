@@ -23,5 +23,7 @@ namespace Main.Common
         public static readonly string MAIN_SCENE_STAGES_STATE = "MainSceneStagesState";
         /// <summary>ステージクリア条件</summary>
         public static readonly string MAIN_SCENE_STAGES_MODULES_STATE = "MainSceneStagesModulesState";
+        /// <summary>準委任帳票</summary>
+        public static readonly string QUASI_ASSIGNMENT_FORM = "QuasiAssignmentForm";
     }
 }
