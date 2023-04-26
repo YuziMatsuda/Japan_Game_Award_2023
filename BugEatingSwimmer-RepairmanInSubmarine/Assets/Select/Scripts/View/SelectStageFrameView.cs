@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UniRx;
 
 namespace Select.View
 {
@@ -12,7 +13,7 @@ namespace Select.View
     [RequireComponent(typeof(Image))]
     public class SelectStageFrameView : SelectStageFrameViewParent, ISelectStageFrameView
     {
-        public bool MoveSelectPlayer(Vector3 targetPosition, Transform currentTarget)
+        public IEnumerator MoveSelectPlayer(Vector3 targetPosition, Transform currentTarget, System.IObserver<bool> observer)
         {
             throw new System.NotImplementedException();
         }
@@ -80,8 +81,8 @@ namespace Select.View
         /// </summary>
         /// <param name="targetPosition">移動先</param>
         /// <param name="currentTarget">今のターゲット</param>
-        /// <returns>成功／失敗</returns>
-        public bool MoveSelectPlayer(Vector3 targetPosition, Transform currentTarget);
+        /// <returns>コルーチン</returns>
+        public IEnumerator MoveSelectPlayer(Vector3 targetPosition, Transform currentTarget, System.IObserver<bool> observer);
 
         /// <summary>
         /// ステージ選択のプレイヤーを移動して選択させる

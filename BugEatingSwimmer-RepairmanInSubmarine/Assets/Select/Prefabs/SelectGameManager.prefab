@@ -1,5 +1,114 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1697066100
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1697066102}
+  - component: {fileID: 1697066101}
+  m_Layer: 0
+  m_Name: AlgorithmOwner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1697066102
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1697066100}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3906211335284896394}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1697066101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1697066100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77d23a70642da674e96cb2484ad33d56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moduleTracers:
+  - enumNodeCodeIDs: 0200000003000000
+    enumDirectionModes: 0200000002000000
+  - enumNodeCodeIDs: 04000000
+    enumDirectionModes: 01000000
+  - enumNodeCodeIDs: 05000000
+    enumDirectionModes: 03000000
+--- !u!1 &2056304116
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2056304117}
+  - component: {fileID: 2056304119}
+  - component: {fileID: 2056304118}
+  m_Layer: 0
+  m_Name: GimmickOwner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2056304117
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056304116}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3906211335284896394}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2056304119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056304116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db9dd3f8ed817d64ebc2bfdac2c3eaed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2056304118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056304116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7622e49c14241614abebf470cc1aa641, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  seastarLeader: {fileID: 2056304119}
 --- !u!1 &3906211333385564421
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,15 +371,22 @@ MonoBehaviour:
   captionStageViews:
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   captionStageModels:
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   fadeImageView: {fileID: 0}
   fadeImageModel: {fileID: 0}
   contentsCountInPage: 5
-  selectStageFrameView: {fileID: 0}
   playerView: {fileID: 0}
   logoStagesView: {fileID: 0}
+  assignedSeastarCountView: {fileID: 0}
+  seastarGageViews:
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &3906211334646022044
 GameObject:
   m_ObjectHideFlags: 0
@@ -491,6 +607,8 @@ Transform:
   - {fileID: 3906211334230722723}
   - {fileID: 3906211334646022045}
   - {fileID: 3906211335122895824}
+  - {fileID: 2056304117}
+  - {fileID: 1697066102}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -510,3 +628,5 @@ MonoBehaviour:
   audioOwner: {fileID: 3906211335030263027}
   sceneOwner: {fileID: 3906211334646022042}
   cursorVisible: {fileID: 3906211335122895825}
+  gimmickOwner: {fileID: 2056304118}
+  algorithmOwner: {fileID: 1697066101}

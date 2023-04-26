@@ -393,6 +393,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pos: {x: 1130, y: 250, z: 0}
   rotate: {x: 0, y: 0, z: 180}
+  duration: 1
 --- !u!1 &449235419
 GameObject:
   m_ObjectHideFlags: 0
@@ -644,6 +645,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pos: {x: 1000, y: 280, z: 0}
   rotate: {x: 0, y: 0, z: 0}
+  duration: 1
 --- !u!114 &668194141
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -657,7 +659,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -933,6 +935,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pos: {x: 960, y: 480, z: 0}
   rotate: {x: 0, y: 0, z: 0}
+  duration: 1
 --- !u!1 &841295510
 GameObject:
   m_ObjectHideFlags: 0
@@ -1078,6 +1081,7 @@ MonoBehaviour:
   - {fileID: 1133231861}
   - {fileID: 390680247}
   - {fileID: 668194140}
+  enumrobotpanel: 4
 --- !u!1 &1048119290
 GameObject:
   m_ObjectHideFlags: 0
@@ -1245,6 +1249,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pos: {x: 790, y: 250, z: 0}
   rotate: {x: 0, y: 0, z: 0}
+  duration: 1
 --- !u!1 &1210049209
 GameObject:
   m_ObjectHideFlags: 0
@@ -1488,6 +1493,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pos: {x: 960, y: 240, z: 0}
   rotate: {x: 0, y: 0, z: 0}
+  duration: 1
 --- !u!1 &1679022713
 GameObject:
   m_ObjectHideFlags: 0

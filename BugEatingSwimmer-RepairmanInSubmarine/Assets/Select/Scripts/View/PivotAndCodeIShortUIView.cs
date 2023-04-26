@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UniRx;
+using Select.Model;
+using Select.Common;
+using System;
 
 namespace Select.View
 {
@@ -9,16 +13,86 @@ namespace Select.View
     /// ビュー
     /// 支点とコード
     /// </summary>
-    public class PivotAndCodeIShortUIView : MonoBehaviour
+    [RequireComponent(typeof(PivotConfig))]
+    public class PivotAndCodeIShortUIView : PivotAndCodeIShortUIViewParent, IPivotAndCodeIShortUIView, ISelectGameManager
     {
-        public bool RenderClearMark()
+        /// <summary>ターンアニメーション実行中</summary>
+        private readonly BoolReactiveProperty _isTurning = new BoolReactiveProperty();
+        /// <summary>方角モード</summary>
+        private readonly IntReactiveProperty _enumDirectionMode = new IntReactiveProperty();
+        /// <summary>方角モード</summary>
+        public IReactiveProperty<int> EnumDirectionMode => _enumDirectionMode;
+        /// <summary>方角モードのベクター配列</summary>
+        [SerializeField] private Vector3[] vectorDirectionModes = { new Vector3(0, 0, 0f), new Vector3(0, 0, -90f), new Vector3(0, 0, 180f), new Vector3(0, 0, 90f) };
+        /// <summary>コード挙動制御</summary>
+        [SerializeField] private ShadowCodeCell shadowCodeCell;
+        /// <summary>コード（明）挙動制御</summary>
+        [SerializeField] private LightCodeCell lightCodeCell;
+        /// <summary>アルゴリズムの共通処理</summary>
+        private AlgorithmCommon _algorithmCommon = new AlgorithmCommon();
+
+        public void OnStart()
         {
-            throw new System.NotImplementedException();
+            if (_transform == null)
+                _transform = transform;
+            _enumDirectionMode.Value = (int)GetComponent<PivotConfig>().EnumDirectionModeDefault;
+            if (!lightCodeCell.SetAlphaOff())
+                Debug.LogError("アルファ値をセット呼び出しの失敗");
+            if (!lightCodeCell.InitializeLight((EnumDirectionMode)_enumDirectionMode.Value))
+                Debug.LogError("アルファ値をセット呼び出しの失敗");
         }
 
-        public bool RenderDisableMark()
+        public IEnumerator PlaySpinAnimationAndUpdateTurnValue(IObserver<bool> observer)
         {
-            throw new System.NotImplementedException();
+            // 通常コードの振る舞い
+            _isTurning.Value = true;
+            var turnValue = 1;
+            if (turnValue == 0)
+                Debug.LogError("ターン加算値の取得呼び出しの失敗");
+            _enumDirectionMode.Value = (int)_algorithmCommon.GetAjustedEnumDirectionMode((EnumDirectionMode)_enumDirectionMode.Value, turnValue);
+            // 回転アニメーション
+            if (!lightCodeCell.SetAlphaOff())
+                Debug.LogError("アルファ値をセット呼び出しの失敗");
+            Observable.FromCoroutine<bool>(observer => shadowCodeCell.PlaySpinAnimation(observer, vectorDirectionModes[_enumDirectionMode.Value]))
+                .Subscribe(_ =>
+                {
+                    if (!lightCodeCell.SetSpinDirection(vectorDirectionModes[_enumDirectionMode.Value]))
+                        Debug.LogError("回転方角セット呼び出しの失敗");
+                    Observable.FromCoroutine<bool>(observer => lightCodeCell.PlayLightAnimation(observer, (EnumDirectionMode)_enumDirectionMode.Value))
+                        .Subscribe(_ =>
+                        {
+                            _isTurning.Value = false;
+                            observer.OnNext(true);
+                        })
+                        .AddTo(gameObject);
+                })
+                .AddTo(gameObject);
+
+            yield return null;
+        }
+
+        public bool SetAsSemiLastSibling()
+        {
+            try
+            {
+                _transform.SetSiblingIndex(_transform.parent.childCount - 2);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        private void Reset()
+        {
+            shadowCodeCell = transform.GetChild(0).GetChild(0).GetComponent<ShadowCodeCell>() != null ? transform.GetChild(0).GetChild(0).GetComponent<ShadowCodeCell>() : null;
+            lightCodeCell = transform.GetChild(1).GetComponent<LightCodeCell>() != null ? transform.GetChild(1).GetComponent<LightCodeCell>() : null;
+            var enumDirectionModeDefault = GetComponent<PivotConfig>().EnumDirectionModeDefault;
+            shadowCodeCell.transform.localEulerAngles = vectorDirectionModes[(int)enumDirectionModeDefault];
+            lightCodeCell.transform.localEulerAngles = vectorDirectionModes[(int)enumDirectionModeDefault];
         }
     }
 
@@ -30,15 +104,16 @@ namespace Select.View
     public interface IPivotAndCodeIShortUIView
     {
         /// <summary>
-        /// T.B.D 選択不可マークを表示
+        /// 回転角度の更新と
+        /// 回転アニメーションの再生
         /// </summary>
-        /// <returns>成功／失敗</returns>
-        public bool RenderDisableMark();
-
+        /// <param name="observer">バインド</param>
+        /// <returns>コルーチン</returns>
+        public IEnumerator PlaySpinAnimationAndUpdateTurnValue(System.IObserver<bool> observer);
         /// <summary>
-        /// T.B.D クリア済みマークを表示
+        /// SetSiblingIndexでparent配下の子オブジェクト数-1へ配置
         /// </summary>
         /// <returns>成功／失敗</returns>
-        public bool RenderClearMark();
+        public bool SetAsSemiLastSibling();
     }
 }

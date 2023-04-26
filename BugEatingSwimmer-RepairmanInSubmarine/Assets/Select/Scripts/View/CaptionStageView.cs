@@ -17,6 +17,8 @@ namespace Select.View
         [SerializeField] private Vector3[] offsetPositions;
         /// <summary>再生する直前にセットするスケールリスト</summary>
         [SerializeField] private Vector3[] offsetScales;
+        /// <summary>ヒトデのビュー配列</summary>
+        [SerializeField] private SeastarView[] seastarViews;
 
         protected override void Start()
         {
@@ -61,6 +63,16 @@ namespace Select.View
         {
             throw new NotImplementedException();
         }
+
+        public bool SetColorAssigned(int index)
+        {
+            return seastarViews[index].SetColorAssigned();
+        }
+
+        public bool SetColorUnAssign(int index)
+        {
+            return seastarViews[index].SetColorUnAssign();
+        }
     }
 
     /// <summary>
@@ -76,5 +88,17 @@ namespace Select.View
         /// <param name="observer">バインド</param>
         /// <returns>成功／失敗</returns>
         public IEnumerator ZoomInOutPanel(int index, System.IObserver<bool> observer);
+        /// <summary>
+        /// アサイン済みのカラー設定
+        /// </summary>
+        /// <param name="index">インデックス</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetColorAssigned(int index);
+        /// <summary>
+        /// 未アサイン状態のカラー設定
+        /// </summary>
+        /// <param name="index">インデックス</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetColorUnAssign(int index);
     }
 }
