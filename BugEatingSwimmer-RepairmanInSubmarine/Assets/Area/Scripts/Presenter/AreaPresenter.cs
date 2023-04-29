@@ -39,14 +39,22 @@ namespace Area.Presenter
         [SerializeField] private FadeImageModel fadeImageModel;
         ///// <summary>1ページあたりのコンテンツ数</summary>
         //[SerializeField] private int contentsCountInPage = 5;
-        ///// <summary>プレイヤーのフレームのビュー</summary>
-        //[SerializeField] private PlayerView playerView;
+        /// <summary>プレイヤーのフレームのビュー</summary>
+        [SerializeField] private PlayerView playerView;
         ///// <summary>ロゴステージの統括パネルのビュー</summary>
         //[SerializeField] private LogoStagesView logoStagesView;
         /// <summary>準委任帳票のビュー</summary>
         [SerializeField] private AssignedSeastarCountView assignedSeastarCountView;
         ///// <summary>ヒトデゲージのビュー</summary>
         //[SerializeField] private SeastarGageView[] seastarGageViews;
+        /// <summary>全てのユニットの制御のビュー</summary>
+        [SerializeField] private RobotPanelView robotPanelView;
+        /// <summary>全てのユニットの制御のモデル</summary>
+        [SerializeField] private RobotPanelModel robotPanelModel;
+        [SerializeField] private bool isConnectedAnimationDemo = true;
+        [SerializeField] private EnumUnitID playRenderEnableDemo = EnumUnitID.Head;
+        [SerializeField] private EnumUnitID[] playRenderEnablesDemo;
+        [SerializeField] private Mission[] missionsDemo;
 
         private void Reset()
         {
@@ -107,6 +115,7 @@ namespace Area.Presenter
             fadeImageModel = GameObject.Find("FadeImage").GetComponent<FadeImageModel>();
 
             //    playerView = GameObject.Find("Player").GetComponent<PlayerView>();
+            playerView = GameObject.Find("Player").GetComponent<PlayerView>();
             //    logoStagesView = GameObject.Find("LogoStages").GetComponent<LogoStagesView>();
             //    List<SeastarGageView> seastarGageViewList = new List<SeastarGageView>();
             //    foreach (Transform item in logoStagesView.transform)
@@ -115,11 +124,14 @@ namespace Area.Presenter
             //    }
             //    seastarGageViews = seastarGageViewList.ToArray();
             assignedSeastarCountView = GameObject.Find("AssignedSeastarCount").GetComponent<AssignedSeastarCountView>();
+            robotPanelView = GameObject.Find("RobotPanel").GetComponent<RobotPanelView>();
+            robotPanelModel = GameObject.Find("RobotPanel").GetComponent<RobotPanelModel>();
         }
 
         public void OnStart()
         {
             //    var common = new SelectPresenterCommon();
+            var common = new AreaPresenterCommon();
             // 初期設定
             //    foreach (var child in logoStageModels)
             //        if (child != null)
@@ -129,6 +141,17 @@ namespace Area.Presenter
             //            if (!child.LoadStateAndUpdateNavigation())
             //                Debug.LogError("ステージ状態のロード及びナビゲーション更新呼び出しの失敗");
             //        }
+            foreach (var child in robotPanelModel.RobotUnitImageModels)
+                if (child != null)
+                {
+                    child.SetButtonEnabled(false);
+                    child.SetEventTriggerEnabled(false);
+                    if (!child.LoadStateAndUpdateNavigation())
+                        Debug.LogError("ステージ状態のロード及びナビゲーション更新呼び出しの失敗");
+                }
+            foreach (var unitID in robotPanelModel.RobotUnitImageModels.Select(q => q.RobotUnitImageConfig.EnumUnitID))
+                if (!robotPanelView.RendererDisableMode(unitID))
+                    Debug.LogError("対象ユニットを非選択状態にする呼び出しの失敗");
             //    foreach (var child in pageViews)
             //        if (child != null)
             //            child.SetVisible(false);
@@ -145,6 +168,25 @@ namespace Area.Presenter
             //        Debug.LogError("支点とコード配列をセット呼び出しの失敗");
 
             AreaGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_select);
+            var enumRobotpanel = common.GetStateOfRobotUnitConnect();
+            if (isConnectedAnimationDemo)
+            {
+                // T.B.D 実績一覧管理の履歴を取得
+                var history = /*missionsDemo*/common.GetMissionHistoryIgnoreLast();
+                // 最後の一つ前の状態を取得する
+                if (!robotPanelView.SetPositionAndEulerAngleOfAllUnit(history[history.Length - 1].enumRobotPanel))
+                    Debug.LogError("各ユニットに対してアニメーション再生呼び出しの失敗");
+                foreach (var unitID in history.Select(q => q.enumUnitID).Distinct())
+                {
+                    if (!robotPanelView.RendererEnableMode(unitID))
+                        Debug.LogError("対象ユニットを非選択状態にする呼び出しの失敗");
+                }
+            }
+            else
+            {
+                if (!robotPanelView.SetPositionAndEulerAngleOfAllUnit(enumRobotpanel))
+                    Debug.LogError("各ユニットに対してアニメーション再生呼び出しの失敗");
+            }
             // シーン読み込み時のアニメーション
             Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Open))
                 .Subscribe(_ =>
@@ -158,54 +200,106 @@ namespace Area.Presenter
                     //    }
                     //if (!common.SetCounterBetweenAndFillAmountAllGage(seastarGageViews))
                     //    Debug.LogError("全ヒトデゲージのカウンターとフィルターをセット呼び出しの失敗");
+
+                    // T.B.D エリア解放・結合テストのセーブファイル、イベント管理を参照して引数を切り替える
+                    if (isConnectedAnimationDemo)
+                    {
+                        Observable.FromCoroutine<bool>(observer => robotPanelView.PlayAnimationOfAllUnit(enumRobotpanel, observer))
+                            .Subscribe(x =>
+                            {
+                                if (x)
+                                {
+                                    if (enumRobotpanel.Equals(EnumRobotPanel.ConnectedHead))
+                                    {
+                                        // T.B.D 実績一覧管理を参照して引数を切り替える
+                                        Observable.FromCoroutine<bool>(observer => robotPanelView.PlayRenderEnable(playRenderEnablesDemo, observer))
+                                            .Subscribe(_ =>
+                                            {
+                                                Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                                    .Subscribe(_ =>
+                                                    {
+                                                        // イベント完了後の処理
+                                                        AreaGameManager.Instance.SceneOwner.ReLoadScene();
+                                                    })
+                                                    .AddTo(gameObject);
+                                            })
+                                            .AddTo(gameObject);
+                                    }
+                                    else
+                                    {
+
+                                        // T.B.D 実績一覧管理を参照して引数を切り替える
+                                        Observable.FromCoroutine<bool>(observer => robotPanelView.PlayRenderEnable(playRenderEnableDemo, observer))
+                                            .Subscribe(_ =>
+                                            {
+                                                Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                                    .Subscribe(_ =>
+                                                    {
+                                                        // イベント完了後の処理
+                                                        AreaGameManager.Instance.SceneOwner.ReLoadScene();
+                                                    })
+                                                    .AddTo(gameObject);
+                                            })
+                                            .AddTo(gameObject);
+                                    }
+                                }
+                                else
+                                {
+                                    Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                        .Subscribe(_ =>
+                                        {
+                                            // イベント完了後の処理
+                                            AreaGameManager.Instance.SceneOwner.ReLoadScene();
+                                        })
+                                        .AddTo(gameObject);
+                                }
+                            })
+                            .AddTo(gameObject);
+                    }
                 })
                 .AddTo(gameObject);
 
-            //    // エリア解放・結合テスト済みデータ
-            //    var areaOpenedAndITState = SelectGameManager.Instance.SceneOwner.GetAreaOpenedAndITState();
-            //    // ステージ番号を取得する処理を追加する
-            //    var sysCommonCash = SelectGameManager.Instance.SceneOwner.GetSystemCommonCash();
-            //    var stageIndex = new IntReactiveProperty(sysCommonCash[EnumSystemCommonCash.SceneId]);
-            //    logoStageModels[stageIndex.Value].SetSelectedGameObject();
-            //    if (!playerView.SelectPlayer(logoStageViews[stageIndex.Value].transform.position, logoStageViews[stageIndex.Value].transform))
-            //        Debug.LogError("ステージ選択のプレイヤーを移動して選択させる呼び出しの失敗");
-            //    if (!playerView.RedererCursorDirectionAndDistance(logoStageModels[stageIndex.Value].Button.navigation, EnumCursorDistance.Long))
-            //        Debug.LogError("ナビゲーションの状態によってカーソル表示を変更呼び出しの失敗");
+            if (isConnectedAnimationDemo)
+                // 演出がある場合は一度シーンをリロードする想定のため、後続処理を実行しない
+                return;
 
-            //    // クリア済みマークの表示
-            //    for (var i = 0; i < logoStageModels.Length; i++)
-            //    {
-            //        if (i == 0)
-            //            // 0番目は空データのためスキップ
-            //            continue;
-            //        var idx = i;
-            //        logoStageModels[idx].StageState.ObserveEveryValueChanged(x => x.Value)
-            //            .Subscribe(x =>
-            //            {
-            //                switch (x)
-            //                {
-            //                    case -1:
-            //                        // 処理無し
-            //                        break;
-            //                    case 0:
-            //                        if (!logoStageViews[idx].RenderDisableMark())
-            //                            Debug.LogError("選択不可マーク表示呼び出しの失敗");
-            //                        break;
-            //                    case 1:
-            //                        // 選択可
-            //                        if (!logoStageViews[idx].RenderEnabled())
-            //                            Debug.LogError("選択可表示呼び出しの失敗");
-            //                        break;
-            //                    case 2:
-            //                        if (!logoStageViews[idx].RenderClearMark())
-            //                            Debug.LogError("クリア済みマーク表示呼び出しの失敗");
-            //                        break;
-            //                    default:
-            //                        Debug.LogWarning("例外ケース");
-            //                        break;
-            //                }
-            //            });
-            //    }
+            // ステージ番号を取得する処理を追加する
+            var sysCommonCash = AreaGameManager.Instance.SceneOwner.GetSystemCommonCash();
+            var stageIndex = new IntReactiveProperty(sysCommonCash[EnumSystemCommonCash.SceneId]);
+            var areaUnits = common.LoadSaveDatasCSVAndGetAreaUnits();
+            var currentUnitID =  areaUnits.Where(q => q[EnumAreaUnits.StageID] == stageIndex.Value)
+                .Select(q => q[EnumAreaUnits.UnitID])
+                .ToArray()[0];
+            // ステージ番号をエリア番号へ変換する
+            //logoStageModels[stageIndex.Value].SetSelectedGameObject();
+            robotPanelModel.RobotUnitImageModels.Where(q => (int)q.RobotUnitImageConfig.EnumUnitID == currentUnitID)
+                .Select(q => q)
+                .ToArray()[0].SetSelectedGameObject();
+            if (!playerView.SelectPlayer(robotPanelModel.RobotUnitImageModels.Where(q => (int)q.RobotUnitImageConfig.EnumUnitID == currentUnitID)
+                .Select(q => q)
+                .ToArray()[0].transform.position/*logoStageViews[stageIndex.Value].transform.position*/, robotPanelModel.RobotUnitImageModels.Where(q => (int)q.RobotUnitImageConfig.EnumUnitID == currentUnitID)
+                .Select(q => q)
+                .ToArray()[0].transform))
+                Debug.LogError("ステージ選択のプレイヤーを移動して選択させる呼び出しの失敗");
+            if (!playerView.RedererCursorDirectionAndDistance(robotPanelModel.RobotUnitImageModels.Where(q => (int)q.RobotUnitImageConfig.EnumUnitID == currentUnitID)
+                .Select(q => q)
+                .ToArray()[0]/*logoStageModels[stageIndex.Value]*/.Button.navigation, EnumCursorDistance.Long))
+                Debug.LogError("ナビゲーションの状態によってカーソル表示を変更呼び出しの失敗");
+
+            // エリア選択状態の表示
+            foreach (var item in robotPanelModel.RobotUnitImageModels.Select((p, i) => new { Content = p, Index = i }))
+            {
+                item.Content.StageState.ObserveEveryValueChanged(x => x.Value)
+                    .Subscribe(x =>
+                    {
+                        if (x <= (int)EnumAreaOpenedAndITStateState.Select)
+                        {
+                            var unitID = robotPanelModel.RobotUnitImageModels[item.Index].RobotUnitImageConfig.EnumUnitID;
+                            if (!robotPanelView.RendererEnableMode(unitID))
+                                Debug.LogError("対象ユニットを非選択状態にする呼び出しの失敗");
+                        }
+                    });
+            }
             //    // 選択ステージ番号の更新
             //    stageIndex.ObserveEveryValueChanged(x => x.Value)
             //        .Subscribe(x =>
@@ -223,30 +317,105 @@ namespace Area.Presenter
             //            }
             //        });
 
-            //    playerView.IsPlaying.ObserveEveryValueChanged(x => x.Value)
-            //        .Subscribe(x =>
-            //        {
-            //            if (x)
-            //            {
-            //                foreach (var item in logoStageModels.Where(q => q != null))
-            //                {
-            //                    if (!item.SetButtonEnabled(false))
-            //                        Debug.LogError("ボタンのステータスを変更呼び出しの失敗");
-            //                    if (!item.SetEventTriggerEnabled(false))
-            //                        Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
-            //                }
-            //            }
-            //            else
-            //            {
-            //                foreach (var item in logoStageModels.Where(q => q != null))
-            //                {
-            //                    if (!item.SetButtonEnabled(true))
-            //                        Debug.LogError("ボタンのステータスを変更呼び出しの失敗");
-            //                    if (!item.SetEventTriggerEnabled(true))
-            //                        Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
-            //                }
-            //            }
-            //        });
+            playerView.IsPlaying.ObserveEveryValueChanged(x => x.Value)
+                .Subscribe(x =>
+                {
+                    if (x)
+                    {
+                        foreach (var item in robotPanelModel.RobotUnitImageModels.Where(q => q != null))
+                        {
+                            if (!item.SetButtonEnabled(false))
+                                Debug.LogError("ボタンのステータスを変更呼び出しの失敗");
+                            if (!item.SetEventTriggerEnabled(false))
+                                Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
+                        }
+                    }
+                    else
+                    {
+                        foreach (var item in robotPanelModel.RobotUnitImageModels.Where(q => q != null))
+                        {
+                            if (!item.SetButtonEnabled(true))
+                                Debug.LogError("ボタンのステータスを変更呼び出しの失敗");
+                            if (!item.SetEventTriggerEnabled(true))
+                                Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
+                        }
+                    }
+                });
+
+            // エリア選択の操作
+            foreach (var item in robotPanelModel.RobotUnitImageModels)
+            {
+                item.EventState.ObserveEveryValueChanged(x => x.Value)
+                    .Subscribe(x =>
+                    {
+                        switch ((EnumEventCommand)x)
+                        {
+                            case EnumEventCommand.Default:
+                                // 処理無し
+                                break;
+                            case EnumEventCommand.Selected:
+                                // 選択SEを再生
+                                AreaGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_select);
+                                // ステージ選択のプレイヤーを移動して選択させる
+                                if (!playerView.SetImageEnabled(false))
+                                    Debug.LogError("イメージのステータスを変更呼び出しの失敗");
+                                Observable.FromCoroutine<bool>(observer => playerView.MoveSelectPlayer(item.transform.position, item.transform, observer))
+                                    .Subscribe(_ =>
+                                    {
+                                        if (!playerView.SetImageEnabled(true))
+                                            Debug.LogError("イメージのステータスを変更呼び出しの失敗");
+                                        if (!playerView.RedererCursorDirectionAndDistance(item.Button.navigation, EnumCursorDistance.Long))
+                                            Debug.LogError("ナビゲーションの状態によってカーソル表示を変更呼び出しの失敗");
+                                        if (playerView.IsSkipMode)
+                                            if (!playerView.SetSkipMode(false))
+                                                Debug.LogError("スキップモードのセット呼び出しの失敗");
+                                    })
+                                    .AddTo(gameObject);
+                                //stageIndex.Value = child.Index;
+                                break;
+                            case EnumEventCommand.DeSelected:
+                                // 処理無し
+                                break;
+                            case EnumEventCommand.Canceled:
+                                // キャンセルSEを再生
+                                AreaGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_cancel);
+                                // タイトルシーンへの遷移
+                                // UI操作を許可しない
+                                foreach (var child in robotPanelModel.RobotUnitImageModels)
+                                    if (child != null)
+                                    {
+                                        child.SetButtonEnabled(false);
+                                        child.SetEventTriggerEnabled(false);
+                                    }
+                                // シーン読み込み時のアニメーション
+                                Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                    .Subscribe(_ =>
+                                    {
+                                        AreaGameManager.Instance.SceneOwner.LoadBackScene();
+                                    })
+                                    .AddTo(gameObject);
+
+                                break;
+                            case EnumEventCommand.Submited:
+                                // 決定SEを再生
+                                AreaGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_decided);
+                                foreach (var child in robotPanelModel.RobotUnitImageModels)
+                                    if (child != null)
+                                    {
+                                        child.SetButtonEnabled(false);
+                                        child.SetEventTriggerEnabled(false);
+                                    }
+                                //if (!logoStagesView.ZoomInOutPanel(child.Index))
+                                //    Debug.LogError("該当ステージを拡大させる呼び出しの失敗");
+
+                                break;
+                            default:
+                                Debug.LogWarning("例外ケース");
+                                break;
+                        }
+
+                    });
+            }
 
             //    // ステージ選択の操作
             //    foreach (var child in logoStageModels.Where(q => q != null).Select(q => q))

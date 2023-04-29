@@ -49,6 +49,11 @@ namespace Area.Accessory
             {
                 using (File.Create($"{GetHomePath()}{ConstResorcesNames.AREA_UNITS}.csv")) { }
             }
+            // エリア解放・結合テストの演出ヒストリー
+            if (!File.Exists($"{GetHomePath()}{ConstResorcesNames.AREA_OPENEDAND_IT_STATE_HISTORY}.csv"))
+            {
+                using (File.Create($"{GetHomePath()}{ConstResorcesNames.AREA_OPENEDAND_IT_STATE_HISTORY}.csv")) { }
+            }
         }
 
         /// <summary>
@@ -333,6 +338,39 @@ namespace Area.Accessory
         }
 
         /// <summary>
+        /// エリア解放・結合テストの演出ヒストリーデータをオブジェクトへ一時セット
+        /// </summary>
+        /// <param name="datas">二次元配列の文字列データ</param>
+        /// <returns>格納オブジェクト配列</returns>
+        public Dictionary<EnumAreaOpenedAndITStateHistory, int>[] GetAreaOpenedAndITStateHistory(List<string[]> datas)
+        {
+            try
+            {
+                var configMapList = new List<Dictionary<EnumAreaOpenedAndITStateHistory, int>>();
+                for (var i = 0; i < datas.Count; i++)
+                {
+                    if (i == 0)
+                        // 一行目はカラム名なのでスキップ
+                        continue;
+                    var child = datas[i];
+                    var configMap = new Dictionary<EnumAreaOpenedAndITStateHistory, int>();
+                    for (var j = 0; j < child.Length; j++)
+                    {
+                        configMap[(EnumAreaOpenedAndITStateHistory)j] = int.Parse(child[j]);
+                    }
+                    configMapList.Add(configMap);
+                }
+
+                return configMapList.ToArray();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return null;
+            }
+        }
+
+        /// <summary>
         /// システム設定キャッシュをCSVデータへ保存
         /// </summary>
         /// <param name="resourcesLoadName">リソースCSVファイル名</param>
@@ -443,6 +481,44 @@ namespace Area.Accessory
         }
 
         /// <summary>
+        /// エリア解放・結合テストの演出ヒストリーデータをCSVデータへ保存
+        /// </summary>
+        /// <param name="resourcesLoadName">リソースCSVファイル名</param>
+        /// <param name="configMaps">格納オブジェクト配列</param>
+        /// <returns>成功／失敗</returns>
+        public bool SaveDatasCSVOfAreaOpenedAndITStateHistory(string resourcesLoadName, Dictionary<EnumAreaOpenedAndITStateHistory, int>[] configMaps)
+        {
+            try
+            {
+                var path = GetHomePath();
+                // 一度ファイル内のデータを削除
+                using (var fileStream = new FileStream($"{path}{resourcesLoadName}.csv", FileMode.Open))
+                {
+                    fileStream.SetLength(0);
+                }
+                // 設定内容を保存
+                using (var sw = new StreamWriter($"{path}{resourcesLoadName}.csv", true, Encoding.GetEncoding("UTF-8")))
+                {
+                    for (var i = 0; i < configMaps.Length; i++)
+                    {
+                        if (i == 0)
+                        {
+                            sw.WriteLine(string.Join(",", GetKeysRecord(configMaps[i])));
+                        }
+                        sw.WriteLine(string.Join(",", GetValuesRecord(configMaps[i])));
+                    }
+                }
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        /// <summary>
         /// キーのレコードを取得
         /// </summary>
         /// <param name="configMap">格納オブジェクト</param>
@@ -473,6 +549,16 @@ namespace Area.Accessory
         }
 
         /// <summary>
+        /// キーのレコードを取得
+        /// </summary>
+        /// <param name="configMap">格納オブジェクト</param>
+        /// <returns>CSVのタイトル箇所</returns>
+        private string[] GetKeysRecord(Dictionary<EnumAreaOpenedAndITStateHistory, int> configMap)
+        {
+            return configMap.Select(q => q.Key + "").ToArray();
+        }
+
+        /// <summary>
         /// Valueのレコードを取得
         /// </summary>
         /// <param name="configMap">格納オブジェクト</param>
@@ -498,6 +584,16 @@ namespace Area.Accessory
         /// <param name="configMap">格納オブジェクト</param>
         /// <returns>一行分のレコード</returns>
         private string[] GetValuesRecord(Dictionary<EnumAreaOpenedAndITState, string> configMap)
+        {
+            return configMap.Select(q => q.Value + "").ToArray();
+        }
+
+        /// <summary>
+        /// Valueのレコードを取得
+        /// </summary>
+        /// <param name="configMap">格納オブジェクト</param>
+        /// <returns>一行分のレコード</returns>
+        private string[] GetValuesRecord(Dictionary<EnumAreaOpenedAndITStateHistory, int> configMap)
         {
             return configMap.Select(q => q.Value + "").ToArray();
         }

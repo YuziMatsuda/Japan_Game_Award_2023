@@ -123,6 +123,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &493943450 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4431877573306783890, guid: 6500b7f113d2fe14fb1b2c853cdbf44c, type: 3}
+  m_PrefabInstance: {fileID: 4431877572368449463}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02da5103f193e37448d9bd43b9a6334e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &579110154
 GameObject:
   m_ObjectHideFlags: 0
@@ -133,7 +144,7 @@ GameObject:
   m_Component:
   - component: {fileID: 579110157}
   - component: {fileID: 579110156}
-  - component: {fileID: 579110155}
+  - component: {fileID: 579110158}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -141,26 +152,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &579110155
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 579110154}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SendPointerHoverToParent: 1
-  m_HorizontalAxis: Horizontal
-  m_VerticalAxis: Vertical
-  m_SubmitButton: Submit
-  m_CancelButton: Cancel
-  m_InputActionsPerSecond: 10
-  m_RepeatDelay: 0.5
-  m_ForceModuleActive: 0
 --- !u!114 &579110156
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,6 +182,36 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &579110158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 579110154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
+  m_MoveRepeatDelay: 0.5
+  m_MoveRepeatRate: 0.1
+  m_XRTrackingOrigin: {fileID: 0}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: 47fa8d362b795274c9991b82463c4c9c, type: 3}
+  m_PointAction: {fileID: 0}
+  m_MoveAction: {fileID: 2168628349271454487, guid: 47fa8d362b795274c9991b82463c4c9c, type: 3}
+  m_SubmitAction: {fileID: 8871682033529318115, guid: 47fa8d362b795274c9991b82463c4c9c, type: 3}
+  m_CancelAction: {fileID: 8352517856038166657, guid: 47fa8d362b795274c9991b82463c4c9c, type: 3}
+  m_LeftClickAction: {fileID: 0}
+  m_MiddleClickAction: {fileID: 0}
+  m_RightClickAction: {fileID: 0}
+  m_ScrollWheelAction: {fileID: 0}
+  m_TrackedDevicePositionAction: {fileID: 0}
+  m_TrackedDeviceOrientationAction: {fileID: 0}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
 --- !u!1 &823186814
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,6 +385,10 @@ PrefabInstance:
       value: AreaGameManager
       objectReference: {fileID: 0}
     - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: playerView
+      value: 
+      objectReference: {fileID: 4431877572368449464}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
       propertyPath: fadeImageView
       value: 
       objectReference: {fileID: 993394174}
@@ -372,9 +397,73 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 993394173}
     - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: robotPanelView
+      value: 
+      objectReference: {fileID: 493943450}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: robotPanelModel
+      value: 
+      objectReference: {fileID: 4431877572368449465}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: enumrobotpanelDemo
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: missionsDemo.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
       propertyPath: assignedSeastarCountView
       value: 
       objectReference: {fileID: 1963879884}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: isConnectedAnimationDemo
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: playRenderEnablesDemo.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: playRenderEnablesDemo.Array.data[0]
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: playRenderEnablesDemo.Array.data[1]
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: missionsDemo.Array.data[0].enumUnitID
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: missionsDemo.Array.data[1].enumUnitID
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: missionsDemo.Array.data[2].enumUnitID
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: missionsDemo.Array.data[3].enumUnitID
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: missionsDemo.Array.data[4].enumUnitID
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: missionsDemo.Array.data[2].enumRobotPanel
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: missionsDemo.Array.data[3].enumRobotPanel
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: missionsDemo.Array.data[4].enumRobotPanel
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
 --- !u!1001 &4431877572368449463
@@ -474,3 +563,25 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6500b7f113d2fe14fb1b2c853cdbf44c, type: 3}
+--- !u!114 &4431877572368449464 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4431877572368449479, guid: 6500b7f113d2fe14fb1b2c853cdbf44c, type: 3}
+  m_PrefabInstance: {fileID: 4431877572368449463}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 440ef521d0bf8a9428c84bb6a4887055, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4431877572368449465 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4431877572368449465, guid: 6500b7f113d2fe14fb1b2c853cdbf44c, type: 3}
+  m_PrefabInstance: {fileID: 4431877572368449463}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcea468d0d2484a4fba09166330893a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

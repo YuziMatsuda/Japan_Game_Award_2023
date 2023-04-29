@@ -93,6 +93,16 @@ namespace Area.Template
         }
 
         /// <summary>
+        /// エリア解放・結合テストの演出ヒストリーデータをオブジェクトへ一時セット
+        /// </summary>
+        /// <param name="datas">二次元配列の文字列データ</param>
+        /// <returns>格納オブジェクト配列</returns>
+        public Dictionary<EnumAreaOpenedAndITStateHistory, int>[] GetAreaOpenedAndITStateHistory(List<string[]> datas)
+        {
+            return new AreaResourcesAccessory().GetAreaOpenedAndITStateHistory(datas);
+        }
+
+        /// <summary>
         /// システム設定キャッシュをCSVデータへ保存
         /// </summary>
         /// <param name="resourcesLoadName">リソースCSVファイル名</param>
@@ -123,6 +133,17 @@ namespace Area.Template
         public bool SaveDatasCSVOfAreaOpenedAndITState(string resourcesLoadName, Dictionary<EnumAreaOpenedAndITState, string>[] configMaps)
         {
             return new AreaResourcesAccessory().SaveDatasCSVOfAreaOpenedAndITState(resourcesLoadName, configMaps);
+        }
+
+        /// <summary>
+        /// エリア解放・結合テストの演出ヒストリーデータをCSVデータへ保存
+        /// </summary>
+        /// <param name="resourcesLoadName">リソースCSVファイル名</param>
+        /// <param name="configMaps">格納オブジェクト配列</param>
+        /// <returns>成功／失敗</returns>
+        public bool SaveDatasCSVOfAreaOpenedAndITStateHistory(string resourcesLoadName, Dictionary<EnumAreaOpenedAndITStateHistory, int>[] configMaps)
+        {
+            return new AreaResourcesAccessory().SaveDatasCSVOfAreaOpenedAndITStateHistory(resourcesLoadName, configMaps);
         }
     }
 }

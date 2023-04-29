@@ -9,11 +9,256 @@ using Area.View;
 namespace Area.Common
 {
     /// <summary>
+    /// ミッション
+    /// </summary>
+    [System.Serializable]
+    public struct Mission
+    {
+        /// <summary>ロボットの結合状態</summary>
+        public EnumRobotPanel enumRobotPanel;
+        /// <summary>エリアID</summary>
+        public EnumUnitID enumUnitID;
+    }
+
+    /// <summary>
     /// プレゼンタ
     /// セレクトシーン
     /// </summary>
     public class AreaPresenterCommon : IAreaPresenterCommon
     {
+        public EnumRobotPanel GetStateOfRobotUnitConnect()
+        {
+            var areaOpenedAndITState = LoadSaveDatasCSVAndGetAreaOpenedAndITState();
+            if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 1 &&
+                (int)EnumAreaOpenedAndITStateState.ITFixed <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 2 &&
+                (int)EnumAreaOpenedAndITStateState.Cleared <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 3 &&
+                (int)EnumAreaOpenedAndITStateState.ITFixed <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 4 &&
+                (int)EnumAreaOpenedAndITStateState.ITFixed <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 5 &&
+                (int)EnumAreaOpenedAndITStateState.Select <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length)
+            {
+                // ヘッドIT済み
+                // ボディIT済み
+                // ライトアームIT済み
+                // レフトアームIT済み
+                // コア解放済み
+                return EnumRobotPanel.Full;
+            }
+            else if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 1 &&
+                (int)EnumAreaOpenedAndITStateState.ITFixed <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 2 &&
+                (int)EnumAreaOpenedAndITStateState.Cleared <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 3 &&
+                (int)EnumAreaOpenedAndITStateState.ITFixed <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 4 &&
+                (int)EnumAreaOpenedAndITStateState.ITFixed <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length)
+            {
+                // ヘッドIT済み
+                // ボディクリア済み
+                // ライトアームIT済み
+                // レフトアームIT済み
+                return EnumRobotPanel.ConnectedDoublearm;
+            }
+            else if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 1 &&
+                (int)EnumAreaOpenedAndITStateState.ITFixed <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 2 &&
+                (int)EnumAreaOpenedAndITStateState.Cleared <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 3 &&
+                (int)EnumAreaOpenedAndITStateState.Select <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 4 &&
+                (int)EnumAreaOpenedAndITStateState.ITFixed <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length)
+            {
+                // ヘッドIT済み
+                // ボディクリア済み
+                // ライトアーム解放
+                // レフトアームIT済み
+                return EnumRobotPanel.ConnectedLeftarm;
+            }
+            else if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 1 &&
+                (int)EnumAreaOpenedAndITStateState.ITFixed <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 2 &&
+                (int)EnumAreaOpenedAndITStateState.Cleared <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 3 &&
+                (int)EnumAreaOpenedAndITStateState.ITFixed <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 4 &&
+                (int)EnumAreaOpenedAndITStateState.Select <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length)
+            {
+                // ヘッドIT済み
+                // ボディクリア済み
+                // ライトアームIT済み
+                // レフトアーム解放
+                return EnumRobotPanel.ConnectedRightarm;
+            }
+            else if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 1 &&
+                (int)EnumAreaOpenedAndITStateState.ITFixed <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 2 &&
+                (int)EnumAreaOpenedAndITStateState.Select <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length)
+            {
+                // ヘッドIT済み
+                // ボディ解放
+                return EnumRobotPanel.ConnectedHead;
+            }
+
+            return EnumRobotPanel.FallingApart;
+        }
+
+        public EnumRobotPanel GetStateOfRobotUnit()
+        {
+            var areaOpenedAndITState = LoadSaveDatasCSVAndGetAreaOpenedAndITState();
+            if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 1 &&
+                (int)EnumAreaOpenedAndITStateState.ITFixed <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 2 &&
+                (int)EnumAreaOpenedAndITStateState.ITFixed <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 3 &&
+                (int)EnumAreaOpenedAndITStateState.ITFixed <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 4 &&
+                (int)EnumAreaOpenedAndITStateState.ITFixed <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 5 &&
+                (int)EnumAreaOpenedAndITStateState.Select <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length)
+            {
+                // ヘッドIT済み
+                // ボディIT済み
+                // ライトアームIT済み
+                // レフトアームIT済み
+                // コア解放済み
+                return EnumRobotPanel.Full;
+            }
+            else if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 1 &&
+                (int)EnumAreaOpenedAndITStateState.ITFixed <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 2 &&
+                (int)EnumAreaOpenedAndITStateState.Cleared <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 3 &&
+                (int)EnumAreaOpenedAndITStateState.Select <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 4 &&
+                (int)EnumAreaOpenedAndITStateState.Select <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length)
+            {
+                // ヘッドIT済み
+                // ボディクリア済み
+                // ライトアーム解放
+                // レフトアーム解放
+                return EnumRobotPanel.ConnectedRightarm;
+            }
+            else if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 1 &&
+                (int)EnumAreaOpenedAndITStateState.ITFixed <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 2 &&
+                (int)EnumAreaOpenedAndITStateState.Select <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length)
+            {
+                // ヘッドIT済み
+                // ボディ解放
+                return EnumRobotPanel.ConnectedHead;
+            }
+            else if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 1 &&
+                (int)EnumAreaOpenedAndITStateState.Cleared <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 2 &&
+                (int)EnumAreaOpenedAndITStateState.Select <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length)
+            {
+                // ヘッドクリア済み
+                // ボディ解放
+                return EnumRobotPanel.OnStartBody;
+            }
+
+            return EnumRobotPanel.FallingApart;
+        }
+
         public Dictionary<EnumAreaOpenedAndITState, string>[] LoadSaveDatasCSVAndGetAreaOpenedAndITState()
         {
             var tResourcesAccessory = new AreaTemplateResourcesAccessory();
@@ -101,6 +346,11 @@ namespace Area.Common
                 return false;
             }
         }
+
+        public Mission[] GetMissionHistoryIgnoreLast()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 
     /// <summary>
@@ -142,5 +392,20 @@ namespace Area.Common
         /// </summary>
         /// <returns>格納オブジェクト配列</returns>
         public Dictionary<EnumAreaOpenedAndITState, string>[] LoadSaveDatasCSVAndGetAreaOpenedAndITState();
+        /// <summary>
+        /// ステータス確認（結合・解放）
+        /// </summary>
+        /// <returns>ロボットの結合・解放状態</returns>
+        public EnumRobotPanel GetStateOfRobotUnit();
+        /// <summary>
+        /// ステータス確認（結合のみ）
+        /// </summary>
+        /// <returns>ロボットの結合・解放状態</returns>
+        public EnumRobotPanel GetStateOfRobotUnitConnect();
+        /// <summary>
+        /// 実績履歴を取得
+        /// </summary>
+        /// <returns>実績履歴配列</returns>
+        public Mission[] GetMissionHistoryIgnoreLast();
     }
 }

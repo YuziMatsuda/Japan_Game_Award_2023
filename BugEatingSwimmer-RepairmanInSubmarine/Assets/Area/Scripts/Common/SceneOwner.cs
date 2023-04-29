@@ -15,6 +15,8 @@ namespace Area.Common
         [SerializeField] private string nextSceneName = "SelectScene";
         /// <summary>前のシーン名</summary>
         [SerializeField] private string backSceneName = "TitleScene";
+        /// <summary>現在のシーン名</summary>
+        [SerializeField] private string currentSceneName = "AreaScene";
 
         public void OnStart()
         {
@@ -81,7 +83,7 @@ namespace Area.Common
         /// <summary>
         /// タイトルシーンをロード
         /// </summary>
-        public void LoadTitleScene()
+        public void LoadBackScene()
         {
             SceneManager.LoadScene(backSceneName);
         }
@@ -89,7 +91,7 @@ namespace Area.Common
         /// <summary>
         /// メインシーンをロード
         /// </summary>
-        public void LoadMainScene()
+        public void LoadNextScene()
         {
             SceneManager.LoadScene(nextSceneName);
         }
@@ -146,6 +148,11 @@ namespace Area.Common
                 return false;
             }
         }
+
+        public void ReLoadScene()
+        {
+            SceneManager.LoadScene(currentSceneName);
+        }
     }
 
     public interface ISceneOwner
@@ -177,5 +184,17 @@ namespace Area.Common
         /// <param name="configMap">格納オブジェクト配列</param>
         /// <returns>成功／失敗</returns>
         public bool SetAreaOpenedAndITState(Dictionary<EnumAreaOpenedAndITState, string>[] configMaps);
+        /// <summary>
+        /// タイトルシーンをロード
+        /// </summary>
+        public void LoadBackScene();
+        /// <summary>
+        /// メインシーンをロード
+        /// </summary>
+        public void LoadNextScene();
+        /// <summary>
+        /// シーンをリロード
+        /// </summary>
+        public void ReLoadScene();
     }
 }

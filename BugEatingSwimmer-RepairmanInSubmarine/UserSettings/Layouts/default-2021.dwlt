@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 997
   m_ShowMode: 4
-  m_Title: Hierarchy
+  m_Title: Game
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 421}
   m_MaxSize: {x: 10000, y: 10000}
@@ -119,7 +119,7 @@ MonoBehaviour:
   m_MinSize: {x: 400, y: 200}
   m_MaxSize: {x: 32384, y: 16192}
   vertical: 0
-  controlID: 120
+  controlID: 115
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -144,7 +144,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 200}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 1
-  controlID: 152
+  controlID: 88
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -169,7 +169,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 153
+  controlID: 89
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -189,8 +189,8 @@ MonoBehaviour:
     y: 0
     width: 1018
     height: 515
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 201, y: 221}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 16}
   m_Panes:
   - {fileID: 16}
@@ -216,8 +216,8 @@ MonoBehaviour:
     y: 0
     width: 447
     height: 515
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 202, y: 221}
+  m_MaxSize: {x: 4002, y: 4021}
   m_ActualView: {fileID: 18}
   m_Panes:
   - {fileID: 18}
@@ -294,8 +294,8 @@ MonoBehaviour:
     y: 0
     width: 328
     height: 432
-  m_MinSize: {x: 100, y: 100}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 102, y: 121}
+  m_MaxSize: {x: 4002, y: 4021}
   m_ActualView: {fileID: 19}
   m_Panes:
   - {fileID: 19}
@@ -346,8 +346,8 @@ MonoBehaviour:
     y: 0
     width: 455
     height: 947
-  m_MinSize: {x: 275, y: 50}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 276, y: 71}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 21}
   m_Panes:
   - {fileID: 21}
@@ -725,9 +725,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 948.66833, y: 536.4011, z: -1.8617129}
+    m_Target: {x: 1134.3588, y: 419.57822, z: -6.4647985}
     speed: 2
-    m_Value: {x: 948.66833, y: 536.4011, z: -1.8617129}
+    m_Value: {x: 1134.3588, y: 419.57822, z: -6.4647985}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -778,9 +778,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 623.97516
+    m_Target: 740.8213
     speed: 2
-    m_Value: 623.97516
+    m_Value: 740.8213
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -902,7 +902,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 5452ffff005dffffde63ffffb464ffffda73ffffb074ffff967affff0080ffff7c9bffffc09bffffc69bffff789dffff7a9dffffe8a3ffff78a9ffff50b3ffffe4b8ffffaeb9ffff3ec2ffffa8c7ffffeac7ffff44c8ffffd6ceffff44cfffffacd5fffff8d5ffff60dcfffffcdcffff64e3ffff12e4ffff8aebffff24efffffc4f5fffffefaffff8e870000
+      m_ExpandedIDs: 92b0fdffbcb0fdff1cb1fdff56b1fdff58b1fdffb2bafdffec31feff6a34feffe66ffefff86ffeff2270feff8270feffbc70feffbe70feff8879feff6296feff7496feffee96feff4e97feff8897feff8a97feffe29dfeff58a8fefff40fffff0610ffff0c10ffff1e10ffff0e14ffff4814ffff4a14ffff6c1effff6e1effff5c63ffffbc63fffff663ffffc469ffffd669ffffdc69ffffee69fffff069ffff1e75ffff3075ffff3675ffff4875ffff1690ffffac95ffffde9afffff09afffff69affff089bffff24faffff84faffffbefaffffc0faffffeaf70000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -983,7 +983,7 @@ MonoBehaviour:
     m_LastAppliedPresetName: Default
     m_SaveData: []
   m_SearchFilter:
-    m_NameFilter: AreaPrese
+    m_NameFilter: 
     m_ClassNames: []
     m_AssetLabels: []
     m_AssetBundleNames: []
@@ -995,22 +995,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Select/Scripts/View
+    - Assets/Effect/Scenes
     m_Globs: []
-    m_OriginalText: AreaPrese
+    m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Select/Scripts/View
+  - Assets/Effect/Scenes
   m_LastFoldersGridSize: 16
   m_LastProjectPath: C:\Users\kzpaqu\Documents\Japan_Game_Award_2023\BugEatingSwimmer-RepairmanInSubmarine
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 573}
-    m_SelectedIDs: 68770000
-    m_LastClickedID: 30568
-    m_ExpandedIDs: 000000002e77000030770000327700003477000036770000387700003a7700003c7700003e77000040770000427700004477000046770000487700004e770000627700006a7700002a8200003682000000ca9a3b
+    scrollPos: {x: 0, y: 60}
+    m_SelectedIDs: cc860000
+    m_LastClickedID: 34508
+    m_ExpandedIDs: 000000002e75000030750000327500003475000036750000387500003a7500003c7500003e7500004075000042750000447500004675000048750000ea750000f2750000fc7500003077000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1038,7 +1038,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000002e77000030770000327700003477000036770000387700003a7700003c7700003e7700004077000042770000447700004677000048770000
+    m_ExpandedIDs: 000000002e75000030750000327500003475000036750000387500003a7500003c7500003e7500004075000042750000447500004675000048750000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1065,19 +1065,19 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 1
-    m_ExpandedInstanceIDs: c623000024750000bc7900001e800000708500006c7b0000ac7e0000a67e0000e6950000f4860000fc860000ac860000f68600004cdf00007ee00000fe860000b2860000ca86000046d700001cc000000ed800007c87000006dc0000762cf7ff7a9a000082a40000ca750000c66f0000f6f101005c7d00005e7d000044a200006eb30100547d00002e6502000a7900002a960000
+    m_HadKeyboardFocusLastEvent: 0
+    m_ExpandedInstanceIDs: c623000024750000bc7900001e800000708500006c7b0000ac7e0000a67e0000e6950000f4860000fc860000ac860000f68600004cdf00007ee00000fe860000b2860000ca86000046d700001cc000000ed800007c87000006dc0000762cf7ff7a9a000082a40000ca750000c66f0000f6f101005c7d00005e7d000044a200006eb30100547d00002e6502000a7900002a960000cc8b0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: QuasiAssignmentForm
-      m_OriginalName: QuasiAssignmentForm
+      m_Name: PivotAndCodeIShortReadonly
+      m_OriginalName: PivotAndCodeIShortReadonly
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 38056
+      m_UserData: 31456
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
       m_OriginalEventType: 0
