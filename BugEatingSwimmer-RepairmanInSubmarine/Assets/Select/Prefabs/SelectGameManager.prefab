@@ -432,7 +432,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nextSceneName: MainScene
-  backSceneName: TitleScene
+  backSceneName: AreaScene
 --- !u!1 &3906211334697514266
 GameObject:
   m_ObjectHideFlags: 0
