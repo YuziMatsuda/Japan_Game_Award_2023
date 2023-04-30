@@ -479,6 +479,40 @@ namespace Area.Common
                 return -1;
             }
         }
+
+        public bool SetSystemCommonCashAndDefaultStageIndex(EnumUnitID enumUnitID)
+        {
+            try
+            {
+                var temp = new AreaTemplateResourcesAccessory();
+                var SystemCommonCash = temp.GetSystemCommonCash(temp.LoadSaveDatasCSV(ConstResorcesNames.SYSTEM_COMMON_CASH));
+                var areaUnits = temp.GetAreaUnits(temp.LoadSaveDatasCSV(ConstResorcesNames.AREA_UNITS));
+                var currentUnitID = (EnumUnitID)areaUnits.Where(q => q[EnumAreaUnits.StageID] == SystemCommonCash[EnumSystemCommonCash.SceneId])
+                    .Distinct()
+                    .Select(q => q[EnumAreaUnits.UnitID])
+                    .ToArray()[0];
+                if (currentUnitID.Equals(enumUnitID))
+                    // 同じエリアへ移動する場合はステージ番号をリセットしない
+                    return true;
+
+                // ユニットIDからステージ番号初期値を取得
+                var defaultStageIndex = areaUnits.Where(q => q[EnumAreaUnits.UnitID] == (int)enumUnitID)
+                    .Select(q => q[EnumAreaUnits.StageID])
+                    .OrderBy(q => q)
+                    .ToArray()[0];
+                // キャッシュをセット
+                SystemCommonCash[EnumSystemCommonCash.SceneId] = defaultStageIndex;
+                if (!temp.SaveDatasCSVOfSystemCommonCash(ConstResorcesNames.SYSTEM_COMMON_CASH, SystemCommonCash))
+                    throw new System.Exception("システム設定キャッシュをCSVデータへ保存呼び出しの失敗");
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
     }
 
     /// <summary>
@@ -550,5 +584,13 @@ namespace Area.Common
         /// </summary>
         /// <returns>追加した件数</returns>
         public int AddMissionHistory();
+        /// <summary>
+        /// キャッシュをセット
+        /// ユニットIDからステージ番号初期値を取得
+        /// 同じエリアへ移動する場合はステージ番号をリセットしない
+        /// </summary>
+        /// <param name="enumUnitID">エリアID</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetSystemCommonCashAndDefaultStageIndex(EnumUnitID enumUnitID);
     }
 }

@@ -134,6 +134,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02da5103f193e37448d9bd43b9a6334e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &550838622 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2858243531037359939, guid: 6500b7f113d2fe14fb1b2c853cdbf44c, type: 3}
+  m_PrefabInstance: {fileID: 4431877572368449463}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62292348415cc2d46829ccd7b640a395, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &579110154
 GameObject:
   m_ObjectHideFlags: 0
@@ -1776,29 +1787,33 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 4431877572368449465}
     - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: templetePanelView
+      value: 
+      objectReference: {fileID: 550838622}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
       propertyPath: receivers.Array.data[0]
       value: 
-      objectReference: {fileID: 904264626}
+      objectReference: {fileID: 904264601}
     - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
       propertyPath: receivers.Array.data[1]
       value: 
-      objectReference: {fileID: 904264630}
+      objectReference: {fileID: 904264622}
     - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
       propertyPath: receivers.Array.data[2]
       value: 
-      objectReference: {fileID: 904264634}
+      objectReference: {fileID: 904264626}
     - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
       propertyPath: receivers.Array.data[3]
       value: 
-      objectReference: {fileID: 904264638}
+      objectReference: {fileID: 904264630}
     - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
       propertyPath: receivers.Array.data[4]
       value: 
-      objectReference: {fileID: 904264622}
+      objectReference: {fileID: 904264634}
     - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
       propertyPath: receivers.Array.data[5]
       value: 
-      objectReference: {fileID: 904264601}
+      objectReference: {fileID: 904264638}
     - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
       propertyPath: assignedSeastarCountView
       value: 

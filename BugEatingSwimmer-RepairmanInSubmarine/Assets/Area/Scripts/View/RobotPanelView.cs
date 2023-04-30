@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using Area.Common;
-using System;
+using System.Linq;
+using DG.Tweening;
 
 namespace Area.View
 {
@@ -253,7 +254,7 @@ namespace Area.View
             }
         }
 
-        public IEnumerator PlayRenderEnable(EnumUnitID[] enumUnitIDs, IObserver<bool> observer)
+        public IEnumerator PlayRenderEnable(EnumUnitID[] enumUnitIDs, System.IObserver<bool> observer)
         {
             var count = new IntReactiveProperty();
             count.ObserveEveryValueChanged(x => x.Value)

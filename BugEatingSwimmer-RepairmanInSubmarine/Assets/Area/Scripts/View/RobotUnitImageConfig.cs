@@ -31,5 +31,9 @@ namespace Area.View
         [SerializeField] private Navigation[] navigations;
         /// <summary>ナビゲーションパターン</summary>
         public Navigation[] Navigations => navigations;
+        /// <summary>拡大スケール</summary>
+        [SerializeField] private Vector3 scaleZoom;
+        /// <summary>拡大スケール</summary>
+        public Vector3 ScaleZoom => scaleZoom;
     }
 }

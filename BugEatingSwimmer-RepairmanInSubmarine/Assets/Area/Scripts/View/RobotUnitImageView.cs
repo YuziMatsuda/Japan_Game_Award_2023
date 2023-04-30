@@ -15,6 +15,8 @@ namespace Area.View
     {
         /// <summary>各ユニットの制御設定</summary>
         [SerializeField] private RobotUnitImageConfig robotUnitImageConfig;
+        /// <summary>各ユニットの制御設定</summary>
+        public RobotUnitImageConfig RobotUnitImageConfig => robotUnitImageConfig;
         /// <summary>画像</summary>
         [SerializeField] private Image image;
         /// <summary>非選択状態のカラー</summary>

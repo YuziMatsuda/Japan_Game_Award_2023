@@ -56,6 +56,8 @@ namespace Area.Presenter
         [SerializeField] private MessageReceived[] receivers;
         /// <summary>Fungusのフローチャートモデル</summary>
         [SerializeField] private FlowchartModel flowchartModel;
+        /// <summary>テンプレートパネルのビュー</summary>
+        [SerializeField] private TempletePanelView templetePanelView;
 
         private void Reset()
         {
@@ -129,21 +131,13 @@ namespace Area.Presenter
             robotPanelModel = GameObject.Find("RobotPanel").GetComponent<RobotPanelModel>();
             receivers = GameObject.FindObjectsOfType<Fungus.MessageReceived>();
             flowchartModel = GameObject.Find("Flowchart").GetComponent<FlowchartModel>();
+            templetePanelView = GameObject.Find("TempletePanel").GetComponent<TempletePanelView>();
         }
 
         public void OnStart()
         {
-            //    var common = new SelectPresenterCommon();
             var common = new AreaPresenterCommon();
             // 初期設定
-            //    foreach (var child in logoStageModels)
-            //        if (child != null)
-            //        {
-            //            child.SetButtonEnabled(false);
-            //            child.SetEventTriggerEnabled(false);
-            //            if (!child.LoadStateAndUpdateNavigation())
-            //                Debug.LogError("ステージ状態のロード及びナビゲーション更新呼び出しの失敗");
-            //        }
             foreach (var child in robotPanelModel.RobotUnitImageModels)
                 if (child != null)
                 {
@@ -167,10 +161,6 @@ namespace Area.Presenter
             //        item.gameObject.SetActive(false);
             if (!assignedSeastarCountView.SetCounterText(AreaGameManager.Instance.GimmickOwner.GetAssinedCounter()))
                 Debug.LogError("ヒトデ総配属人数をセット呼び出しの失敗");
-            //    foreach (var item in pivotAndCodeIShortUIViews)
-            //        item.OnStart();
-            //    if (SelectGameManager.Instance.AlgorithmOwner.SetPivotAndCodeIShortUIs(pivotAndCodeIShortUIViews.Select(q => q.transform).ToArray()) < 1)
-            //        Debug.LogError("支点とコード配列をセット呼び出しの失敗");
 
             AreaGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_select);
             var enumRobotpanel = common.GetStateOfRobotUnitConnect();
@@ -212,95 +202,108 @@ namespace Area.Presenter
                             .AddTo(gameObject);
                     }
                 });
+            var sysCommonCash = AreaGameManager.Instance.SceneOwner.GetSystemCommonCash();
+            var stageIndex = sysCommonCash[EnumSystemCommonCash.SceneId] /*new IntReactiveProperty(sysCommonCash[EnumSystemCommonCash.SceneId])*/;
+            //var selectUnitID = new IntReactiveProperty((int)common.GetEnumUnitID(stageIndex));
+            var areaUnits = common.LoadSaveDatasCSVAndGetAreaUnits();
+            var currentUnitID = new IntReactiveProperty(areaUnits.Where(q => q[EnumAreaUnits.StageID] == stageIndex/*.Value*/)
+                .Select(q => q[EnumAreaUnits.UnitID])
+                .ToArray()[0]);
             // シーン読み込み時のアニメーション
+            if (!templetePanelView.SetPositionAndScaleAfterPrevSaveTransform((EnumUnitID)currentUnitID.Value))
+                Debug.LogError("位置とスケールをセットして一つ前の状態を保存する呼び出しの失敗");
             Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Open))
                 .Subscribe(_ =>
                 {
-                    //    // UI操作を許可
-                    //    foreach (var child in logoStageModels)
-                    //    if (child != null)
-                    //    {
-                    //        child.SetButtonEnabled(true);
-                    //        child.SetEventTriggerEnabled(true);
-                    //    }
-                    //if (!common.SetCounterBetweenAndFillAmountAllGage(seastarGageViews))
-                    //    Debug.LogError("全ヒトデゲージのカウンターとフィルターをセット呼び出しの失敗");
+                    Observable.FromCoroutine<bool>(observer => templetePanelView.PlayAnimationZoomOutUnit((EnumUnitID)currentUnitID.Value, observer))
+                        .Subscribe(_ =>
+                        {
+                            //    // UI操作を許可
+                            //    foreach (var child in logoStageModels)
+                            //    if (child != null)
+                            //    {
+                            //        child.SetButtonEnabled(true);
+                            //        child.SetEventTriggerEnabled(true);
+                            //    }
+                            //if (!common.SetCounterBetweenAndFillAmountAllGage(seastarGageViews))
+                            //    Debug.LogError("全ヒトデゲージのカウンターとフィルターをセット呼び出しの失敗");
 
-                    // エリア解放・結合テストのセーブファイル、イベント管理を参照して引数を切り替える
-                    if (common.IsConnectedAnimation())
-                    {
-                        Observable.FromCoroutine<bool>(observer => robotPanelView.PlayAnimationOfAllUnit(enumRobotpanel, observer))
-                            .Subscribe(x =>
+                            // エリア解放・結合テストのセーブファイル、イベント管理を参照して引数を切り替える
+                            if (common.IsConnectedAnimation())
                             {
-                                if (x)
-                                {
-                                    if (enumRobotpanel.Equals(EnumRobotPanel.ConnectedHead))
+                                Observable.FromCoroutine<bool>(observer => robotPanelView.PlayAnimationOfAllUnit(enumRobotpanel, observer))
+                                    .Subscribe(x =>
                                     {
-                                        // 実績一覧管理を参照して引数を切り替える
-                                        // ※ヘッドITの場合のみライトアームとレフトアームの解放演出が入るためここのみ配列を渡す
-                                        Observable.FromCoroutine<bool>(observer => robotPanelView.PlayRenderEnable(common.GetPlayRenderEnables(), observer))
-                                            .Subscribe(_ =>
+                                        if (x)
+                                        {
+                                            if (enumRobotpanel.Equals(EnumRobotPanel.ConnectedHead))
                                             {
-                                                // シナリオのレシーバーへ送信
-                                                foreach (var receiver in receivers)
-                                                {
-                                                    var n = flowchartModel.GetBlockName();
-                                                    if (!string.IsNullOrEmpty(n))
-                                                        receiver.OnSendFungusMessage(n);
-                                                    else
-                                                        Debug.LogWarning("取得ブロック名無し");
-                                                }
-                                            })
-                                            .AddTo(gameObject);
-                                    }
-                                    else
-                                    {
-                                        // 実績一覧管理を参照して引数を切り替える
-                                        Observable.FromCoroutine<bool>(observer => robotPanelView.PlayRenderEnable(common.GetPlayRenderEnables()[0], observer))
-                                            .Subscribe(_ =>
-                                            {
-                                                // シナリオのレシーバーへ送信
-                                                foreach (var receiver in receivers)
-                                                {
-                                                    var n = flowchartModel.GetBlockName();
-                                                    if (!string.IsNullOrEmpty(n))
-                                                        receiver.OnSendFungusMessage(n);
-                                                    else
+                                                // 実績一覧管理を参照して引数を切り替える
+                                                // ※ヘッドITの場合のみライトアームとレフトアームの解放演出が入るためここのみ配列を渡す
+                                                Observable.FromCoroutine<bool>(observer => robotPanelView.PlayRenderEnable(common.GetPlayRenderEnables(), observer))
+                                                    .Subscribe(_ =>
                                                     {
-                                                        Debug.LogWarning("取得ブロック名無し");
-                                                        // 実績履歴を更新
-                                                        if (common.AddMissionHistory() < 1)
-                                                            Debug.LogError("実績履歴を更新呼び出しの失敗");
-                                                        Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
-                                                            .Subscribe(_ =>
+                                                        // シナリオのレシーバーへ送信
+                                                        foreach (var receiver in receivers)
+                                                        {
+                                                            var n = flowchartModel.GetBlockName();
+                                                            if (!string.IsNullOrEmpty(n))
+                                                                receiver.OnSendFungusMessage(n);
+                                                            else
+                                                                Debug.LogWarning("取得ブロック名無し");
+                                                        }
+                                                    })
+                                                    .AddTo(gameObject);
+                                            }
+                                            else
+                                            {
+                                                // 実績一覧管理を参照して引数を切り替える
+                                                Observable.FromCoroutine<bool>(observer => robotPanelView.PlayRenderEnable(common.GetPlayRenderEnables()[0], observer))
+                                                    .Subscribe(_ =>
+                                                    {
+                                                        // シナリオのレシーバーへ送信
+                                                        foreach (var receiver in receivers)
+                                                        {
+                                                            var n = flowchartModel.GetBlockName();
+                                                            if (!string.IsNullOrEmpty(n))
+                                                                receiver.OnSendFungusMessage(n);
+                                                            else
                                                             {
-                                                                // イベント完了後の処理
-                                                                AreaGameManager.Instance.SceneOwner.ReLoadScene();
-                                                            })
-                                                            .AddTo(gameObject);
-                                                        // ブロック名を取得できない場合はブレイクする
-                                                        break;
-                                                    }
-                                                }
-                                            })
-                                            .AddTo(gameObject);
-                                    }
-                                }
-                                else
-                                {
-                                    // シナリオのレシーバーへ送信
-                                    foreach (var receiver in receivers)
-                                    {
-                                        var n = flowchartModel.GetBlockName();
-                                        if (!string.IsNullOrEmpty(n))
-                                            receiver.OnSendFungusMessage(n);
+                                                                Debug.LogWarning("取得ブロック名無し");
+                                                                // 実績履歴を更新
+                                                                if (common.AddMissionHistory() < 1)
+                                                                    Debug.LogError("実績履歴を更新呼び出しの失敗");
+                                                                Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                                                    .Subscribe(_ =>
+                                                                    {
+                                                                        // イベント完了後の処理
+                                                                        AreaGameManager.Instance.SceneOwner.ReLoadScene();
+                                                                    })
+                                                                    .AddTo(gameObject);
+                                                                // ブロック名を取得できない場合はブレイクする
+                                                                break;
+                                                            }
+                                                        }
+                                                    })
+                                                    .AddTo(gameObject);
+                                            }
+                                        }
                                         else
-                                            Debug.LogWarning("取得ブロック名無し");
-                                    }
-                                }
-                            })
-                            .AddTo(gameObject);
-                    }
+                                        {
+                                            // シナリオのレシーバーへ送信
+                                            foreach (var receiver in receivers)
+                                            {
+                                                var n = flowchartModel.GetBlockName();
+                                                if (!string.IsNullOrEmpty(n))
+                                                    receiver.OnSendFungusMessage(n);
+                                                else
+                                                    Debug.LogWarning("取得ブロック名無し");
+                                            }
+                                        }
+                                    })
+                                    .AddTo(gameObject);
+                            }
+                        });
                 })
                 .AddTo(gameObject);
 
@@ -308,27 +311,19 @@ namespace Area.Presenter
                 // 演出がある場合は一度シーンをリロードする想定のため、後続処理を実行しない
                 return;
 
-            // ステージ番号を取得する処理を追加する
-            var sysCommonCash = AreaGameManager.Instance.SceneOwner.GetSystemCommonCash();
-            var stageIndex = new IntReactiveProperty(sysCommonCash[EnumSystemCommonCash.SceneId]);
-            var areaUnits = common.LoadSaveDatasCSVAndGetAreaUnits();
-            var currentUnitID =  areaUnits.Where(q => q[EnumAreaUnits.StageID] == stageIndex.Value)
-                .Select(q => q[EnumAreaUnits.UnitID])
-                .ToArray()[0];
             // ステージ番号をエリア番号へ変換する
-            //logoStageModels[stageIndex.Value].SetSelectedGameObject();
-            robotPanelModel.RobotUnitImageModels.Where(q => (int)q.RobotUnitImageConfig.EnumUnitID == currentUnitID)
+            robotPanelModel.RobotUnitImageModels.Where(q => (int)q.RobotUnitImageConfig.EnumUnitID == currentUnitID.Value)
                 .Select(q => q)
                 .ToArray()[0].SetSelectedGameObject();
-            if (!playerView.SelectPlayer(robotPanelModel.RobotUnitImageModels.Where(q => (int)q.RobotUnitImageConfig.EnumUnitID == currentUnitID)
+            if (!playerView.SelectPlayer(robotPanelModel.RobotUnitImageModels.Where(q => (int)q.RobotUnitImageConfig.EnumUnitID == currentUnitID.Value)
                 .Select(q => q)
-                .ToArray()[0].transform.position/*logoStageViews[stageIndex.Value].transform.position*/, robotPanelModel.RobotUnitImageModels.Where(q => (int)q.RobotUnitImageConfig.EnumUnitID == currentUnitID)
+                .ToArray()[0].transform.position, robotPanelModel.RobotUnitImageModels.Where(q => (int)q.RobotUnitImageConfig.EnumUnitID == currentUnitID.Value)
                 .Select(q => q)
                 .ToArray()[0].transform))
                 Debug.LogError("ステージ選択のプレイヤーを移動して選択させる呼び出しの失敗");
-            if (!playerView.RedererCursorDirectionAndDistance(robotPanelModel.RobotUnitImageModels.Where(q => (int)q.RobotUnitImageConfig.EnumUnitID == currentUnitID)
+            if (!playerView.RedererCursorDirectionAndDistance(robotPanelModel.RobotUnitImageModels.Where(q => (int)q.RobotUnitImageConfig.EnumUnitID == currentUnitID.Value)
                 .Select(q => q)
-                .ToArray()[0]/*logoStageModels[stageIndex.Value]*/.Button.navigation, EnumCursorDistance.Long))
+                .ToArray()[0].Button.navigation, EnumCursorDistance.Long))
                 Debug.LogError("ナビゲーションの状態によってカーソル表示を変更呼び出しの失敗");
 
             // エリア選択状態の表示
@@ -416,7 +411,7 @@ namespace Area.Presenter
                                                 Debug.LogError("スキップモードのセット呼び出しの失敗");
                                     })
                                     .AddTo(gameObject);
-                                //stageIndex.Value = child.Index;
+                                currentUnitID.Value = (int)item.RobotUnitImageConfig.EnumUnitID;
                                 break;
                             case EnumEventCommand.DeSelected:
                                 // 処理無し
@@ -450,8 +445,22 @@ namespace Area.Presenter
                                         child.SetButtonEnabled(false);
                                         child.SetEventTriggerEnabled(false);
                                     }
-                                //if (!logoStagesView.ZoomInOutPanel(child.Index))
-                                //    Debug.LogError("該当ステージを拡大させる呼び出しの失敗");
+                                if (!playerView.RedererCursorDirectionAndDistance(new UnityEngine.UI.Navigation(), EnumCursorDistance.Long))
+                                    Debug.LogError("ナビゲーションの状態によってカーソル表示を変更呼び出しの失敗");
+                                Observable.FromCoroutine<bool>(observer => templetePanelView.PlayAnimationZoomInUnit(item.RobotUnitImageConfig.EnumUnitID, observer))
+                                    .Subscribe(_ =>
+                                    {
+                                        if (!common.SetSystemCommonCashAndDefaultStageIndex((EnumUnitID)currentUnitID.Value))
+                                            Debug.LogError("キャッシュをセット呼び出しの失敗");
+                                        // シーン読み込み時のアニメーション
+                                        Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                            .Subscribe(_ =>
+                                            {
+                                                AreaGameManager.Instance.SceneOwner.LoadNextScene();
+                                            })
+                                            .AddTo(gameObject);
+                                    })
+                                    .AddTo(gameObject);
 
                                 break;
                             default:
