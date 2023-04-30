@@ -103,6 +103,26 @@ namespace Area.Template
         }
 
         /// <summary>
+        /// 実績一覧管理データをオブジェクトへ一時セット
+        /// </summary>
+        /// <param name="datas">二次元配列の文字列データ</param>
+        /// <returns>格納オブジェクト配列</returns>
+        public Dictionary<EnumMission, string>[] GetMission(List<string[]> datas)
+        {
+            return new AreaResourcesAccessory().GetMission(datas);
+        }
+
+        /// <summary>
+        /// 実績履歴データをオブジェクトへ一時セット
+        /// </summary>
+        /// <param name="datas">二次元配列の文字列データ</param>
+        /// <returns>格納オブジェクト配列</returns>
+        public Dictionary<EnumMissionHistory, string>[] GetMissionHistory(List<string[]> datas)
+        {
+            return new AreaResourcesAccessory().GetMissionHistory(datas);
+        }
+
+        /// <summary>
         /// システム設定キャッシュをCSVデータへ保存
         /// </summary>
         /// <param name="resourcesLoadName">リソースCSVファイル名</param>
@@ -144,6 +164,28 @@ namespace Area.Template
         public bool SaveDatasCSVOfAreaOpenedAndITStateHistory(string resourcesLoadName, Dictionary<EnumAreaOpenedAndITStateHistory, int>[] configMaps)
         {
             return new AreaResourcesAccessory().SaveDatasCSVOfAreaOpenedAndITStateHistory(resourcesLoadName, configMaps);
+        }
+
+        /// <summary>
+        /// 実績一覧管理データをCSVデータへ保存
+        /// </summary>
+        /// <param name="resourcesLoadName">リソースCSVファイル名</param>
+        /// <param name="configMaps">格納オブジェクト配列</param>
+        /// <returns>成功／失敗</returns>
+        public bool SaveDatasCSVOfMission(string resourcesLoadName, Dictionary<EnumMission, string>[] configMaps)
+        {
+            return new AreaResourcesAccessory().SaveDatasCSVOfMission(resourcesLoadName, configMaps);
+        }
+
+        /// <summary>
+        /// 実績履歴データをCSVデータへ保存
+        /// </summary>
+        /// <param name="resourcesLoadName">リソースCSVファイル名</param>
+        /// <param name="configMaps">格納オブジェクト配列</param>
+        /// <returns>成功／失敗</returns>
+        public bool SaveDatasCSVOfMissionHistory(string resourcesLoadName, Dictionary<EnumMissionHistory, string>[] configMaps)
+        {
+            return new AreaResourcesAccessory().SaveDatasCSVOfMissionHistory(resourcesLoadName, configMaps);
         }
     }
 }

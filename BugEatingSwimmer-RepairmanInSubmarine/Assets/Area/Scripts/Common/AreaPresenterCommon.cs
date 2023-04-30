@@ -14,6 +14,8 @@ namespace Area.Common
     [System.Serializable]
     public struct Mission
     {
+        /// <summary>ミッションID</summary>
+        public EnumMissionID enumMissionID;
         /// <summary>ロボットの結合状態</summary>
         public EnumRobotPanel enumRobotPanel;
         /// <summary>エリアID</summary>
@@ -157,6 +159,21 @@ namespace Area.Common
                 // ヘッドIT済み
                 // ボディ解放
                 return EnumRobotPanel.ConnectedHead;
+            }
+            else if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 1 &&
+                (int)EnumAreaOpenedAndITStateState.Cleared <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 2 &&
+                (int)EnumAreaOpenedAndITStateState.Select <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                .Select(q => q)
+                .ToArray()
+                .Length)
+            {
+                // ヘッドIT失敗
+                // ボディ解放
+                return EnumRobotPanel.ConnectedFailureHead;
             }
 
             return EnumRobotPanel.FallingApart;
@@ -347,9 +364,120 @@ namespace Area.Common
             }
         }
 
-        public Mission[] GetMissionHistoryIgnoreLast()
+        public Mission[] GetMissions()
         {
-            throw new System.NotImplementedException();
+            List<Mission> missions = new List<Mission>();
+            // GetMissionHistoryLastから実績履歴の最後のデータを取り出す
+            var historyLast = GetMissionHistories();
+            if (historyLast.Length < 1)
+            {
+                // 空の場合は初期値を返す
+                return missions.ToArray();
+            }
+            // 実績IDに紐づく「ロボットの結合状態」「エリアID」を構造体リストで返す
+            foreach (var item in historyLast)
+                missions.AddRange(AreaGameManager.Instance.MissionOwner.Missions.Where(q => $"{q.enumMissionID}".Equals(item))
+                    .Select(q => q)
+                    .ToArray());
+
+            return missions.ToArray();
+        }
+
+        private string[] GetMissionHistories()
+        {
+            var temp = new AreaTemplateResourcesAccessory();
+            // 実績履歴を取得
+            var history = temp.GetMissionHistory(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION_HISTORY));
+            return 0 < history.Length ? history.Select(q => q[EnumMissionHistory.History]).ToArray() : new string[0];
+        }
+
+        public bool IsConnectedAnimation()
+        {
+            try
+            {
+                var temp = new AreaTemplateResourcesAccessory();
+                // 実績一覧管理を取得
+                var mission = temp.GetMission(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION));
+                // 実績履歴を取得
+                var history = temp.GetMissionHistory(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION_HISTORY));
+                // 実績一覧管理のアンロック解除している実績IDが履歴に見つからない場合は演出を実行する
+                foreach (var item in mission.Where(q => q[EnumMission.CategoryID].Equals($"{EnumCategoryID.CA0000}") &&
+                    q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_TRUE))
+                    .Select(q => q))
+                    if (history.Where(q => q[EnumMissionHistory.History].Equals($"{item[EnumMission.MissionID]}"))
+                        .Select(q => q)
+                        .ToArray().Length < 1)
+                        return true;
+
+                return false;
+            }
+            catch (System.Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public EnumUnitID[] GetPlayRenderEnables()
+        {
+            List<EnumUnitID> enumUnitIDs = new List<EnumUnitID>();
+            var temp = new AreaTemplateResourcesAccessory();
+            // 実績一覧管理を取得
+            var mission = temp.GetMission(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION));
+            // 実績履歴を取得
+            var history = temp.GetMissionHistory(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION_HISTORY));
+            var missionOwner = AreaGameManager.Instance.MissionOwner;
+            // 実績一覧管理のアンロック解除している実績IDが履歴に見つからない場合は演出を実行する
+            foreach (var item in mission.Where(q => q[EnumMission.CategoryID].Equals($"{EnumCategoryID.CA0000}") &&
+                q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_TRUE))
+                .Select(q => q))
+                if (history.Where(q => q[EnumMissionHistory.History].Equals($"{item[EnumMission.MissionID]}"))
+                    .Select(q => q)
+                    .ToArray().Length < 1)
+                    enumUnitIDs.AddRange(missionOwner.Missions.Where(q => $"{q.enumMissionID}".Equals(item[EnumMission.MissionID]))
+                        .Select(q => q.enumUnitID)
+                        .ToArray());
+
+            return enumUnitIDs.ToArray();
+        }
+
+        public int AddMissionHistory()
+        {
+            try
+            {
+                List<EnumMissionID> addHistoryList = new List<EnumMissionID>();
+                var temp = new AreaTemplateResourcesAccessory();
+                // 実績一覧管理を取得
+                var mission = temp.GetMission(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION));
+                // 実績履歴を取得
+                var histories = temp.GetMissionHistory(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION_HISTORY));
+                var missionOwner = AreaGameManager.Instance.MissionOwner;
+                // 実績一覧管理のアンロック解除している実績IDが履歴に見つからない場合は演出を実行する
+                foreach (var item in mission.Where(q => q[EnumMission.CategoryID].Equals($"{EnumCategoryID.CA0000}") &&
+                    q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_TRUE))
+                    .Select(q => q))
+                    if (histories.Where(q => q[EnumMissionHistory.History].Equals($"{item[EnumMission.MissionID]}"))
+                        .Select(q => q)
+                        .ToArray().Length < 1)
+                        addHistoryList.AddRange(missionOwner.Missions.Where(q => $"{q.enumMissionID}".Equals(item[EnumMission.MissionID]))
+                            .Select(q => q.enumMissionID)
+                            .ToArray());
+                var historyList = histories.ToList();
+                foreach (var item in addHistoryList)
+                {
+                    Dictionary<EnumMissionHistory, string> m = new Dictionary<EnumMissionHistory, string>();
+                    m[EnumMissionHistory.History] = $"{item}";
+                    historyList.Add(m);
+                }
+                if (!temp.SaveDatasCSVOfMissionHistory(ConstResorcesNames.MISSION_HISTORY, historyList.ToArray()))
+                    throw new System.Exception("実績履歴データをCSVデータへ保存呼び出しの失敗");
+
+                return addHistoryList.Count;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return -1;
+            }
         }
     }
 
@@ -406,6 +534,21 @@ namespace Area.Common
         /// 実績履歴を取得
         /// </summary>
         /// <returns>実績履歴配列</returns>
-        public Mission[] GetMissionHistoryIgnoreLast();
+        public Mission[] GetMissions();
+        /// <summary>
+        /// 新エリア解放演出を実行するか
+        /// </summary>
+        /// <returns>演出あり／なし</returns>
+        public bool IsConnectedAnimation();
+        /// <summary>
+        /// 解放演出の対象ユニットを取得
+        /// </summary>
+        /// <returns>エリアID配列</returns>
+        public EnumUnitID[] GetPlayRenderEnables();
+        /// <summary>
+        /// 実績履歴を更新
+        /// </summary>
+        /// <returns>追加した件数</returns>
+        public int AddMissionHistory();
     }
 }

@@ -20,9 +20,9 @@ namespace Area.View
         /// <summary>角度</summary>
         public Vector3 Rotate => rotate;
         /// <summary>実行時間</summary>
-        [SerializeField] private float duration;
+        [SerializeField] private float[] durations;
         /// <summary>実行時間</summary>
-        public float Duration => duration;
+        public float[] Durations => durations;
         /// <summary>ユニットID</summary>
         [SerializeField] private EnumUnitID enumUnitID;
         /// <summary>ユニットID</summary>

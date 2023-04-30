@@ -21,6 +21,8 @@ namespace Area.View
         [SerializeField] private Color disabledColor = new Color(.4f, .4f, .4f);
         /// <summary>選択状態のカラー</summary>
         [SerializeField] private Color enabledColor = Color.white;
+        /// <summary>エラー状態のカラー</summary>
+        [SerializeField] private Color errorColor = new Color(.99f, .26f, .16f);
 
         private void Reset()
         {
@@ -44,7 +46,7 @@ namespace Area.View
 
         public IEnumerator PlayFadeAnimation(System.IObserver<bool> observer, bool visibled)
         {
-            image.DOFade(endValue: visibled ? 1.0f : 0.0f, robotUnitImageConfig.Duration)
+            image.DOFade(endValue: visibled ? 1.0f : 0.0f, robotUnitImageConfig.Durations[0])
                 .SetUpdate(true)
                 .OnComplete(() => observer.OnNext(true));
             yield return null;
@@ -53,7 +55,7 @@ namespace Area.View
         public IEnumerator PlayAnimationMove(System.IObserver<bool> observer)
         {
             Transform myTransform = this.transform;
-            myTransform.DOMove(robotUnitImageConfig.Pos, robotUnitImageConfig.Duration)
+            myTransform.DOMove(robotUnitImageConfig.Pos, robotUnitImageConfig.Durations[0])
                 .SetUpdate(true)
                 .OnComplete(() => observer.OnNext(true));
             myTransform.eulerAngles = robotUnitImageConfig.Rotate;
@@ -68,8 +70,7 @@ namespace Area.View
 
         public IEnumerator PlayRenderEnable(System.IObserver<bool> observer)
         {
-            image.DOColor(enabledColor, robotUnitImageConfig.Duration)
-                .From(disabledColor)
+            image.DOColor(enabledColor, robotUnitImageConfig.Durations[0])
                 .OnComplete(() => observer.OnNext(true));
 
             yield return null;
@@ -78,6 +79,20 @@ namespace Area.View
         public void RendererEnableMode()
         {
             image.color = enabledColor;
+        }
+
+        public IEnumerator PlayAnimationMoveAndErrorSignal(System.IObserver<bool> observer)
+        {
+            transform.eulerAngles = robotUnitImageConfig.Rotate;
+            Sequence sequence = DOTween.Sequence()
+                .Append(transform.DOMove(robotUnitImageConfig.Pos, robotUnitImageConfig.Durations[0]))
+                .Append(image.DOColor(errorColor, robotUnitImageConfig.Durations[1])
+                    .From(image.color = enabledColor)
+                    .SetLoops(7, LoopType.Yoyo))
+                .SetUpdate(true)
+                .OnComplete(() => observer.OnNext(true));
+
+            yield return null;
         }
     }
 
@@ -122,5 +137,11 @@ namespace Area.View
         /// <param name="observer">バインド</param>
         /// <returns>コルーチン</returns>
         public IEnumerator PlayAnimationMove(System.IObserver<bool> observer);
+        /// <summary>
+        /// 位置を動かしてエラーになるアニメーションを再生
+        /// </summary>
+        /// <param name="observer">バインド</param>
+        /// <returns>コルーチン</returns>
+        public IEnumerator PlayAnimationMoveAndErrorSignal(System.IObserver<bool> observer);
     }
 }

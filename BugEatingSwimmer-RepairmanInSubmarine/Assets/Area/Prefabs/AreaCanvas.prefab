@@ -63,7 +63,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pos: {x: 1130, y: 250, z: 0}
   rotate: {x: 0, y: 0, z: 180}
-  duration: 1
+  durations: []
   enumUnitID: 4
   navigations:
   - m_Mode: 4
@@ -269,7 +269,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pos: {x: 790, y: 250, z: 0}
   rotate: {x: 0, y: 0, z: 0}
-  duration: 1
+  durations: []
   enumUnitID: 3
   navigations: []
 --- !u!114 &482025811
@@ -760,7 +760,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pos: {x: 1130, y: 250, z: 0}
   rotate: {x: 0, y: 0, z: 180}
-  duration: 1
+  durations: []
   enumUnitID: 4
   navigations:
   - m_Mode: 4
@@ -966,7 +966,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pos: {x: 790, y: 250, z: 0}
   rotate: {x: 0, y: 0, z: 0}
-  duration: 1
+  durations: []
   enumUnitID: 3
   navigations: []
 --- !u!114 &1588008031
@@ -1247,7 +1247,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -801, y: 0}
   m_SizeDelta: {x: 106, y: 54}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4776111249414401303
@@ -1342,7 +1342,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 82f3d69b4c25b7e4f8aacd99e11b2908, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 38f1a6a11f0adce4281da43594261439, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1450,7 +1450,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 82f3d69b4c25b7e4f8aacd99e11b2908, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 38f1a6a11f0adce4281da43594261439, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1557,7 +1557,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0f4074fc70f173e489c03e278d2cacc3, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6eb6da740fa24e849997c94868963dd1, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1742,6 +1742,8 @@ MonoBehaviour:
   robotUnitImageConfig: {fileID: 167815372601006123}
   image: {fileID: 4431877571319234884}
   disabledColor: {r: 0.4, g: 0.4, b: 0.4, a: 1}
+  enabledColor: {r: 1, g: 1, b: 1, a: 1}
+  errorColor: {r: 0.99, g: 0.26, b: 0.16, a: 1}
 --- !u!114 &167815372601006123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1756,7 +1758,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pos: {x: 790, y: 250, z: 0}
   rotate: {x: 0, y: 0, z: 0}
-  duration: 1
+  durations:
+  - 1
   enumUnitID: 3
   navigations: []
 --- !u!1 &4431877571429621006
@@ -2007,6 +2010,8 @@ MonoBehaviour:
   robotUnitImageConfig: {fileID: 1274378947}
   image: {fileID: 4431877571617131824}
   disabledColor: {r: 0.4, g: 0.4, b: 0.4, a: 1}
+  enabledColor: {r: 1, g: 1, b: 1, a: 1}
+  errorColor: {r: 0.99, g: 0.26, b: 0.16, a: 1}
 --- !u!114 &1274378947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2021,7 +2026,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pos: {x: 960, y: 240, z: 0}
   rotate: {x: 0, y: 0, z: 0}
-  duration: 1
+  durations:
+  - 1
+  - 0.25
   enumUnitID: 2
   navigations:
   - m_Mode: 4
@@ -2605,6 +2612,8 @@ MonoBehaviour:
   robotUnitImageConfig: {fileID: 1221168414896910395}
   image: {fileID: 4431877572590301442}
   disabledColor: {r: 0.4, g: 0.4, b: 0.4, a: 1}
+  enabledColor: {r: 1, g: 1, b: 1, a: 1}
+  errorColor: {r: 0.99, g: 0.26, b: 0.16, a: 1}
 --- !u!114 &1221168414896910395
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2619,7 +2628,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pos: {x: 1130, y: 250, z: 0}
   rotate: {x: 0, y: 0, z: 180}
-  duration: 1
+  durations:
+  - 1
   enumUnitID: 4
   navigations:
   - m_Mode: 4
@@ -2930,6 +2940,8 @@ MonoBehaviour:
   robotUnitImageConfig: {fileID: 7646272505103338196}
   image: {fileID: 4431877572868532970}
   disabledColor: {r: 0.4, g: 0.4, b: 0.4, a: 1}
+  enabledColor: {r: 1, g: 1, b: 1, a: 1}
+  errorColor: {r: 0.99, g: 0.26, b: 0.16, a: 1}
 --- !u!114 &7646272505103338196
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2944,7 +2956,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pos: {x: 1000, y: 280, z: 0}
   rotate: {x: 0, y: 0, z: 0}
-  duration: 1
+  durations:
+  - 1
   enumUnitID: 5
   navigations: []
 --- !u!114 &729051237
@@ -3253,6 +3266,8 @@ MonoBehaviour:
   robotUnitImageConfig: {fileID: 4325483597058640246}
   image: {fileID: 4431877573159457297}
   disabledColor: {r: 0.4, g: 0.4, b: 0.4, a: 1}
+  enabledColor: {r: 1, g: 1, b: 1, a: 1}
+  errorColor: {r: 0.99, g: 0.26, b: 0.16, a: 1}
 --- !u!114 &4325483597058640246
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3267,7 +3282,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pos: {x: 960, y: 480, z: 0}
   rotate: {x: 0, y: 0, z: 0}
-  duration: 1
+  durations:
+  - 1
+  - 0.25
   enumUnitID: 1
   navigations:
   - m_Mode: 4
@@ -3732,7 +3749,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 82f3d69b4c25b7e4f8aacd99e11b2908, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 38f1a6a11f0adce4281da43594261439, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3840,7 +3857,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 82f3d69b4c25b7e4f8aacd99e11b2908, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 38f1a6a11f0adce4281da43594261439, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

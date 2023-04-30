@@ -29,6 +29,10 @@ namespace Area.View
                 {
                     case EnumRobotPanel.FallingApart:
                         break;
+                    case EnumRobotPanel.OnStartBody:
+                        break;
+                    case EnumRobotPanel.ConnectedFailureHead:
+                        break;
                     case EnumRobotPanel.ConnectedHead:
                         robotUnitImageViews[0].SetPositionAndEulerAngle();
                         robotUnitImageViews[1].SetPositionAndEulerAngle();
@@ -78,8 +82,19 @@ namespace Area.View
                     observer.OnNext(true);
                     break;
                 case EnumRobotPanel.ConnectedFailureHead:
-                    // T.B.D 接続失敗演出
-                    observer.OnNext(false);
+                    var connectedBodyFailure = new IntReactiveProperty();
+                    connectedBodyFailure.ObserveEveryValueChanged(x => x.Value)
+                        .Subscribe(x =>
+                        {
+                            if (1 < connectedBodyFailure.Value)
+                                observer.OnNext(false);
+                        });
+                    Observable.FromCoroutine<bool>(observer => robotUnitImageViews[0].PlayAnimationMoveAndErrorSignal(observer))
+                        .Subscribe(_ => connectedBodyFailure.Value++)
+                        .AddTo(gameObject);
+                    Observable.FromCoroutine<bool>(observer => robotUnitImageViews[1].PlayAnimationMoveAndErrorSignal(observer))
+                        .Subscribe(_ => connectedBodyFailure.Value++)
+                        .AddTo(gameObject);
                     break;
                 case EnumRobotPanel.ConnectedHead:
                     var connectedBody = new IntReactiveProperty();
@@ -195,6 +210,7 @@ namespace Area.View
                     break;
                 case EnumUnitID.Core:
                     // 処理無し
+                    observer.OnNext(true);
                     break;
                 default:
                     throw new System.Exception("例外エラー");

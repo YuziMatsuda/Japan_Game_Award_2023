@@ -8,6 +8,7 @@ using UniRx;
 using UniRx.Triggers;
 using Area.Audio;
 using System.Linq;
+using Fungus;
 
 namespace Area.Presenter
 {
@@ -51,10 +52,10 @@ namespace Area.Presenter
         [SerializeField] private RobotPanelView robotPanelView;
         /// <summary>全てのユニットの制御のモデル</summary>
         [SerializeField] private RobotPanelModel robotPanelModel;
-        [SerializeField] private bool isConnectedAnimationDemo = true;
-        [SerializeField] private EnumUnitID playRenderEnableDemo = EnumUnitID.Head;
-        [SerializeField] private EnumUnitID[] playRenderEnablesDemo;
-        [SerializeField] private Mission[] missionsDemo;
+        /// <summary>Fungusのレシーバー</summary>
+        [SerializeField] private MessageReceived[] receivers;
+        /// <summary>Fungusのフローチャートモデル</summary>
+        [SerializeField] private FlowchartModel flowchartModel;
 
         private void Reset()
         {
@@ -126,6 +127,8 @@ namespace Area.Presenter
             assignedSeastarCountView = GameObject.Find("AssignedSeastarCount").GetComponent<AssignedSeastarCountView>();
             robotPanelView = GameObject.Find("RobotPanel").GetComponent<RobotPanelView>();
             robotPanelModel = GameObject.Find("RobotPanel").GetComponent<RobotPanelModel>();
+            receivers = GameObject.FindObjectsOfType<Fungus.MessageReceived>();
+            flowchartModel = GameObject.Find("Flowchart").GetComponent<FlowchartModel>();
         }
 
         public void OnStart()
@@ -152,6 +155,8 @@ namespace Area.Presenter
             foreach (var unitID in robotPanelModel.RobotUnitImageModels.Select(q => q.RobotUnitImageConfig.EnumUnitID))
                 if (!robotPanelView.RendererDisableMode(unitID))
                     Debug.LogError("対象ユニットを非選択状態にする呼び出しの失敗");
+            if (!playerView.RedererCursorDirectionAndDistance(new UnityEngine.UI.Navigation(), EnumCursorDistance.Long))
+                Debug.LogError("ナビゲーションの状態によってカーソル表示を変更呼び出しの失敗");
             //    foreach (var child in pageViews)
             //        if (child != null)
             //            child.SetVisible(false);
@@ -169,17 +174,19 @@ namespace Area.Presenter
 
             AreaGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_select);
             var enumRobotpanel = common.GetStateOfRobotUnitConnect();
-            if (isConnectedAnimationDemo)
+            if (common.IsConnectedAnimation())
             {
-                // T.B.D 実績一覧管理の履歴を取得
-                var history = /*missionsDemo*/common.GetMissionHistoryIgnoreLast();
-                // 最後の一つ前の状態を取得する
-                if (!robotPanelView.SetPositionAndEulerAngleOfAllUnit(history[history.Length - 1].enumRobotPanel))
-                    Debug.LogError("各ユニットに対してアニメーション再生呼び出しの失敗");
-                foreach (var unitID in history.Select(q => q.enumUnitID).Distinct())
+                // 実績一覧管理の履歴を取得
+                var missions = common.GetMissions();
+                if (0 < missions.Length)
                 {
-                    if (!robotPanelView.RendererEnableMode(unitID))
-                        Debug.LogError("対象ユニットを非選択状態にする呼び出しの失敗");
+                    // 最後に解除したミッション情報を取得する
+                    if (!robotPanelView.SetPositionAndEulerAngleOfAllUnit(missions[missions.Length - 1].enumRobotPanel))
+                        Debug.LogError("各ユニットに対してアニメーション再生呼び出しの失敗");
+                    foreach (var unitID in missions.Select(q => q.enumUnitID)
+                        .Distinct())
+                        if (!robotPanelView.RendererEnableMode(unitID))
+                            Debug.LogError("対象ユニットを非選択状態にする呼び出しの失敗");
                 }
             }
             else
@@ -187,6 +194,24 @@ namespace Area.Presenter
                 if (!robotPanelView.SetPositionAndEulerAngleOfAllUnit(enumRobotpanel))
                     Debug.LogError("各ユニットに対してアニメーション再生呼び出しの失敗");
             }
+            // シナリオ管理
+            flowchartModel.ReadedScenarioNo.ObserveEveryValueChanged(x => x.Value)
+                .Subscribe(x =>
+                {
+                    if (0 < x)
+                    {
+                        // 実績履歴を更新
+                        if (common.AddMissionHistory() < 1)
+                            Debug.LogError("実績履歴を更新呼び出しの失敗");
+                        Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                            .Subscribe(_ =>
+                            {
+                                // イベント完了後の処理
+                                AreaGameManager.Instance.SceneOwner.ReLoadScene();
+                            })
+                            .AddTo(gameObject);
+                    }
+                });
             // シーン読み込み時のアニメーション
             Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Open))
                 .Subscribe(_ =>
@@ -201,8 +226,8 @@ namespace Area.Presenter
                     //if (!common.SetCounterBetweenAndFillAmountAllGage(seastarGageViews))
                     //    Debug.LogError("全ヒトデゲージのカウンターとフィルターをセット呼び出しの失敗");
 
-                    // T.B.D エリア解放・結合テストのセーブファイル、イベント管理を参照して引数を切り替える
-                    if (isConnectedAnimationDemo)
+                    // エリア解放・結合テストのセーブファイル、イベント管理を参照して引数を切り替える
+                    if (common.IsConnectedAnimation())
                     {
                         Observable.FromCoroutine<bool>(observer => robotPanelView.PlayAnimationOfAllUnit(enumRobotpanel, observer))
                             .Subscribe(x =>
@@ -211,47 +236,67 @@ namespace Area.Presenter
                                 {
                                     if (enumRobotpanel.Equals(EnumRobotPanel.ConnectedHead))
                                     {
-                                        // T.B.D 実績一覧管理を参照して引数を切り替える
-                                        Observable.FromCoroutine<bool>(observer => robotPanelView.PlayRenderEnable(playRenderEnablesDemo, observer))
+                                        // 実績一覧管理を参照して引数を切り替える
+                                        // ※ヘッドITの場合のみライトアームとレフトアームの解放演出が入るためここのみ配列を渡す
+                                        Observable.FromCoroutine<bool>(observer => robotPanelView.PlayRenderEnable(common.GetPlayRenderEnables(), observer))
                                             .Subscribe(_ =>
                                             {
-                                                Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        // イベント完了後の処理
-                                                        AreaGameManager.Instance.SceneOwner.ReLoadScene();
-                                                    })
-                                                    .AddTo(gameObject);
+                                                // シナリオのレシーバーへ送信
+                                                foreach (var receiver in receivers)
+                                                {
+                                                    var n = flowchartModel.GetBlockName();
+                                                    if (!string.IsNullOrEmpty(n))
+                                                        receiver.OnSendFungusMessage(n);
+                                                    else
+                                                        Debug.LogWarning("取得ブロック名無し");
+                                                }
                                             })
                                             .AddTo(gameObject);
                                     }
                                     else
                                     {
-
-                                        // T.B.D 実績一覧管理を参照して引数を切り替える
-                                        Observable.FromCoroutine<bool>(observer => robotPanelView.PlayRenderEnable(playRenderEnableDemo, observer))
+                                        // 実績一覧管理を参照して引数を切り替える
+                                        Observable.FromCoroutine<bool>(observer => robotPanelView.PlayRenderEnable(common.GetPlayRenderEnables()[0], observer))
                                             .Subscribe(_ =>
                                             {
-                                                Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
-                                                    .Subscribe(_ =>
+                                                // シナリオのレシーバーへ送信
+                                                foreach (var receiver in receivers)
+                                                {
+                                                    var n = flowchartModel.GetBlockName();
+                                                    if (!string.IsNullOrEmpty(n))
+                                                        receiver.OnSendFungusMessage(n);
+                                                    else
                                                     {
-                                                        // イベント完了後の処理
-                                                        AreaGameManager.Instance.SceneOwner.ReLoadScene();
-                                                    })
-                                                    .AddTo(gameObject);
+                                                        Debug.LogWarning("取得ブロック名無し");
+                                                        // 実績履歴を更新
+                                                        if (common.AddMissionHistory() < 1)
+                                                            Debug.LogError("実績履歴を更新呼び出しの失敗");
+                                                        Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                                            .Subscribe(_ =>
+                                                            {
+                                                                // イベント完了後の処理
+                                                                AreaGameManager.Instance.SceneOwner.ReLoadScene();
+                                                            })
+                                                            .AddTo(gameObject);
+                                                        // ブロック名を取得できない場合はブレイクする
+                                                        break;
+                                                    }
+                                                }
                                             })
                                             .AddTo(gameObject);
                                     }
                                 }
                                 else
                                 {
-                                    Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
-                                        .Subscribe(_ =>
-                                        {
-                                            // イベント完了後の処理
-                                            AreaGameManager.Instance.SceneOwner.ReLoadScene();
-                                        })
-                                        .AddTo(gameObject);
+                                    // シナリオのレシーバーへ送信
+                                    foreach (var receiver in receivers)
+                                    {
+                                        var n = flowchartModel.GetBlockName();
+                                        if (!string.IsNullOrEmpty(n))
+                                            receiver.OnSendFungusMessage(n);
+                                        else
+                                            Debug.LogWarning("取得ブロック名無し");
+                                    }
                                 }
                             })
                             .AddTo(gameObject);
@@ -259,7 +304,7 @@ namespace Area.Presenter
                 })
                 .AddTo(gameObject);
 
-            if (isConnectedAnimationDemo)
+            if (common.IsConnectedAnimation())
                 // 演出がある場合は一度シーンをリロードする想定のため、後続処理を実行しない
                 return;
 
@@ -292,7 +337,7 @@ namespace Area.Presenter
                 item.Content.StageState.ObserveEveryValueChanged(x => x.Value)
                     .Subscribe(x =>
                     {
-                        if (x <= (int)EnumAreaOpenedAndITStateState.Select)
+                        if ((int)EnumAreaOpenedAndITStateState.Select <= x)
                         {
                             var unitID = robotPanelModel.RobotUnitImageModels[item.Index].RobotUnitImageConfig.EnumUnitID;
                             if (!robotPanelView.RendererEnableMode(unitID))

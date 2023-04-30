@@ -35,6 +35,10 @@ namespace Area.Common
         [SerializeField] private GimmickOwner gimmickOwner;
         /// <summary>ギミックのオーナー</summary>
         public GimmickOwner GimmickOwner => gimmickOwner;
+        /// <summary>実績一覧管理のオーナー</summary>
+        [SerializeField] private MissionOwner missionOwner;
+        /// <summary>実績一覧管理のオーナー</summary>
+        public MissionOwner MissionOwner => missionOwner;
 
         private void Reset()
         {
@@ -43,6 +47,7 @@ namespace Area.Common
             sceneOwner = GameObject.Find("SceneOwner").GetComponent<SceneOwner>();
             cursorVisible = GameObject.Find("CursorVisible").GetComponent<CursorVisible>();
             gimmickOwner = GameObject.Find("GimmickOwner").GetComponent<GimmickOwner>();
+            missionOwner = GameObject.Find("MissionOwner").GetComponent<MissionOwner>();
         }
 
         private void Awake()
