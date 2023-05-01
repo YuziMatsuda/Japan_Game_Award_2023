@@ -161,6 +161,8 @@ namespace Area.Presenter
             //        item.gameObject.SetActive(false);
             if (!assignedSeastarCountView.SetCounterText(AreaGameManager.Instance.GimmickOwner.GetAssinedCounter()))
                 Debug.LogError("ヒトデ総配属人数をセット呼び出しの失敗");
+            if (!common.CheckMissionAndSaveDatasCSVOfMission())
+                Debug.LogError("ミッションの更新チェック呼び出しの失敗");
 
             AreaGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_select);
             var enumRobotpanel = common.GetStateOfRobotUnitConnect();

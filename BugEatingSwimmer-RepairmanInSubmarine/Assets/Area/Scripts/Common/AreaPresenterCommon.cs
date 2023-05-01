@@ -513,6 +513,43 @@ namespace Area.Common
                 return false;
             }
         }
+
+        public bool CheckMissionAndSaveDatasCSVOfMission()
+        {
+            try
+            {
+                var temp = new AreaTemplateResourcesAccessory();
+                var areaOpenedAndITState = temp.GetAreaOpenedAndITState(temp.LoadSaveDatasCSV(ConstResorcesNames.AREA_OPENED_AND_IT_STATE));
+                var mission = temp.GetMission(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION));
+                var updateCount = 0;
+                // T.B.D ミッションごとに条件が異なるため洗いだす
+                if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == (int)EnumUnitID.Head &&
+                    int.Parse(q[EnumAreaOpenedAndITState.State]) == (int)EnumAreaOpenedAndITStateState.Cleared)
+                    .Select(q => q)
+                    .ToArray().Length &&
+                    0 < mission.Where(q => q[EnumMission.MissionID].Equals($"{EnumMissionID.MI0001}") &&
+                    q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_FALSE))
+                    .Select(q => q)
+                    .ToArray().Length)
+                {
+                    // MI0001
+                    mission.Where(q => q[EnumMission.MissionID].Equals($"{EnumMissionID.MI0001}"))
+                        .Select(q => q)
+                        .ToArray()[0][EnumMission.Unlock] = ConstGeneric.DIGITFORM_TRUE;
+                    updateCount++;
+                }
+                if (0 < updateCount)
+                    if (!temp.SaveDatasCSVOfMission(ConstResorcesNames.MISSION, mission))
+                        throw new System.Exception("実績一覧管理データをCSVデータへ保存呼び出しの失敗");
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
     }
 
     /// <summary>
@@ -592,5 +629,10 @@ namespace Area.Common
         /// <param name="enumUnitID">エリアID</param>
         /// <returns>成功／失敗</returns>
         public bool SetSystemCommonCashAndDefaultStageIndex(EnumUnitID enumUnitID);
+        /// <summary>
+        /// ミッションの更新チェック
+        /// </summary>
+        /// <returns>成功／失敗</returns>
+        public bool CheckMissionAndSaveDatasCSVOfMission();
     }
 }
