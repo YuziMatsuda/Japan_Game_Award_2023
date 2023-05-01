@@ -5,6 +5,8 @@ using Main.Model;
 using Main.Common;
 using Main.View;
 using UniRx;
+using Main.Template;
+using System.Linq;
 
 namespace Main.Presenter
 {
@@ -160,6 +162,58 @@ namespace Main.Presenter
                 return false;
             }
         }
+
+        public bool SaveDatasCSVOfAreaOpenedAndITStateAndOfMission()
+        {
+            try
+            {
+                // ステージのクリア状態をチェック
+                var temp = new MainTemplateResourcesAccessory();
+                var mainSceneStagesState = temp.GetMainSceneStagesState(temp.LoadSaveDatasCSV(ConstResorcesNames.MAIN_SCENE_STAGES_STATE));
+                // 各エリアのステージがクリア済みならエリアのステータスを更新する
+                var areaOpenedAndITState = temp.GetAreaOpenedAndITState(temp.LoadSaveDatasCSV(ConstResorcesNames.AREA_OPENED_AND_IT_STATE));
+                var areaUnitsDefault = temp.GetAreaUnits(temp.LoadSaveDatasCSV(ConstResorcesNames.AREA_UNITS));
+                foreach (var unitID in areaUnitsDefault.Select(q => q[EnumAreaUnits.UnitID])
+                    .Distinct())
+                {
+                    bool allCleared = false;
+                    foreach (var stageID in areaUnitsDefault.Where(q => q[EnumAreaUnits.UnitID] == unitID)
+                        .Select(q => q[EnumAreaUnits.StageID]))
+                        allCleared = mainSceneStagesState[stageID][EnumMainSceneStagesState.State] == 2;
+                    if (allCleared)
+                    {
+                        if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == unitID &&
+                            int.Parse(q[EnumAreaOpenedAndITState.State]) < (int)EnumAreaOpenedAndITStateState.Cleared)
+                            .Select(q => q)
+                            .ToArray().Length)
+                            areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == unitID &&
+                                int.Parse(q[EnumAreaOpenedAndITState.State]) < (int)EnumAreaOpenedAndITStateState.Cleared)
+                                .Select(q => q)
+                                .ToArray()[0][EnumAreaOpenedAndITState.State] = $"{(int)EnumAreaOpenedAndITStateState.Cleared}";
+                        // 最終エリアでないなら次のエリアを1にする
+                        var nextUnitID = unitID + 1;
+                        if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == nextUnitID &&
+                            int.Parse(q[EnumAreaOpenedAndITState.State]) < (int)EnumAreaOpenedAndITStateState.Select)
+                            .Select(q => q)
+                            .ToArray().Length)
+                            areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == nextUnitID &&
+                                int.Parse(q[EnumAreaOpenedAndITState.State]) < (int)EnumAreaOpenedAndITStateState.Select)
+                                .Select(q => q)
+                                .ToArray()[0][EnumAreaOpenedAndITState.State] = $"{(int)EnumAreaOpenedAndITStateState.Select}";
+                    }
+                }
+                if (!temp.SaveDatasCSVOfAreaOpenedAndITState(ConstResorcesNames.AREA_OPENED_AND_IT_STATE, areaOpenedAndITState))
+                    throw new System.Exception("エリア解放・結合テスト済みデータをCSVデータへ保存呼び出しの失敗");
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+
+        }
     }
 
     /// <summary>
@@ -220,5 +274,10 @@ namespace Main.Presenter
         /// <param name="addCountValue">カウンター値（1は加算、0はリセット、-1は更新なし）</param>
         /// <returns>成功／失敗</returns>
         public bool PlayCounterBetweenAndFillAmountAnimation(SeastarGageView seastarGageView, IntReactiveProperty seastarGageCount, int addCountValue);
+        /// <summary>
+        /// エリア解放と実績一覧を更新
+        /// </summary>
+        /// <returns>成功／失敗</returns>
+        public bool SaveDatasCSVOfAreaOpenedAndITStateAndOfMission();
     }
 }

@@ -501,6 +501,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2198966657046190899}
     m_Modifications:
+    - target: {fileID: 6754346844346972341, guid: 5a958d04c017b974bbf943b7ef0de300, type: 3}
+      propertyPath: bugMoveDirection.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6754346844346972341, guid: 5a958d04c017b974bbf943b7ef0de300, type: 3}
+      propertyPath: bugMoveDirection.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7921164854875228516, guid: 5a958d04c017b974bbf943b7ef0de300, type: 3}
       propertyPath: enumNodeCodeId
       value: 1
@@ -972,7 +980,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7145725760183925158, guid: 9c7b53c6032e8dd4f9734c836f288c3b, type: 3}
       propertyPath: m_Name
-      value: Stage_3
+      value: Stage_1-3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9c7b53c6032e8dd4f9734c836f288c3b, type: 3}

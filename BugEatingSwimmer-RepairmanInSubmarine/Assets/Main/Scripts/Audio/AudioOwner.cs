@@ -104,15 +104,9 @@ namespace Main.Audio
     /// </summary>
     public enum ClipToPlayBGM
     {
-        /// <summary>ステージ1～10のBGM</summary>
-        bgm_stage_vol1,
-        /// <summary>ステージ11～20のBGM</summary>
-        bgm_stage_vol2,
-        /// <summary>ステージ21～30のBGM</summary>
-        bgm_stage_vol3,
-        /// <summary>ステージ31～40のBGM</summary>
-        bgm_stage_vol4,
-        /// <summary>ステージ41～50のBGM</summary>
-        bgm_stage_vol5,
+        /// <summary>メインBGM（エリア１～４）</summary>
+        bgm_main,
+        /// <summary>深海BGM（エリア５）</summary>
+        bgm_shinkai,
     }
 }

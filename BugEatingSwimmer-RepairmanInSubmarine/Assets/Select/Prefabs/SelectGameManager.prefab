@@ -252,6 +252,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioSource: {fileID: 3906211333385564416}
   clip:
+  - {fileID: 8300000, guid: 2f9a326f50ae9c94a861ea548f0aa4da, type: 3}
   - {fileID: 8300000, guid: 5f80b528faa4ae64aaaa2634ca59b75d, type: 3}
 --- !u!1 &3906211333422925634
 GameObject:
@@ -432,7 +433,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nextSceneName: MainScene
-  backSceneName: TitleScene
+  backSceneName: AreaScene
 --- !u!1 &3906211334697514266
 GameObject:
   m_ObjectHideFlags: 0

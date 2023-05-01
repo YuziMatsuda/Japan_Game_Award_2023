@@ -14,7 +14,7 @@ namespace Select.Common
         /// <summary>次のシーン名</summary>
         [SerializeField] private string nextSceneName = "MainScene";
         /// <summary>前のシーン名</summary>
-        [SerializeField] private string backSceneName = "TitleScene";
+        [SerializeField] private string backSceneName = "AreaScene";
 
         public void OnStart()
         {
