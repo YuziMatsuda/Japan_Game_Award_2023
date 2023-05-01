@@ -497,8 +497,16 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1111211621718819112, guid: 8162b5c3ba13eba43b8254dae0265225, type: 3}
+      propertyPath: TrailModule.enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1111211621718819112, guid: 8162b5c3ba13eba43b8254dae0265225, type: 3}
       propertyPath: ShapeModule.radiusThickness
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1111211621718819112, guid: 8162b5c3ba13eba43b8254dae0265225, type: 3}
+      propertyPath: TrailModule.widthOverTrail.scalar
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 1111211621718819112, guid: 8162b5c3ba13eba43b8254dae0265225, type: 3}
       propertyPath: ColorModule.gradient.maxGradient.key0.b
@@ -560,6 +568,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: ParticlesOfLightGatherAround
       objectReference: {fileID: 0}
+    - target: {fileID: 1111211621718819115, guid: 8162b5c3ba13eba43b8254dae0265225, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1111211621718819115, guid: 8162b5c3ba13eba43b8254dae0265225, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: b1a6488a411011a44b340d208e79449b, type: 2}
+    - target: {fileID: 1111211621718819115, guid: 8162b5c3ba13eba43b8254dae0265225, type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: b1a6488a411011a44b340d208e79449b, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8162b5c3ba13eba43b8254dae0265225, type: 3}
 --- !u!4 &707168352 stripped
@@ -721,7 +741,7 @@ TrailRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: b1a6488a411011a44b340d208e79449b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
