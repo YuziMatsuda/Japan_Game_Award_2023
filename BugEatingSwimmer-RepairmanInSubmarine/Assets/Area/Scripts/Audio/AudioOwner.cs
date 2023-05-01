@@ -83,7 +83,9 @@ namespace Area.Audio
     /// </summary>
     public enum ClipToPlayBGM
     {
-        /// <summary>タイトル</summary>
+        /// <summary>回想</summary>
+        bgm_kaiso,
+        /// <summary>セレクト</summary>
         bgm_select,
     }
 }
