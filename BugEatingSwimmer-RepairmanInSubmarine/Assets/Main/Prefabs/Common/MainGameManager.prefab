@@ -375,12 +375,11 @@ MonoBehaviour:
   fadeImageModel: {fileID: 0}
   playerStartPointView: {fileID: 0}
   safeZoneModel: {fileID: 0}
-  goalPointView: {fileID: 0}
-  goalPointModel: {fileID: 0}
   playerView: {fileID: 0}
   playerModel: {fileID: 0}
   targetPointerView: {fileID: 0}
   assignedSeastarCountView: {fileID: 0}
+  cinemachineVirtualCameraView: {fileID: 0}
 --- !u!1 &1369696454729978949
 GameObject:
   m_ObjectHideFlags: 0
@@ -720,11 +719,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioSource: {fileID: 1369696455142536826}
   clip:
-  - {fileID: 8300000, guid: 697f873c5e0ef01488a20e896673181c, type: 3}
-  - {fileID: 8300000, guid: 586be2ca5a05532419de30f170d26adc, type: 3}
-  - {fileID: 8300000, guid: 77af6d6d19b6dde4ea587954663ecc2d, type: 3}
-  - {fileID: 8300000, guid: d828cf9c1f6ceed4d81eff864410e1c7, type: 3}
-  - {fileID: 8300000, guid: b814919c0bb344840aed94f7fa3e5bd0, type: 3}
+  - {fileID: 8300000, guid: f64bc47d37ba2db439e50a2649448161, type: 3}
+  - {fileID: 8300000, guid: 1778505b67fd50e46a4001eb438154c7, type: 3}
 --- !u!1 &1369696455348085395
 GameObject:
   m_ObjectHideFlags: 0
