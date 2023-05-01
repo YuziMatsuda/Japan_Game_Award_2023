@@ -83,6 +83,8 @@ namespace Select.Audio
     /// </summary>
     public enum ClipToPlayBGM
     {
+        /// <summary>回想</summary>
+        bgm_kaiso,
         /// <summary>タイトル</summary>
         bgm_select,
     }

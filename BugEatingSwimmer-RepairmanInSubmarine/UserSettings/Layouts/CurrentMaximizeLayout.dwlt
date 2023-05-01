@@ -166,7 +166,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 14219
+  controlID: 138
 --- !u!114 &5
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -474,9 +474,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: -114.81724, y: 112.762764, z: -5.3181496}
+    m_Target: {x: 972.7574, y: 570.5466, z: -5.04919}
     speed: 2
-    m_Value: {x: -114.81724, y: 112.762764, z: -5.3181496}
+    m_Value: {x: 972.7574, y: 570.5466, z: -5.04919}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -527,9 +527,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 887.8687
+    m_Target: 687.49207
     speed: 2
-    m_Value: 887.8687
+    m_Value: 687.49207
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -675,9 +675,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: be7b0000
-      m_LastClickedID: 0
-      m_ExpandedIDs: d80cfaffcc83faffdc83faffe283fafff483faff2e84faff3084fafff089fafff289fafff890fafffa90faff3297faff3497faff3420fbff4220fbffc4d0fbffe4dbfbfffcdbfbff6cdcfbff80dcfbff86dcfbff96dcfbfffa84fdff1cb2ffff22cbffffd4f9ffffa6faffffb6faffffbcfaffffcefaffff08fbffff0afbffff
+      m_SelectedIDs: 1ceaffff
+      m_LastClickedID: -5604
+      m_ExpandedIDs: 1eedffff28edffff62edffffb0f6ffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -864,8 +864,7 @@ MonoBehaviour:
   m_SearchFilter:
     m_NameFilter: 
     m_ClassNames: []
-    m_AssetLabels:
-    - Scene
+    m_AssetLabels: []
     m_AssetBundleNames: []
     m_VersionControlStates: []
     m_SoftLockControlStates: []
@@ -875,22 +874,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Select/Scripts/View
+    - Assets/Title/Textures
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Select/Scripts/View
+  - Assets/Title/Textures
   m_LastFoldersGridSize: 16
   m_LastProjectPath: C:\Users\kzpaqu\Documents\Japan_Game_Award_2023\BugEatingSwimmer-RepairmanInSubmarine
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 633}
-    m_SelectedIDs: 44780000
-    m_LastClickedID: 30788
-    m_ExpandedIDs: 000000000a7800000c7800000e78000010780000127800001478000016780000187800001a7800001c7800001e780000207800002278000024780000347800003e78000000ca9a3b
+    scrollPos: {x: 0, y: 937}
+    m_SelectedIDs: dc800000
+    m_LastClickedID: 32988
+    m_ExpandedIDs: 000000005a7f00005c7f00005e7f0000607f0000627f0000647f0000667f0000687f00006a7f00006c7f00006e7f0000707f0000727f0000747f0000767f0000787f0000548000005880000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -918,7 +917,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000000a7800000c7800000e78000010780000127800001478000016780000187800001a7800001c7800001e78000020780000227800002478000000ca9a3b
+    m_ExpandedIDs: 000000005a7f00005c7f00005e7f0000607f0000627f0000647f0000667f0000687f00006a7f00006c7f00006e7f0000707f0000727f0000747f0000767f0000787f0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -943,24 +942,24 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: be7b0000
-    m_LastClickedInstanceID: 31678
+    m_SelectedInstanceIDs: 1ceaffff
+    m_LastClickedInstanceID: -5604
     m_HadKeyboardFocusLastEvent: 1
-    m_ExpandedInstanceIDs: c623000024750000bc7900001e800000708500006c7b0000ac7e0000a67e0000e6950000f4860000fc860000ac860000f68600004cdf00007ee00000fe860000b2860000ca86000046d700001cc000000ed800007c87000006dc0000762cf7ff7a9a000082a40000ca750000c66f0000f6f101005c7d00005e7d000044a200006eb30100547d00002e650200
+    m_ExpandedInstanceIDs: c623000024750000bc7900001e800000708500006c7b0000ac7e0000a67e0000e6950000f4860000fc860000ac860000f68600004cdf00007ee00000fe860000b2860000ca86000046d700001cc000000ed800007c87000006dc0000762cf7ff7a9a000082a40000ca750000c66f0000f6f101005c7d00005e7d000044a200006eb30100547d00002e6502000a7900002a960000cc8b0000b6740000e2bd0000f0bd0000227a000002810000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: 
-      m_OriginalName: 
+      m_Name: TitleScene
+      m_OriginalName: TitleScene
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 0
+      m_UserData: 33064
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 11
+      m_OriginalEventType: 0
       m_IsRenamingFilename: 1
       m_ClientGUIView: {fileID: 14}
     m_CreateAssetUtility:

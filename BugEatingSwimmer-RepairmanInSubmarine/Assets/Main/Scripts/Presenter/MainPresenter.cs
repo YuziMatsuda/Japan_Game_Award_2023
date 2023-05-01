@@ -67,10 +67,6 @@ namespace Main.Presenter
         [SerializeField] private PlayerStartPointView playerStartPointView;
         /// <summary>セーフゾーンのモデル</summary>
         [SerializeField] private SafeZoneModel safeZoneModel;
-        /// <summary>ゴールポイントのビュー</summary>
-        [SerializeField] private GoalPointView goalPointView;
-        /// <summary>ゴールポイントのモデル</summary>
-        [SerializeField] private GoalPointModel goalPointModel;
         /// <summary>プレイヤーのビュー</summary>
         [SerializeField] private PlayerView playerView;
         /// <summary>プレイヤーのモデル</summary>
@@ -254,12 +250,15 @@ namespace Main.Presenter
                         MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.me_game_clear);
                         // クリア済みデータの更新
                         mainSceneStagesState[currentStageDic[EnumSystemCommonCash.SceneId]][EnumMainSceneStagesState.State] = 2;
-                        if (currentStageDic[EnumSystemCommonCash.SceneId] < mainSceneStagesState.Length - 1)
+                        if (currentStageDic[EnumSystemCommonCash.SceneId] < mainSceneStagesState.Length - 1 &&
+                            mainSceneStagesState[(currentStageDic[EnumSystemCommonCash.SceneId] + 1)][EnumMainSceneStagesState.State] < 1)
                             mainSceneStagesState[(currentStageDic[EnumSystemCommonCash.SceneId] + 1)][EnumMainSceneStagesState.State] = 1;
                         // ステージごとのクリア状態を保存
                         //Debug.Log(string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID)));
                         if (!MainGameManager.Instance.SceneOwner.SaveMainSceneStagesState(mainSceneStagesState))
                             Debug.LogError("クリア済みデータ保存呼び出しの失敗");
+                        if (!common.SaveDatasCSVOfAreaOpenedAndITStateAndOfMission())
+                            Debug.LogError("エリア解放と実績一覧を更新呼び出しの失敗");
                         if (!MainGameManager.Instance.SceneOwner.SaveMainSceneStagesModulesState(mainSceneStagesModulesState))
                             Debug.LogError("ステージクリア条件の保存呼び出しの失敗");
                         if (!MainGameManager.Instance.GimmickOwner.SaveAssigned())
@@ -1196,15 +1195,6 @@ namespace Main.Presenter
                                         }
                                     }
                                 }
-                            });
-                        var goalPointObj = GameObject.Find(ConstGameObjectNames.GAMEOBJECT_NAME_GOALPOINT);
-                        goalPointView = goalPointObj.GetComponent<GoalPointView>();
-                        goalPointModel = goalPointObj.GetComponent<GoalPointModel>();
-                        goalPointModel.IsTriggerEntered.ObserveEveryValueChanged(x => x.Value)
-                            .Subscribe(x =>
-                            {
-                                if (x)
-                                    isGoalReached.Value = true;
                             });
                     }
                 });
