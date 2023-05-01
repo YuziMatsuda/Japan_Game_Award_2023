@@ -66,9 +66,14 @@ namespace Select.Common
                         case 0:
                             var quasiAssignmentForm = new SelectPresenterCommon().LoadSaveDatasCSVAndGetQuasiAssignmentForm();
                             if (FindNodeCodeIDAndEqualsDirection(moduleTracers[i], _pivotAndCodeIShortUI) &&
-                                int.Parse(areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 1)
+                                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 1 &&
+                                int.Parse(q[EnumAreaOpenedAndITState.State]) == (int)EnumAreaOpenedAndITStateState.Cleared)
                                     .Select(q => q)
-                                    .ToArray()[0][EnumAreaOpenedAndITState.State]) == (int)EnumAreaOpenedAndITStateState.Cleared &&
+                                    .ToArray().Length &&
+                                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 2 &&
+                                int.Parse(q[EnumAreaOpenedAndITState.State]) == (int)EnumAreaOpenedAndITStateState.Cleared)
+                                    .Select(q => q)
+                                    .ToArray().Length &&
                                 quasiAssignmentForm.Where(q => int.Parse(q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex]) == 1)
                                     .Select(q => q)
                                     .ToArray()

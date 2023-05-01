@@ -151,7 +151,7 @@ namespace Area.Common
                 .ToArray()
                 .Length &&
                 0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 2 &&
-                (int)EnumAreaOpenedAndITStateState.Select <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                (int)EnumAreaOpenedAndITStateState.Cleared <= int.Parse(q[EnumAreaOpenedAndITState.State]))
                 .Select(q => q)
                 .ToArray()
                 .Length)
@@ -166,7 +166,7 @@ namespace Area.Common
                 .ToArray()
                 .Length &&
                 0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 2 &&
-                (int)EnumAreaOpenedAndITStateState.Select <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                (int)EnumAreaOpenedAndITStateState.Cleared <= int.Parse(q[EnumAreaOpenedAndITState.State]))
                 .Select(q => q)
                 .ToArray()
                 .Length)

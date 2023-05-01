@@ -181,9 +181,26 @@ namespace Main.Presenter
                         .Select(q => q[EnumAreaUnits.StageID]))
                         allCleared = mainSceneStagesState[stageID][EnumMainSceneStagesState.State] == 2;
                     if (allCleared)
-                        areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == unitID)
+                    {
+                        if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == unitID &&
+                            int.Parse(q[EnumAreaOpenedAndITState.State]) < (int)EnumAreaOpenedAndITStateState.Cleared)
                             .Select(q => q)
-                            .ToArray()[0][EnumAreaOpenedAndITState.State] = $"{(int)EnumAreaOpenedAndITStateState.Cleared}";
+                            .ToArray().Length)
+                            areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == unitID &&
+                                int.Parse(q[EnumAreaOpenedAndITState.State]) < (int)EnumAreaOpenedAndITStateState.Cleared)
+                                .Select(q => q)
+                                .ToArray()[0][EnumAreaOpenedAndITState.State] = $"{(int)EnumAreaOpenedAndITStateState.Cleared}";
+                        // 最終エリアでないなら次のエリアを1にする
+                        var nextUnitID = unitID + 1;
+                        if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == nextUnitID &&
+                            int.Parse(q[EnumAreaOpenedAndITState.State]) < (int)EnumAreaOpenedAndITStateState.Select)
+                            .Select(q => q)
+                            .ToArray().Length)
+                            areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == nextUnitID &&
+                                int.Parse(q[EnumAreaOpenedAndITState.State]) < (int)EnumAreaOpenedAndITStateState.Select)
+                                .Select(q => q)
+                                .ToArray()[0][EnumAreaOpenedAndITState.State] = $"{(int)EnumAreaOpenedAndITStateState.Select}";
+                    }
                 }
                 if (!temp.SaveDatasCSVOfAreaOpenedAndITState(ConstResorcesNames.AREA_OPENED_AND_IT_STATE, areaOpenedAndITState))
                     throw new System.Exception("エリア解放・結合テスト済みデータをCSVデータへ保存呼び出しの失敗");
