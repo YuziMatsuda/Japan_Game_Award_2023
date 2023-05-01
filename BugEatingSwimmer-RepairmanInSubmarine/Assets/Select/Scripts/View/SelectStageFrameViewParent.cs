@@ -15,7 +15,7 @@ namespace Select.View
         /// <summary>トランスフォーム</summary>
         protected Transform _transform;
         /// <summary>移動アニメーション時間</summary>
-        protected float duration = .5f;
+        [SerializeField] protected float duration = .5f;
         /// <summary>イメージのコンポーネント</summary>
         protected Image _image;
 

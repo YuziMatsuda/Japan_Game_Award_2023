@@ -77,6 +77,10 @@ namespace Main.Presenter
         [SerializeField] private PlayerModel playerModel;
         /// <summary>移動先にポインタ表示のビュー</summary>
         [SerializeField] private TargetPointerView targetPointerView;
+        /// <summary>準委任帳票のビュー</summary>
+        [SerializeField] private AssignedSeastarCountView assignedSeastarCountView;
+        /// <summary>CinemachineVirtualCameraのビュー</summary>
+        [SerializeField] private CinemachineVirtualCameraView cinemachineVirtualCameraView;
 
         private void Reset()
         {
@@ -115,10 +119,14 @@ namespace Main.Presenter
             jumpGuideView = GameObject.Find("JumpGuide").GetComponent<JumpGuideView>();
             fadeImageView = GameObject.Find("FadeImage").GetComponent<FadeImageView>();
             fadeImageModel = GameObject.Find("FadeImage").GetComponent<FadeImageModel>();
+            assignedSeastarCountView = GameObject.Find("AssignedSeastarCount").GetComponent<AssignedSeastarCountView>();
+            cinemachineVirtualCameraView = GameObject.Find("CinemachineVirtualCamera").GetComponent<CinemachineVirtualCameraView>();
         }
 
         public void OnStart()
         {
+            var common = new MainPresenterCommon();
+
             // 初期設定
             pauseView.gameObject.SetActive(false);
             gameProceedButtonView.gameObject.SetActive(false);
@@ -131,6 +139,8 @@ namespace Main.Presenter
             moveGuideView.gameObject.SetActive(false);
             jumpGuideView.SetAlpha(EnumFadeState.Close);
             jumpGuideView.gameObject.SetActive(false);
+            if (!assignedSeastarCountView.SetCounterText(MainGameManager.Instance.GimmickOwner.GetAssinedCounter()))
+                Debug.LogError("ヒトデ総配属人数をセット呼び出しの失敗");
 
             MainGameManager.Instance.AudioOwner.OnStartAndPlayBGM();
             // T.B.D ステージ開始演出
@@ -252,6 +262,10 @@ namespace Main.Presenter
                             Debug.LogError("クリア済みデータ保存呼び出しの失敗");
                         if (!MainGameManager.Instance.SceneOwner.SaveMainSceneStagesModulesState(mainSceneStagesModulesState))
                             Debug.LogError("ステージクリア条件の保存呼び出しの失敗");
+                        if (!MainGameManager.Instance.GimmickOwner.SaveAssigned())
+                            Debug.LogError("アサインを保存呼び出しの失敗");
+                        if (!assignedSeastarCountView.SetCounterText(MainGameManager.Instance.GimmickOwner.GetAssinedCounter()))
+                            Debug.LogError("ヒトデ総配属人数をセット呼び出しの失敗");
                         // 初期処理
                         clearView.gameObject.SetActive(true);
                         stageClearView.gameObject.SetActive(true);
@@ -602,6 +616,10 @@ namespace Main.Presenter
                                         {
                                             if (x)
                                             {
+                                                if (!cinemachineVirtualCameraView.SetFollow(playerModel.transform))
+                                                    Debug.LogError("フォローをセット呼び出しの失敗");
+                                                if (!cinemachineVirtualCameraView.SetBodyTrackedObjectOffsets(EnumBodyTrackedObjectOffsetIndex.PlayerTracked))
+                                                    Debug.LogError("カメラのオフセットをセット呼び出しの失敗");
                                                 targetPointerView = playerModel.TargetPointer.GetComponent<TargetPointerView>();
                                                 playerModel.MoveVelocityReactiveProperty.ObserveEveryValueChanged(x => x.Value)
                                                     .Subscribe(x =>
@@ -628,8 +646,124 @@ namespace Main.Presenter
                                             if (!attackTrigger.SetColliderEnabled(x))
                                                 Debug.LogError("コライダーの有効／無効をセット呼び出しの失敗");
                                         });
+                                    var chargePhase = new IntReactiveProperty(-1);
+                                    playerModel.InputPowerChargeTime.ObserveEveryValueChanged(x => x.Value)
+                                        .Subscribe(x =>
+                                        {
+                                            if (playerModel.PowerChargePhaseTimes[2] < x)
+                                                chargePhase.Value = 2;
+                                            else if (playerModel.PowerChargePhaseTimes[1] < x)
+                                                chargePhase.Value = 1;
+                                            else if (playerModel.PowerChargePhaseTimes[0] < x)
+                                                chargePhase.Value = 0;
+                                            else
+                                            {
+                                                chargePhase.Value = -1;
+                                            }
+                                            if (playerModel.PowerChargePhaseTimes[0] < x)
+                                                if (!playerView.HoverCharge())
+                                                    Debug.LogError("チャージのホバー呼び出しの失敗");
+                                        });
+                                    chargePhase.ObserveEveryValueChanged(x => x.Value)
+                                        .Subscribe(x =>
+                                        {
+                                            switch (x)
+                                            {
+                                                case 0:
+                                                    if (!playerView.StartCharge(x))
+                                                        Debug.LogError("チャージ開始呼び出しの失敗");
+                                                    if (!playerView.ChangeChargeMode(0, true))
+                                                        Debug.LogError("チャージ開始呼び出しの失敗");
+                                                    break;
+                                                case 1:
+                                                    // 処理無し
+                                                    break;
+                                                case 2:
+                                                    if (!playerView.ChangeChargeMode(1, true))
+                                                        Debug.LogError("チャージ開始呼び出しの失敗");
+                                                    break;
+                                                case -1:
+                                                    if (!playerView.StopCharge())
+                                                        Debug.LogError("チャージ停止呼び出しの失敗");
+                                                    for (var i = 0; i < playerView.Halos.PlayerHalos.Length; i++)
+                                                        if (!playerView.ChangeChargeMode(i, false))
+                                                            Debug.LogError("チャージ状態を切り替え呼び出しの失敗");
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
+                                        });
+                                    playerModel.IsPressAndHoldAndReleased.ObserveEveryValueChanged(x => x.Value)
+                                        .Subscribe(x =>
+                                        {
+                                            if (x)
+                                                if (!playerView.PlayPowerAttackEffect())
+                                                    Debug.LogError("パワーアタックのエフェクト発生呼び出しの失敗");
+                                        });
+                                    playerModel.OnTurn.ObserveEveryValueChanged(x => x.Value)
+                                        .Subscribe(x =>
+                                        {
+                                            if (x)
+                                            {
+                                                if (!playerModel.SetOnTrurn(false))
+                                                    Debug.LogError("ターン状態をセット呼び出しの失敗");
+                                                if (!playerView.PlayTurnAnimation())
+                                                    Debug.LogError("ターン用のアニメーション再生呼び出しの失敗");
+                                            }
+                                        });
                                 }
                             });
+                        // ヒトデ
+                        List<SeastarModel> seastarModels = new List<SeastarModel>();
+                        List<SeastarView> seastarViews = new List<SeastarView>();
+                        foreach (var item in GameObject.FindGameObjectsWithTag(ConstTagNames.TAG_NAME_SEASTAR)
+                            .Where(q => q != null)
+                            .Select(q => q))
+                        {
+                            seastarViews.Add(item.GetComponent<SeastarView>());
+                            seastarModels.Add(item.GetComponent<SeastarModel>());
+                        }
+                        var seastarGageCount = new IntReactiveProperty(0);
+                        var seastarGage = GameObject.FindGameObjectWithTag(ConstTagNames.TAG_NAME_SEASTARGAGE);
+                        var seastarGageView = seastarGage == null ? null : seastarGage.GetComponent<SeastarGageView>();
+                        if (!common.SetCounterBetweenAndFillAmount(seastarGageView, seastarGageCount))
+                            Debug.LogError("ヒトデゲージのカウンターとフィルターカウンターを更新呼び出しの失敗");
+                        for (var i = 0; i < seastarModels.Count; i++)
+                        {
+                            var idx = i;
+                            seastarModels[idx].IsAssigned.ObserveEveryValueChanged(x => x.Value)
+                                .Subscribe(x =>
+                                {
+                                    if (!MainGameManager.Instance.GimmickOwner.SetAssignState(seastarModels[idx].transform.GetComponent<SeastarConfig>().EnumSeastarID, x))
+                                        Debug.LogError("アサイン呼び出しの失敗");
+                                    if (x)
+                                    {
+                                        if (!seastarViews[idx].SetColorAssigned())
+                                            Debug.LogError("アサイン済みのカラー設定呼び出しの失敗");
+                                    }
+                                    else
+                                    {
+                                        if (!seastarViews[idx].SetColorUnAssign())
+                                            Debug.LogError("未アサイン状態のカラー設定呼び出しの失敗");
+                                    }
+                                });
+                            seastarModels[idx].IsAssignedLocal.ObserveEveryValueChanged(x => x.Value)
+                                .Subscribe(x =>
+                                {
+                                    if (x)
+                                    {
+                                        if (!common.SetCounterBetweenAndFillAmount(seastarGageView, seastarGageCount, 1))
+                                            Debug.LogError("ヒトデゲージのカウンターとフィルターカウンターを更新呼び出しの失敗");
+                                    }
+                                    else
+                                    {
+                                        // リセットした時のみtrue⇒falseへ変化
+                                        // カウンターもリセットさせる
+                                        if (!common.PlayCounterBetweenAndFillAmountAnimation(seastarGageView, seastarGageCount, 0))
+                                            Debug.LogError("ヒトデゲージのカウンターとフィルターカウンターを更新呼び出しの失敗");
+                                    }
+                                });
+                        }
                         // Getプロセスの実行状態（false:初期状態／停止、true:実行中）
                         var isGetProcessStart = new BoolReactiveProperty();
                         // スタートノード
@@ -679,13 +813,15 @@ namespace Main.Presenter
                                     if (x)
                                     {
                                         Debug.Log($"GET実行中:[{startNode.name}]");
+                                        // ※※※GETがスタートノードまで到達しないため、未到達処理？※※※
                                         if (!MainGameManager.Instance.AlgorithmOwner.AddHistorySignalsGeted(startNode.transform))
                                             Debug.LogError("信号が送信された履歴へ追加呼び出しの失敗");
-                                        if (!MainGameManager.Instance.AlgorithmOwner.MergeHistorySignalsGetedToPosted())
-                                            Debug.LogError("信号が受信された履歴の配列を信号が送信された履歴の配列へマージ呼び出しの失敗");
-                                        var goalNode = MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Where(q => q.GetComponent<GoalNodeModel>() != null).Select(q => q).ToArray()[0];
-                                        if (!goalNode.GetComponent<GoalNodeModel>().GetSignal())
-                                            Debug.LogError("シグナル受信呼び出しの失敗");
+                                        if (MainGameManager.Instance.AlgorithmOwner.MergeHistorySignalsGetedToPosted())
+                                        {
+                                            var goalNode = MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Where(q => q.GetComponent<GoalNodeModel>() != null).Select(q => q).ToArray()[0];
+                                            if (!goalNode.GetComponent<GoalNodeModel>().GetSignal())
+                                                Debug.LogError("シグナル受信呼び出しの失敗");
+                                        }
                                     }
                                     else
                                         Debug.Log($"GET実行停止:[{startNode.name}]");
@@ -706,65 +842,77 @@ namespace Main.Presenter
                                     if (x)
                                     {
                                         Debug.Log($"POST実行中:[{goalNode.name}]");
-                                        if (!MainGameManager.Instance.AlgorithmOwner.AddHistorySignalsPosted(goalNode.transform))
-                                            Debug.LogError("信号が送信された履歴へ追加呼び出しの失敗");
-                                        foreach (var item in MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted)
+                                        // ゴールノードが既に格納済みなら格納しない
+                                        if (MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Where(q => q.Equals(goalNode.transform))
+                                            .Select(q => q)
+                                            .ToArray()
+                                            .Length < 0)
                                         {
-                                            if (item.GetComponent<StartNodeView>() != null)
-                                            {
-                                                Observable.FromCoroutine<bool>(observer => item.GetComponent<StartNodeView>().PlayLightAnimation(observer))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        // スタートからゴールまで繋がっている状態ならリセットしない
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
-                                            if (item.GetComponent<PivotView>() != null)
-                                            {
-                                                Observable.FromCoroutine<bool>(observer => item.GetComponent<PivotView>().PlayLightAnimation(observer))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        // スタートからゴールまで繋がっている状態ならリセットしない
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
-                                            if (item.GetComponent<GoalNodeView>() != null)
-                                            {
-                                                Observable.FromCoroutine<bool>(observer => item.GetComponent<GoalNodeView>().PlayLightAnimation(observer))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        // スタートからゴールまで繋がっている状態ならリセットしない
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
+                                            if (!MainGameManager.Instance.AlgorithmOwner.AddHistorySignalsPosted(goalNode.transform))
+                                                Debug.LogError("信号が送信された履歴へ追加呼び出しの失敗");
                                         }
-                                        //Debug.Log($"クリア条件:{string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray())}");
-                                        var isBugFixed = false;
-                                        // HistorySignalsPostedからノードコードの組み合わせを参照
-                                        foreach (var item in mainSceneStagesModulesState.Where(q => q[EnumMainSceneStagesModulesState.SceneId].Equals(currentStageDic[EnumSystemCommonCash.SceneId] + "") &&
-                                            q[EnumMainSceneStagesModulesState.Terms].Equals(string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray()))).Select(q => q))
-                                        {
-                                            isBugFixed = item[EnumMainSceneStagesModulesState.Fixed].Equals(ConstGeneric.DIGITFORM_TRUE);
-                                        }
-                                        var goalNodeView = goalNode.GetComponent<GoalNodeView>();
-                                        // 取り出したバグのモデルを監視
-                                        if (!goalNodeView.bugfix())
-                                            Debug.LogError("バグフィックス呼び出しの失敗");
-                                        var bug = goalNodeView.InstanceBug;
-                                        if (!bug.GetComponent<BugView>().SetColorCleared(isBugFixed))
-                                            Debug.LogError("カラーを設定呼び出しの失敗");
-                                        bug.GetComponent<BugModel>().IsEated.ObserveEveryValueChanged(x => x.Value)
-                                            .Subscribe(x =>
+
+                                        if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, true))
+                                            Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
+                                        Observable.FromCoroutine<bool>(observer => MainGameManager.Instance.AlgorithmOwner.PlayRunLightningSignal(observer))
+                                            .Subscribe(_ =>
                                             {
-                                                if (x)
+                                                if (seastarGageView == null ||
+                                                    (seastarGageView != null &&
+                                                    !seastarGageView.IsCounting))
                                                 {
-                                                    // HistorySignalsPostedの内容を保存する
+                                                    if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, false))
+                                                        Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
+                                                    // スタートからゴールまで繋がっている状態ならリセットしない
+                                                    //Debug.Log($"クリア条件:{string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray())}");
+                                                    var isBugFixed = false;
+                                                    // HistorySignalsPostedからノードコードの組み合わせを参照
                                                     foreach (var item in mainSceneStagesModulesState.Where(q => q[EnumMainSceneStagesModulesState.SceneId].Equals(currentStageDic[EnumSystemCommonCash.SceneId] + "") &&
                                                         q[EnumMainSceneStagesModulesState.Terms].Equals(string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray()))).Select(q => q))
                                                     {
-                                                        item[EnumMainSceneStagesModulesState.Fixed] = ConstGeneric.DIGITFORM_TRUE;
+                                                        isBugFixed = item[EnumMainSceneStagesModulesState.Fixed].Equals(ConstGeneric.DIGITFORM_TRUE);
                                                     }
-                                                    isGoalReached.Value = true;
+                                                    // 取り出したバグのモデルを監視
+                                                    if (!goalNode.GetComponent<GoalNodeView>().bugfix())
+                                                        Debug.LogError("バグフィックス呼び出しの失敗");
+                                                    var bug = goalNode.GetComponent<GoalNodeView>().InstanceBug;
+                                                    if (!bug.GetComponent<BugView>().SetColorCleared(isBugFixed))
+                                                        Debug.LogError("カラーを設定呼び出しの失敗");
+                                                    bug.GetComponent<BugModel>().IsEated.ObserveEveryValueChanged(x => x.Value)
+                                                        .Subscribe(x =>
+                                                        {
+                                                            if (x)
+                                                            {
+                                                            // HistorySignalsPostedの内容を保存する
+                                                            foreach (var item in mainSceneStagesModulesState.Where(q => q[EnumMainSceneStagesModulesState.SceneId].Equals(currentStageDic[EnumSystemCommonCash.SceneId] + "") &&
+                                                                    q[EnumMainSceneStagesModulesState.Terms].Equals(string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray()))).Select(q => q))
+                                                                {
+                                                                    item[EnumMainSceneStagesModulesState.Fixed] = ConstGeneric.DIGITFORM_TRUE;
+                                                                }
+                                                                if (!playerModel.SetInputBan(true))
+                                                                    Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
+                                                                if (!playerModel.SetIsBanMoveVelocity(true))
+                                                                    Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
+                                                                if (!bug.GetComponent<BugView>().PlayCorrectOrWrong())
+                                                                    Debug.LogError("バグ消失パーティクルを再生呼び出しの失敗");
+                                                                Observable.FromCoroutine<bool>(observer => bug.GetComponent<BugView>().PlayFadeAnimation(observer))
+                                                                    .Subscribe(_ =>
+                                                                    {
+                                                                        isGoalReached.Value = true;
+                                                                    })
+                                                                    .AddTo(gameObject);
+                                                            }
+                                                        });
+                                                }
+                                                else
+                                                {
+                                                    if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, false))
+                                                        Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
+                                                    if (!common.ResetAllPostingState(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted))
+                                                        Debug.LogError("POSTのリセット呼び出しの失敗");
+                                                    foreach (var item in seastarModels)
+                                                        if (!item.ResetIsAssigned())
+                                                            Debug.LogError("アサイン情報をリセット呼び出しの失敗");
                                                 }
                                             });
                                     }
@@ -830,7 +978,12 @@ namespace Main.Presenter
                                         {
                                             // IsPostingがTrueならバグフィックス状態
                                             // バグフィックス状態でコードをつつく　⇒　回転によりコードが繋がらなくなる
-                                            if (goalNode.GetComponent<GoalNodeModel>().IsPosting.Value)
+                                            // Histroyに含まないコード回転は無視する
+                                            if (goalNode.GetComponent<GoalNodeModel>().IsPosting.Value &&
+                                                0 < MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Where(q => q.Equals(codeObjs[idx].transform))
+                                                    .Select(q => q)
+                                                    .ToArray()
+                                                    .Length)
                                             {
                                                 var bug = goalNode.GetComponent<GoalNodeView>().InstanceBug;
                                                 Observable.FromCoroutine<bool>(observer => goalNode.GetComponent<GoalNodeView>().degrad(observer))
@@ -838,7 +991,11 @@ namespace Main.Presenter
                                                     {
                                                         Destroy(bug.gameObject);
                                                         // 一度全てをリセット
-                                                        isGetProcessStart.Value = !isGetProcessStart.Value;
+                                                        if (!common.ResetAllPostingState(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted))
+                                                            Debug.LogError("POSTのリセット呼び出しの失敗");
+                                                        foreach (var item in seastarModels)
+                                                            if (!item.ResetIsAssigned())
+                                                                Debug.LogError("アサイン情報をリセット呼び出しの失敗");
                                                     })
                                                     .AddTo(gameObject);
                                             }
@@ -863,12 +1020,14 @@ namespace Main.Presenter
                                         {
                                             foreach (var child in codeObjs[idx].GetComponent<PivotModel>().ToList)
                                             {
-                                                if (child.GetComponent<PivotModel>() != null &&
-                                                    !child.GetComponent<PivotModel>().GetSignal())
-                                                    Debug.LogError("シグナル受信呼び出しの失敗");
-                                                if (child.GetComponent<GoalNodeModel>() != null &&
-                                                    !child.GetComponent<GoalNodeModel>().GetSignal())
-                                                    Debug.LogError("シグナル受信呼び出しの失敗");
+                                                if (child.GetComponent<PivotModel>() != null)
+                                                    if (!child.GetComponent<PivotModel>().GetSignal())
+                                                        Debug.LogError("シグナル受信呼び出しの失敗");
+                                                if (child.GetComponent<GoalNodeModel>() != null)
+                                                {
+                                                    if (!child.GetComponent<GoalNodeModel>().GetSignal())
+                                                        Debug.LogError("シグナル受信呼び出しの失敗");
+                                                }
                                             }
                                         }
                                         else if (x == 0)
@@ -910,10 +1069,16 @@ namespace Main.Presenter
                                                     Debug.LogError("シグナル受信呼び出しの失敗");
                                             }
                                         }
-                                        else if (x == 0 &&
-                                            !MainGameManager.Instance.AlgorithmOwner.GetGetProcessState(codeObjs))
+                                        else if (x == 0)
                                         {
-                                            isGetProcessStart.Value = false;
+                                            if (MainGameManager.Instance.AlgorithmOwner.MergeHistorySignalsGetedToPosted())
+                                            {
+                                                var goalNode = MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Where(q => q.GetComponent<GoalNodeModel>() != null).Select(q => q).ToArray()[0];
+                                                if (!goalNode.GetComponent<GoalNodeModel>().GetSignal())
+                                                    Debug.LogError("シグナル受信呼び出しの失敗");
+                                            }
+                                            else
+                                                isGetProcessStart.Value = false;
                                         }
                                         else
                                         {
@@ -945,90 +1110,57 @@ namespace Main.Presenter
                                     else
                                     {
                                         // 上記でもモジュールが繋がっていない状態として判断された場合リセットする
-
-                                        // POSTのリセット
-                                        foreach (var item in MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted)
-                                        {
-                                            if (item.GetComponent<StartNodeView>() != null)
+                                        if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, true))
+                                            Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
+                                        Observable.FromCoroutine<bool>(observer => MainGameManager.Instance.AlgorithmOwner.PlayRunLightningSignal(observer))
+                                            .Subscribe(_ =>
                                             {
-                                                Observable.FromCoroutine<bool>(observer => item.GetComponent<StartNodeView>().PlayLightAnimation(observer))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        if (!item.GetComponent<StartNodeModel>().SetIsPosting(false))
-                                                            Debug.LogError("信号発生アニメーション実行中フラグをセット呼び出しの失敗");
-                                                        if (!item.GetComponent<StartNodeModel>().SetToListLength(-1))
-                                                            Debug.LogError("POST先のノードコードリスト数をセット呼び出しの失敗");
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
-                                            if (item.GetComponent<PivotView>() != null)
-                                            {
-                                                Observable.FromCoroutine<bool>(observer => item.GetComponent<PivotView>().PlayLightAnimation(observer))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        if (!item.GetComponent<PivotModel>().SetIsPosting(false))
-                                                            Debug.LogError("信号発生アニメーション実行中フラグをセット呼び出しの失敗");
-                                                        if (!item.GetComponent<PivotModel>().SetToListLength(-1))
-                                                            Debug.LogError("POST先のノードコードリスト数をセット呼び出しの失敗");
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
-                                            if (item.GetComponent<GoalNodeView>() != null)
-                                            {
-                                                Observable.FromCoroutine<bool>(observer => item.GetComponent<GoalNodeView>().PlayLightAnimation(observer))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        if (!item.GetComponent<GoalNodeModel>().SetIsPosting(false))
-                                                            Debug.LogError("信号発生アニメーション実行中フラグをセット呼び出しの失敗");
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
-                                        }
+                                                if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, false))
+                                                    Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
+                                                if (!common.ResetAllPostingState(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted))
+                                                    Debug.LogError("POSTのリセット呼び出しの失敗");
+                                                foreach (var item in seastarModels)
+                                                    if (!item.ResetIsAssigned())
+                                                        Debug.LogError("アサイン情報をリセット呼び出しの失敗");
+                                            });
                                     }
                                 }
                                 else
                                 {
                                     Debug.Log("Getプロセス初期状態／停止");
 
-                                    if (MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted != null)
+                                    // 帰納法処理ありの場合の信号発生演出用
+                                    if (goalNode != null &&
+                                        goalNode.GetComponent<PivotConfig>() != null &&
+                                        goalNode.GetComponent<PivotConfig>().EnumAtomicMode.Equals(EnumAtomicMode.Molecules))
                                     {
-                                        // POSTのリセット
-                                        foreach (var item in MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted)
+                                        // ゴールまで繋がる⇒コード回転で再び未接続の状態は信号発生演出しない
+                                        if (MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted != null &&
+                                            0 < MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Where(q => q.GetComponent<GoalNodeModel>() != null)
+                                            .Select(q => q)
+                                            .ToArray().Length)
                                         {
-                                            if (item.GetComponent<StartNodeView>() != null)
-                                            {
-                                                Observable.FromCoroutine<bool>(observer => item.GetComponent<StartNodeView>().PlayLightAnimation(observer))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        if (!item.GetComponent<StartNodeModel>().SetIsPosting(false))
-                                                            Debug.LogError("信号発生アニメーション実行中フラグをセット呼び出しの失敗");
-                                                        if (!item.GetComponent<StartNodeModel>().SetToListLength(-1))
-                                                            Debug.LogError("POST先のノードコードリスト数をセット呼び出しの失敗");
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
-                                            if (item.GetComponent<PivotView>() != null)
-                                            {
-                                                Observable.FromCoroutine<bool>(observer => item.GetComponent<PivotView>().PlayLightAnimation(observer))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        if (!item.GetComponent<PivotModel>().SetIsPosting(false))
-                                                            Debug.LogError("信号発生アニメーション実行中フラグをセット呼び出しの失敗");
-                                                        if (!item.GetComponent<PivotModel>().SetToListLength(-1))
-                                                            Debug.LogError("POST先のノードコードリスト数をセット呼び出しの失敗");
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
-                                            if (item.GetComponent<GoalNodeView>() != null)
-                                            {
-                                                Observable.FromCoroutine<bool>(observer => item.GetComponent<GoalNodeView>().PlayLightAnimation(observer))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        if (!item.GetComponent<GoalNodeModel>().SetIsPosting(false))
-                                                            Debug.LogError("信号発生アニメーション実行中フラグをセット呼び出しの失敗");
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
+                                            if (!common.ResetAllPostingState(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted))
+                                                Debug.LogError("POSTのリセット呼び出しの失敗");
+                                            foreach (var item in seastarModels)
+                                                if (!item.ResetIsAssigned())
+                                                    Debug.LogError("アサイン情報をリセット呼び出しの失敗");
+                                        }
+                                        else
+                                        {
+                                            if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, true))
+                                                Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
+                                            Observable.FromCoroutine<bool>(observer => MainGameManager.Instance.AlgorithmOwner.PlayRunLightningSignal(observer))
+                                                .Subscribe(_ =>
+                                                {
+                                                    if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, false))
+                                                        Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
+                                                    if (!common.ResetAllPostingState(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted))
+                                                        Debug.LogError("POSTのリセット呼び出しの失敗");
+                                                    foreach (var item in seastarModels)
+                                                        if (!item.ResetIsAssigned())
+                                                            Debug.LogError("アサイン情報をリセット呼び出しの失敗");
+                                                });
                                         }
                                     }
                                     if (MainGameManager.Instance.AlgorithmOwner.HistorySignalsGeted != null)

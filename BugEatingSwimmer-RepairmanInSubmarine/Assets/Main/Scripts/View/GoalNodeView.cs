@@ -4,6 +4,7 @@ using UnityEngine;
 using UniRx;
 using DG.Tweening;
 using System;
+using Main.Common;
 
 namespace Main.View
 {
@@ -11,7 +12,7 @@ namespace Main.View
     /// ビュー
     /// ゴールノード
     /// </summary>
-    public class GoalNodeView : MonoBehaviour, IGoalNodeView, IStartNodeView
+    public class GoalNodeView : ShadowCodeCellParent, IGoalNodeView, IStartNodeView
     {
         /// <summary>バグ</summary>
         [SerializeField] private Transform bug;
@@ -25,8 +26,6 @@ namespace Main.View
         [SerializeField] private Vector3 bugMoveDirection = Vector3.up;
         /// <summary>移動アニメーション距離</summary>
         [SerializeField] private float bugMoveDistance = 1.5f;
-        /// <summary>信号発生アニメーション時間</summary>
-        [SerializeField] private float postDuration = .5f;
         /// <summary>信号発生アニメーション時間</summary>
         private bool _isRuning;
         /// <summary>撤退移動アニメーション時間</summary>
@@ -58,25 +57,8 @@ namespace Main.View
             }
         }
 
-        public IEnumerator PlayLightAnimation(IObserver<bool> observer)
-        {
-            if (!_isRuning)
-            {
-                _isRuning = true;
 
-                DOVirtual.DelayedCall(postDuration, () =>
-                {
-                    // T.B.D 信号発生演出
-                    Debug.Log($"T.B.D 信号発生演出:{name}");
-                }).OnComplete(() =>
-                {
-                    observer.OnNext(true);
-                    _isRuning = false;
-                });
-            }
 
-            yield return null;
-        }
 
         public bool SetIsRuning(bool isRuning)
         {
@@ -88,6 +70,11 @@ namespace Main.View
             _instancedBug.DOLocalMove(Vector3.zero, bugReturnMoveDuration)
                 .OnComplete(() => observer.OnNext(true));
             yield return null;
+        }
+
+        public IEnumerator PlayLightAnimation(IObserver<bool> observer)
+        {
+            throw new NotImplementedException();
         }
     }
 

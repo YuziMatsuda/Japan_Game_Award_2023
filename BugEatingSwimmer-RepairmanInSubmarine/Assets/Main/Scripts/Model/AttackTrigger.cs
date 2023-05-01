@@ -10,10 +10,12 @@ namespace Main.Model
     /// 攻撃時のトリガー判定
     /// </summary>
     [RequireComponent(typeof(CircleCollider2D))]
-    public class AttackTrigger : MonoBehaviour, IAttackTrigger
+    public class AttackTrigger : MonoBehaviour, IAttackTrigger, IPlayerModel
     {
         /// <summary>コライダー</summary>
         [SerializeField] CircleCollider2D circleCollider;
+        /// <summary>パワー状態</summary>
+        public IReactiveProperty<bool> IsPower => transform.parent.GetComponent<PlayerModel>().IsPower;
 
         public bool SetColliderEnabled(bool enabled)
         {
@@ -28,6 +30,26 @@ namespace Main.Model
                 Debug.LogError(e);
                 return false;
             }
+        }
+
+        public bool SetInputBan(bool unactive)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool SetIsBanMoveVelocity(bool unactive)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool SetIsPower(bool enabled)
+        {
+            return transform.parent.GetComponent<PlayerModel>().SetIsPower(enabled);
+        }
+
+        public bool SetOnTrurn(bool enabled)
+        {
+            throw new System.NotImplementedException();
         }
 
         private void Reset()

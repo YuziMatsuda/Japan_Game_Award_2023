@@ -78,8 +78,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 1, b: 0, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 2c96a232a0774d34ea180e523ebee21a, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -150,7 +150,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enumDirectionModeDefault: 0
   enumAtomicMode: 0
-  enumPostMode: 0
+  enumNodeCodeId: 0
+  errorDirections: 
+  readonlyCodeMode: 0
 --- !u!114 &2758591331888471047
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -169,7 +171,7 @@ MonoBehaviour:
   rayLayerMask:
     serializedVersion: 2
     m_Bits: 128
-  postIntervalSeconds: 5
+  postIntervalSeconds: 3
   vectorDirectionModes:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: -90}
@@ -187,4 +189,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e27f77b8c6058d046ac9177e6d069bc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  postDuration: 0.5

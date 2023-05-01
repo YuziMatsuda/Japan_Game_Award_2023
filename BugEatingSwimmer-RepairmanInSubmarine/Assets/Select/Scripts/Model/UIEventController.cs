@@ -39,6 +39,8 @@ namespace Select.Model
         private EventSystem _eventSystem;
         /// <summary>ボタン</summary>
         protected Button _button;
+        /// <summary>ボタン</summary>
+        public Button Button => _button == null ? GetComponent<Button>() : _button;
         /// <summary>イベントトリガー</summary>
         protected EventTrigger _eventTrigger;
 

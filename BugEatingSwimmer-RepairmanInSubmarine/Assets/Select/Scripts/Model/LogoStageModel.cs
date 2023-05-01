@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Select.Common;
 using UniRx;
+using System.Linq;
 
 namespace Select.Model
 {
@@ -36,6 +37,18 @@ namespace Select.Model
         private readonly IntReactiveProperty stageState = new IntReactiveProperty();
         /// <summary>ステージの状態</summary>
         public IReactiveProperty<int> StageState => stageState;
+        /// <summary>エラー状態のナビゲーション（未クリア）</summary>
+        [SerializeField] private Navigation navigationOfError;
+        /// <summary>IT実施後のナビゲーション</summary>
+        [SerializeField] private Navigation navigationOfIT;
+        /// <summary>エリア内の最終ステージか</summary>
+        [SerializeField] private bool isFinalInArea;
+
+        private void Reset()
+        {
+            navigationOfError = GetComponent<Button>().navigation;
+            navigationOfIT = GetComponent<Button>().navigation;
+        }
 
         protected override void OnEnable()
         {
@@ -52,16 +65,31 @@ namespace Select.Model
             {
                 var mainSceneStagesState = SelectGameManager.Instance.SceneOwner.GetMainSceneStagesState();
                 stageState.Value = mainSceneStagesState[Index][EnumMainSceneStagesState.State];
+                var areaUnits = SelectGameManager.Instance.SceneOwner.GetAreaUnits();
+                var areaOpenedAndITState = SelectGameManager.Instance.SceneOwner.GetAreaOpenedAndITState();
+                var currentUnitID = areaUnits.Where(q => q[EnumAreaUnits.StageID] == Index)
+                    .Select(q => q[EnumAreaUnits.UnitID])
+                    .Distinct()
+                    .ToArray();
+                var currentState = areaOpenedAndITState.Where(q => q.ContainsKey(EnumAreaOpenedAndITState.UnitID) &&
+                    int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == currentUnitID[0])
+                    .Select(q => q[EnumAreaOpenedAndITState.State])
+                    .ToArray()[0];
                 // 未クリアの場合次のステージへナビゲーションしない
-                Debug.Log("T.B.D 未クリアの場合次のステージへナビゲーションしない");
-                //if (stageState.Value != 2)
-                //{
-                //    if (_button == null)
-                //        _button = GetComponent<Button>();
-                //    Navigation navigation = _button.navigation;
-                //    navigation.selectOnRight = null;
-                //    _button.navigation = navigation;
-                //}
+                if (stageState.Value != 2)
+                {
+                    if (_button == null)
+                        _button = GetComponent<Button>();
+                    _button.navigation = navigationOfError;
+                }
+                else if (isFinalInArea &&
+                    ((EnumAreaOpenedAndITStateState)int.Parse(currentState)).Equals(EnumAreaOpenedAndITStateState.ITFixed))
+                {
+                    // 対象ステージに紐づくエリア状態が結合済みかつ、最終ステージの場合IT済み後のボタンナビゲーションへ更新
+                    if (_button == null)
+                        _button = GetComponent<Button>();
+                    _button.navigation = navigationOfIT;
+                }
 
                 return true;
             }

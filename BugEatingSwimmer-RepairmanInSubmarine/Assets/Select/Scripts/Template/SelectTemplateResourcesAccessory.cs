@@ -63,6 +63,36 @@ namespace Select.Template
         }
 
         /// <summary>
+        /// 準委任帳票をオブジェクトへ一時セット
+        /// </summary>
+        /// <param name="datas">二次元配列の文字列データ</param>
+        /// <returns>格納オブジェクト配列</returns>
+        public Dictionary<EnumQuasiAssignmentForm, string>[] GetQuasiAssignmentForm(List<string[]> datas)
+        {
+            return new SelectResourcesAccessory().GetQuasiAssignmentForm(datas);
+        }
+
+        /// <summary>
+        /// エリア解放・結合テスト済みデータをオブジェクトへ一時セット
+        /// </summary>
+        /// <param name="datas">二次元配列の文字列データ</param>
+        /// <returns>格納オブジェクト配列</returns>
+        public Dictionary<EnumAreaOpenedAndITState, string>[] GetAreaOpenedAndITState(List<string[]> datas)
+        {
+            return new SelectResourcesAccessory().GetAreaOpenedAndITState(datas);
+        }
+
+        /// <summary>
+        /// エリアユニットファイルへ一時セット
+        /// </summary>
+        /// <param name="datas">二次元配列の文字列データ</param>
+        /// <returns>格納オブジェクト配列</returns>
+        public Dictionary<EnumAreaUnits, int>[] GetAreaUnits(List<string[]> datas)
+        {
+            return new SelectResourcesAccessory().GetAreaUnits(datas);
+        }
+
+        /// <summary>
         /// システム設定キャッシュをCSVデータへ保存
         /// </summary>
         /// <param name="resourcesLoadName">リソースCSVファイル名</param>
@@ -71,6 +101,28 @@ namespace Select.Template
         public bool SaveDatasCSVOfSystemCommonCash(string resourcesLoadName, Dictionary<EnumSystemCommonCash, int> configMap)
         {
             return new SelectResourcesAccessory().SaveDatasCSVOfSystemCommonCash(resourcesLoadName, configMap);
+        }
+
+        /// <summary>
+        /// 準委任帳票をCSVデータへ保存
+        /// </summary>
+        /// <param name="resourcesLoadName">リソースCSVファイル名</param>
+        /// <param name="configMaps">格納オブジェクト配列</param>
+        /// <returns>成功／失敗</returns>
+        public bool SaveDatasCSVOfQuasiAssignmentForm(string resourcesLoadName, Dictionary<EnumQuasiAssignmentForm, string>[] configMaps)
+        {
+            return new SelectResourcesAccessory().SaveDatasCSVOfQuasiAssignmentForm(resourcesLoadName, configMaps);
+        }
+
+        /// <summary>
+        /// エリア解放・結合テスト済みデータをCSVデータへ保存
+        /// </summary>
+        /// <param name="resourcesLoadName">リソースCSVファイル名</param>
+        /// <param name="configMaps">格納オブジェクト配列</param>
+        /// <returns>成功／失敗</returns>
+        public bool SaveDatasCSVOfAreaOpenedAndITState(string resourcesLoadName, Dictionary<EnumAreaOpenedAndITState, string>[] configMaps)
+        {
+            return new SelectResourcesAccessory().SaveDatasCSVOfAreaOpenedAndITState(resourcesLoadName, configMaps);
         }
     }
 }
