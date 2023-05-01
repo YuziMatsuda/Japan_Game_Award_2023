@@ -67,10 +67,6 @@ namespace Main.Presenter
         [SerializeField] private PlayerStartPointView playerStartPointView;
         /// <summary>セーフゾーンのモデル</summary>
         [SerializeField] private SafeZoneModel safeZoneModel;
-        /// <summary>ゴールポイントのビュー</summary>
-        [SerializeField] private GoalPointView goalPointView;
-        /// <summary>ゴールポイントのモデル</summary>
-        [SerializeField] private GoalPointModel goalPointModel;
         /// <summary>プレイヤーのビュー</summary>
         [SerializeField] private PlayerView playerView;
         /// <summary>プレイヤーのモデル</summary>
@@ -1199,15 +1195,6 @@ namespace Main.Presenter
                                         }
                                     }
                                 }
-                            });
-                        var goalPointObj = GameObject.Find(ConstGameObjectNames.GAMEOBJECT_NAME_GOALPOINT);
-                        goalPointView = goalPointObj.GetComponent<GoalPointView>();
-                        goalPointModel = goalPointObj.GetComponent<GoalPointModel>();
-                        goalPointModel.IsTriggerEntered.ObserveEveryValueChanged(x => x.Value)
-                            .Subscribe(x =>
-                            {
-                                if (x)
-                                    isGoalReached.Value = true;
                             });
                     }
                 });
