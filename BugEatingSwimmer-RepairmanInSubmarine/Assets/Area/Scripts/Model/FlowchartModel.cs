@@ -49,6 +49,123 @@ namespace Area.Model
             _readedScenarioNo.Value = 1;
         }
 
+        /// <summary>
+        /// （ロボ、信号を飛ばす。ボディの電源が入る）
+        /// </summary>
+        public void OnSendSignalAndBodyTurnsOn()
+        {
+            // T.B.D ステータスを管理
+            //_readedScenarioNo.Value = ?;
+        }
+
+        /// <summary>
+        /// （回想終了）
+        /// </summary>
+        public void OnRecollectionEnds()
+        {
+            // T.B.D ステータスを管理
+            //_readedScenarioNo.Value = ?;
+        }
+
+        /// <summary>
+        /// （ロボ、信号を飛ばす。右腕、左腕の電源が入る）
+        /// </summary>
+        public void OnSendSignalAndRightArmAndLeftArmTurnsOn()
+        {
+            // T.B.D ステータスを管理
+            //_readedScenarioNo.Value = ?;
+        }
+
+        /// <summary>
+        /// （画面が揺れる ロボ、びっくり）
+        /// </summary>
+        public void OnScreenShakesLoboIsStartled()
+        {
+            // T.B.D ステータスを管理
+            //_readedScenarioNo.Value = ?;
+        }
+
+        /// <summary>
+        /// （画面が揺れて土砂やゴミが投入される ロボ、再度びっくり）
+        /// </summary>
+        public void OnScreenShakesLoboIsStartledAgain()
+        {
+            // T.B.D ステータスを管理
+            //_readedScenarioNo.Value = ?;
+        }
+
+        /// <summary>
+        /// （画面転換 一枚絵 夜、湖の畔の工事現場が燃えている 鳴り響くサイレンと爆発音）
+        /// </summary>
+        public void OnScreenShiftSinglePictureAtNightConstructionSiteByTheLakeIsOnFireSirensBlaringAndExplosions()
+        {
+            // T.B.D ステータスを管理
+            //_readedScenarioNo.Value = ?;
+        }
+
+        /// <summary>
+        /// （画面転換 フェードアウト（真っ暗） 泡の音）
+        /// </summary>
+        public void OnScreenChangeFadeOut_PitchBlack_SoundOfBubbles()
+        {
+            // T.B.D ステータスを管理
+            //_readedScenarioNo.Value = ?;
+        }
+
+        /// <summary>
+        /// （画面転換 一枚絵 どこかの家のリビング）
+        /// </summary>
+        public void OnScreenChangeSinglePictureLivingRoomOfAHouseSomewhere()
+        {
+            // T.B.D ステータスを管理
+            //_readedScenarioNo.Value = ?;
+        }
+
+        /// <summary>
+        /// （タイトルがバーンと出てエンディング）
+        /// </summary>
+        public void OnTitleBlastsOutEnding()
+        {
+            // T.B.D ステータスを管理
+            //_readedScenarioNo.Value = ?;
+        }
+
+        public void OnOtherAdditions_1()
+        {
+            // T.B.D ステータスを管理
+            //_readedScenarioNo.Value = ?;
+        }
+
+        public void OnOtherAdditions_2()
+        {
+            // T.B.D ステータスを管理
+            //_readedScenarioNo.Value = ?;
+        }
+
+        public void OnOtherAdditions_3()
+        {
+            // T.B.D ステータスを管理
+            //_readedScenarioNo.Value = ?;
+        }
+
+        public void OnOtherAdditions_4()
+        {
+            // T.B.D ステータスを管理
+            //_readedScenarioNo.Value = ?;
+        }
+
+        public void OnOtherAdditions_5()
+        {
+            // T.B.D ステータスを管理
+            //_readedScenarioNo.Value = ?;
+        }
+
+        public void OnOtherAdditions_6()
+        {
+            // T.B.D ステータスを管理
+            //_readedScenarioNo.Value = ?;
+        }
+
         public string GetBlockName()
         {
             var missionID = "";
