@@ -1068,10 +1068,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 434354311}
     - target: {fileID: 1181800399, guid: 898ade031a3ce554b8df63abbf1da280, type: 3}
-      propertyPath: receivers.Array.size
-      value: 17
-      objectReference: {fileID: 0}
-    - target: {fileID: 1181800399, guid: 898ade031a3ce554b8df63abbf1da280, type: 3}
       propertyPath: gameProceedButtonView
       value: 
       objectReference: {fileID: 685385159}
@@ -1251,14 +1247,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MainGameManager
       objectReference: {fileID: 0}
-    - target: {fileID: 3024240338226834771, guid: 898ade031a3ce554b8df63abbf1da280, type: 3}
-      propertyPath: particleSystems.Array.size
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 3024240338226834771, guid: 898ade031a3ce554b8df63abbf1da280, type: 3}
-      propertyPath: particleSystems.Array.data[5]
-      value: 
-      objectReference: {fileID: 4000010731693402, guid: 0d1adb20421ed664b800c8cf3d103e70, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 898ade031a3ce554b8df63abbf1da280, type: 3}
 --- !u!1001 &3116255076235499502

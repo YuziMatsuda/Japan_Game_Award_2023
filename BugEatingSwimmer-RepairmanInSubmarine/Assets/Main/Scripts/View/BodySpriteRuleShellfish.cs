@@ -36,6 +36,8 @@ namespace Main.View
                 {
                     if (!MainGameManager.Instance.ParticleSystemsOwner.PlayParticleSystems(GetInstanceID(), EnumParticleSystemsIndex.ParticleJigglyBubbleSoapy, transform.position))
                         throw new System.Exception("指定されたパーティクルシステムを再生する呼び出しの失敗");
+                    // 泡を出すSE
+                    MainGameManager.Instance.AudioOwner.PlaySFX(Audio.ClipToPlay.se_swim);
                     DOVirtual.DelayedCall(delayDuration, () => observer.OnNext(true));
                 });
 

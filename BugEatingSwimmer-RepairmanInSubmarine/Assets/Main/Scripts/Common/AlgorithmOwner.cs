@@ -408,6 +408,8 @@ namespace Main.Common
                 var root = _history.historySignalsPosted.Select(q => q.position).ToArray();
                 if (!MainGameManager.Instance.ParticleSystemsOwner.PlayParticleSystems(GetInstanceID(), EnumParticleSystemsIndex.DustConnectSignal, root[0]))
                     Debug.LogError("指定されたパーティクルシステムを再生する呼び出しの失敗");
+                // 信号走るSE
+                MainGameManager.Instance.AudioOwner.PlaySFX(Audio.ClipToPlay.se_signal);
                 var signal = MainGameManager.Instance.ParticleSystemsOwner.GetParticleSystemsTransform(GetInstanceID(), EnumParticleSystemsIndex.DustConnectSignal);
                 var doPathRoot = root.Select((p, i) => new { Content = p, Index = i })
                     .Where(q => 0 < q.Index)

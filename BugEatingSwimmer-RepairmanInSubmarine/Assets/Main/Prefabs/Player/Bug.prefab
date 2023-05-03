@@ -80,6 +80,9 @@ MonoBehaviour:
   clearedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   alreadyClearedColor: {r: 0, g: 0, b: 1, a: 1}
   bodySprite: {fileID: 770826558294334067}
+  durations:
+  - 0.5
+  - 0.5
 --- !u!1 &8801027016678669389
 GameObject:
   m_ObjectHideFlags: 0

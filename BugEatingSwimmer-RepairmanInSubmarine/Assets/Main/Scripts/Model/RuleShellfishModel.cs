@@ -20,6 +20,10 @@ namespace Main.Model
         private readonly BoolReactiveProperty _isInRange = new BoolReactiveProperty();
         /// <summary>接触状態か</summary>
         public IReactiveProperty<bool> IsInRange => _isInRange;
+        /// <summary>一度のみヒントを表示させる（デフォルト：無効）</summary>
+        [SerializeField] private bool isOnlyOnceHint = false;
+        /// <summary>一度のみヒントを表示させる（デフォルト：無効）</summary>
+        public bool IsOnlyOnceHint => isOnlyOnceHint;
 
         private void OnTriggerEnter2D(Collider2D collision)
         {

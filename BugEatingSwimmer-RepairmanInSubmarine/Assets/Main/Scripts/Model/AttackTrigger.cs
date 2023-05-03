@@ -17,6 +17,11 @@ namespace Main.Model
         /// <summary>パワー状態</summary>
         public IReactiveProperty<bool> IsPower => transform.parent.GetComponent<PlayerModel>().IsPower;
 
+        public bool SetAutoAttack(bool isEnabled)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public bool SetColliderEnabled(bool enabled)
         {
             try

@@ -680,6 +680,8 @@ namespace Main.Presenter
                                                         Debug.LogError("チャージ開始呼び出しの失敗");
                                                     if (!playerView.ChangeChargeMode(0, true))
                                                         Debug.LogError("チャージ開始呼び出しの失敗");
+                                                    // パワーチャージSE
+                                                    MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_energy_store, true);
                                                     break;
                                                 case 1:
                                                     // 処理無し
@@ -691,6 +693,8 @@ namespace Main.Presenter
                                                 case -1:
                                                     if (!playerView.StopCharge())
                                                         Debug.LogError("チャージ停止呼び出しの失敗");
+                                                    // パワーチャージSE停止
+                                                    MainGameManager.Instance.AudioOwner.StopSFX(ClipToPlay.se_energy_store);
                                                     for (var i = 0; i < playerView.Halos.PlayerHalos.Length; i++)
                                                         if (!playerView.ChangeChargeMode(i, false))
                                                             Debug.LogError("チャージ状態を切り替え呼び出しの失敗");
@@ -703,8 +707,15 @@ namespace Main.Presenter
                                         .Subscribe(x =>
                                         {
                                             if (x)
-                                                if (!playerView.PlayPowerAttackEffect())
-                                                    Debug.LogError("パワーアタックのエフェクト発生呼び出しの失敗");
+                                            {
+                                                // パワーチャージSE停止
+                                                MainGameManager.Instance.AudioOwner.StopSFX(ClipToPlay.se_energy_store);
+                                                // T.B.D パワー解放エフェクトは不要？一旦コメントアウト
+                                                //if (!playerView.PlayPowerAttackEffect())
+                                                //    Debug.LogError("パワーアタックのエフェクト発生呼び出しの失敗");
+                                                // パワー解放SE
+                                                MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_energy_release);
+                                            }
                                         });
                                     playerModel.OnTurn.ObserveEveryValueChanged(x => x.Value)
                                         .Subscribe(x =>
@@ -715,6 +726,21 @@ namespace Main.Presenter
                                                     Debug.LogError("ターン状態をセット呼び出しの失敗");
                                                 if (!playerView.PlayTurnAnimation())
                                                     Debug.LogError("ターン用のアニメーション再生呼び出しの失敗");
+                                                // 泳ぐSE
+                                                MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_swim);
+                                                if (!playerView.InstanceBubble())
+                                                    Debug.LogError("泡が発生呼び出しの失敗");
+                                            }
+                                        });
+                                    playerModel.IsSwimming.ObserveEveryValueChanged(x => x.Value)
+                                        .Subscribe(x =>
+                                        {
+                                            if (x)
+                                            {
+                                                // 泳ぐSE
+                                                MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_swim);
+                                                if (!playerView.InstanceBubble())
+                                                    Debug.LogError("泡が発生呼び出しの失敗");
                                             }
                                         });
                                 }
@@ -889,12 +915,14 @@ namespace Main.Presenter
                                                         {
                                                             if (x)
                                                             {
-                                                            // HistorySignalsPostedの内容を保存する
-                                                            foreach (var item in mainSceneStagesModulesState.Where(q => q[EnumMainSceneStagesModulesState.SceneId].Equals(currentStageDic[EnumSystemCommonCash.SceneId] + "") &&
+                                                                // HistorySignalsPostedの内容を保存する
+                                                                foreach (var item in mainSceneStagesModulesState.Where(q => q[EnumMainSceneStagesModulesState.SceneId].Equals(currentStageDic[EnumSystemCommonCash.SceneId] + "") &&
                                                                     q[EnumMainSceneStagesModulesState.Terms].Equals(string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray()))).Select(q => q))
                                                                 {
                                                                     item[EnumMainSceneStagesModulesState.Fixed] = ConstGeneric.DIGITFORM_TRUE;
                                                                 }
+                                                                if (!playerModel.AutoPlayPunchAction())
+                                                                    Debug.LogError("自動攻撃をセット呼び出しの失敗");
                                                                 if (!playerModel.SetInputBan(true))
                                                                     Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
                                                                 if (!playerModel.SetIsBanMoveVelocity(true))
@@ -982,6 +1010,8 @@ namespace Main.Presenter
                                     {
                                         if (x)
                                         {
+                                            // コード回転のSE
+                                            MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_code_normal);
                                             // IsPostingがTrueならバグフィックス状態
                                             // バグフィックス状態でコードをつつく　⇒　回転によりコードが繋がらなくなる
                                             // Histroyに含まないコード回転は無視する
@@ -1207,7 +1237,8 @@ namespace Main.Presenter
                         var ruleShellfish = GameObject.Find(ConstTagNames.RULESHELLFISH);
                         if (ruleShellfish != null)
                         {
-                            if (!ruleShellfish.GetComponent<RuleShellfishView>().SetColorSpriteIsVisible(common.IsTutorialMode(currentStageDic, mainSceneStagesState)))
+                            if (!ruleShellfish.GetComponent<RuleShellfishView>().SetColorSpriteIsVisible(!ruleShellfish.GetComponent<RuleShellfishModel>().IsOnlyOnceHint ||
+                                common.IsTutorialMode(currentStageDic, mainSceneStagesState)))
                                 Debug.LogError("スプライトの表示／非表示設定呼び出しの失敗");
                             if (ruleShellfish.GetComponent<RuleShellfishView>().IsVisible)
                                 ruleShellfish.GetComponent<RuleShellfishModel>().IsInRange.ObserveEveryValueChanged(x => x.Value)

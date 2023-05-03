@@ -15,5 +15,6 @@ namespace Main.Common
         Explosion,
         CorrectOrWrong,
         ParticleJigglyBubbleSoapy,
+        ParticleJigglyBubbleSoapyPlayer,
     }
 }
