@@ -10,6 +10,7 @@ using Main.Audio;
 using System.Linq;
 using Main.InputSystem;
 using System.Threading.Tasks;
+using Fungus;
 
 namespace Main.Presenter
 {
@@ -77,6 +78,10 @@ namespace Main.Presenter
         [SerializeField] private AssignedSeastarCountView assignedSeastarCountView;
         /// <summary>CinemachineVirtualCameraのビュー</summary>
         [SerializeField] private CinemachineVirtualCameraView cinemachineVirtualCameraView;
+        /// <summary>Fungusのレシーバー</summary>
+        [SerializeField] private MessageReceived[] receivers;
+        /// <summary>Fungusのフローチャートモデル</summary>
+        [SerializeField] private FlowchartModel flowchartModel;
 
         private void Reset()
         {
@@ -117,6 +122,8 @@ namespace Main.Presenter
             fadeImageModel = GameObject.Find("FadeImage").GetComponent<FadeImageModel>();
             assignedSeastarCountView = GameObject.Find("AssignedSeastarCount").GetComponent<AssignedSeastarCountView>();
             cinemachineVirtualCameraView = GameObject.Find("CinemachineVirtualCamera").GetComponent<CinemachineVirtualCameraView>();
+            receivers = GameObject.FindObjectsOfType<Fungus.MessageReceived>();
+            flowchartModel = GameObject.Find("Flowchart").GetComponent<FlowchartModel>();
         }
 
         public void OnStart()
@@ -272,7 +279,7 @@ namespace Main.Presenter
                         gameRetryButtonView.gameObject.SetActive(false);
                         gameSelectButtonView.gameObject.SetActive(false);
                         // 一定時間後に表示するUI
-                        await Task.Delay(clearContentsRenderingDelayTime);
+                        await System.Threading.Tasks.Task.Delay(clearContentsRenderingDelayTime);
                         gameProceedButtonView.gameObject.SetActive(true);
                         // 初回のみ最初から拡大表示
                         gameProceedButtonView.SetScale();
@@ -1196,6 +1203,76 @@ namespace Main.Presenter
                                     }
                                 }
                             });
+                        // ルール貝
+                        var ruleShellfish = GameObject.Find(ConstTagNames.RULESHELLFISH);
+                        if (ruleShellfish != null)
+                        {
+                            if (!ruleShellfish.GetComponent<RuleShellfishView>().SetColorSpriteIsVisible(common.IsTutorialMode(currentStageDic, mainSceneStagesState)))
+                                Debug.LogError("スプライトの表示／非表示設定呼び出しの失敗");
+                            if (ruleShellfish.GetComponent<RuleShellfishView>().IsVisible)
+                                ruleShellfish.GetComponent<RuleShellfishModel>().IsInRange.ObserveEveryValueChanged(x => x.Value)
+                                    .Subscribe(x =>
+                                    {
+                                        if (x)
+                                        {
+                                            if (!playerModel.SetInputBan(true))
+                                                Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
+                                            if (!playerModel.SetIsBanMoveVelocity(true))
+                                                Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
+                                            Observable.FromCoroutine<bool>(observer => ruleShellfish.GetComponent<RuleShellfishView>().PlayChangeSpriteCloseBetweenOpen(observer))
+                                                .Subscribe(_ =>
+                                                {
+                                                    // シナリオのレシーバーへ送信
+                                                    foreach (var receiver in receivers)
+                                                    {
+                                                        var n = flowchartModel.GetBlockName(currentStageDic[EnumSystemCommonCash.SceneId]);
+                                                        if (!string.IsNullOrEmpty(n))
+                                                            receiver.OnSendFungusMessage(n);
+                                                        else
+                                                            Debug.LogWarning("取得ブロック名無し");
+                                                    }
+                                                })
+                                                .AddTo(gameObject);
+                                        }
+                                    });
+                            else
+                                Debug.LogWarning("クリア済みのためルール貝非表示");
+                        }
+                        else
+                        {
+                            Debug.LogWarning("ルール貝無しステージ");
+                        }
+                    }
+                });
+            // シナリオ管理
+            flowchartModel.ReadedScenarioNo.ObserveEveryValueChanged(x => x.Value)
+                .Subscribe(x =>
+                {
+                    if (0 < x)
+                    {
+                        switch (x)
+                        {
+                            case 1:
+                                // 実績履歴を更新
+                                if (common.AddMissionHistory() < 1)
+                                    Debug.LogError("実績履歴を更新呼び出しの失敗");
+                                Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                    .Subscribe(_ =>
+                                    {
+                                        // イベント完了後の処理
+                                        MainGameManager.Instance.SceneOwner.LoadSelectScene();
+                                    })
+                                    .AddTo(gameObject);
+                                break;
+                            case 2:
+                                if (!playerModel.SetInputBan(false, true))
+                                    Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
+                                if (!playerModel.SetIsBanMoveVelocity(false))
+                                    Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 });
 

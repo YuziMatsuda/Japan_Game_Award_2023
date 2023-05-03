@@ -33,5 +33,7 @@ namespace Main.Common
         public static readonly string TAG_NAME_DUSTCONNECTSIGNAL = "DustConnectSignal";
         /// <summary>パワーシェル</summary>
         public static readonly string TAG_NAME_POWERSHELL = "PowerShell";
+        /// <summary>ルール貝</summary>
+        public static readonly string RULESHELLFISH = "RuleShellfish";
     }
 }

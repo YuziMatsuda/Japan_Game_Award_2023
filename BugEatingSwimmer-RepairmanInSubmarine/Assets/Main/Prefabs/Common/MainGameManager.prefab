@@ -48,6 +48,52 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 75d8e350201b9534cb460dc008ee8580, type: 2}
   - {fileID: 2100000, guid: 80e5814790ed26942af85f239f35f86b, type: 2}
   - {fileID: 2100000, guid: f75c96fe9f81f0d48a340c4901a0fd18, type: 2}
+--- !u!1 &213561362
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 213561363}
+  - component: {fileID: 213561364}
+  m_Layer: 0
+  m_Name: MissionOwner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &213561363
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 213561362}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1369696456132551609}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &213561364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 213561362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47878e68340390742885c413e150878f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  missions:
+  - enumMissionID: 0
 --- !u!1 &221583501
 GameObject:
   m_ObjectHideFlags: 0
@@ -380,6 +426,11 @@ MonoBehaviour:
   targetPointerView: {fileID: 0}
   assignedSeastarCountView: {fileID: 0}
   cinemachineVirtualCameraView: {fileID: 0}
+  receivers:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  flowchartModel: {fileID: 0}
 --- !u!1 &1369696454729978949
 GameObject:
   m_ObjectHideFlags: 0
@@ -806,6 +857,7 @@ Transform:
   - {fileID: 221583503}
   - {fileID: 6239027276364180388}
   - {fileID: 1075325078529999368}
+  - {fileID: 213561363}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -831,6 +883,7 @@ MonoBehaviour:
   algorithmOwner: {fileID: 221583502}
   particleSystemsOwner: {fileID: 3024240338226834771}
   gimmickOwner: {fileID: 8530329674911153026}
+  missionOwner: {fileID: 213561364}
 --- !u!1 &4414222006299124334
 GameObject:
   m_ObjectHideFlags: 0

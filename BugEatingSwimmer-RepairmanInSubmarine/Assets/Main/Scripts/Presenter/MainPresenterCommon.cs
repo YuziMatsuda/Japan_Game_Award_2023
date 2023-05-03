@@ -11,6 +11,16 @@ using System.Linq;
 namespace Main.Presenter
 {
     /// <summary>
+    /// ミッション
+    /// </summary>
+    [System.Serializable]
+    public struct Mission
+    {
+        /// <summary>ミッションID</summary>
+        public EnumMissionID enumMissionID;
+    }
+
+    /// <summary>
     /// プレゼンタの共通処理
     /// </summary>
     public class MainPresenterCommon : IMainPresenterCommon
@@ -214,6 +224,53 @@ namespace Main.Presenter
             }
 
         }
+
+        public int AddMissionHistory()
+        {
+            try
+            {
+                List<EnumMissionID> addHistoryList = new List<EnumMissionID>();
+                var temp = new MainTemplateResourcesAccessory();
+                // 実績一覧管理を取得
+                var mission = temp.GetMission(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION));
+                // 実績履歴を取得
+                var histories = temp.GetMissionHistory(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION_HISTORY));
+                var missionOwner = MainGameManager.Instance.MissionOwner;
+                // 実績一覧管理のアンロック解除している実績IDが履歴に見つからない場合は演出を実行する
+                foreach (var item in mission.Where(q => q[EnumMission.CategoryID].Equals($"{EnumCategoryID.CA0000}") &&
+                    q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_TRUE))
+                    .Select(q => q))
+                    if (histories.Where(q => q[EnumMissionHistory.History].Equals($"{item[EnumMission.MissionID]}"))
+                        .Select(q => q)
+                        .ToArray().Length < 1)
+                        addHistoryList.AddRange(missionOwner.Missions.Where(q => $"{q.enumMissionID}".Equals(item[EnumMission.MissionID]))
+                            .Select(q => q.enumMissionID)
+                            .ToArray());
+                var historyList = histories.ToList();
+                foreach (var item in addHistoryList)
+                {
+                    Dictionary<EnumMissionHistory, string> m = new Dictionary<EnumMissionHistory, string>();
+                    m[EnumMissionHistory.History] = $"{item}";
+                    historyList.Add(m);
+                }
+                if (!temp.SaveDatasCSVOfMissionHistory(ConstResorcesNames.MISSION_HISTORY, historyList.ToArray()))
+                    throw new System.Exception("実績履歴データをCSVデータへ保存呼び出しの失敗");
+
+                return addHistoryList.Count;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return -1;
+            }
+        }
+
+        public bool IsTutorialMode(Dictionary<EnumSystemCommonCash, int> currentStageDic, Dictionary<EnumMainSceneStagesState, int>[] mainSceneStagesState)
+        {
+            return (0 < currentStageDic[EnumSystemCommonCash.SceneId] &&
+                            mainSceneStagesState[currentStageDic[EnumSystemCommonCash.SceneId]][EnumMainSceneStagesState.State] < 2) ||
+                        currentStageDic[EnumSystemCommonCash.SceneId] == 0;
+        }
     }
 
     /// <summary>
@@ -279,5 +336,17 @@ namespace Main.Presenter
         /// </summary>
         /// <returns>成功／失敗</returns>
         public bool SaveDatasCSVOfAreaOpenedAndITStateAndOfMission();
+        /// <summary>
+        /// 実績履歴を更新
+        /// </summary>
+        /// <returns>追加した件数</returns>
+        public int AddMissionHistory();
+        /// <summary>
+        /// チュートリアルモードか
+        /// </summary>
+        /// <param name="currentStageDic">現在選択されたステージ番号のディクショナリ</param>
+        /// <param name="mainSceneStagesState">ステージクリア状態のディクショナリ</param>
+        /// <returns></returns>
+        public bool IsTutorialMode(Dictionary<EnumSystemCommonCash, int> currentStageDic, Dictionary<EnumMainSceneStagesState, int>[] mainSceneStagesState);
     }
 }

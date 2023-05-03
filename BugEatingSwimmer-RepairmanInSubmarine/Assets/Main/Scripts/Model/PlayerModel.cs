@@ -77,19 +77,12 @@ namespace Main.Model
         private readonly BoolReactiveProperty _onTurn = new BoolReactiveProperty();
         /// <summary>ターン実行状態</summary>
         public IReactiveProperty<bool> OnTurn => _onTurn;
+        /// <summary>遅延実行の時間</summary>
+        [SerializeField] private float delayDoDuration = .25f;
 
         public bool SetInputBan(bool unactive)
         {
-            try
-            {
-                _inputBan = unactive;
-                return true;
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError(e);
-                return false;
-            }
+            return SetInputBan(unactive, false);
         }
 
         private void Start()
@@ -379,6 +372,24 @@ namespace Main.Model
             }
         }
 
+        public bool SetInputBan(bool unactive, bool isDelayMode)
+        {
+            try
+            {
+                if (!isDelayMode)
+                    _inputBan = unactive;
+                else
+                    DOVirtual.DelayedCall(delayDoDuration, () => _inputBan = unactive);
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
         /// <summary>
         /// 移動向きモード
         /// </summary>
@@ -412,6 +423,14 @@ namespace Main.Model
         /// <param name="unactive">許可／禁止</param>
         /// <returns>成功／失敗</returns>
         public bool SetInputBan(bool unactive);
+
+        /// <summary>
+        /// 操作禁止フラグをセット
+        /// </summary>
+        /// <param name="unactive">許可／禁止</param>
+        /// <param name="isDelayMode">遅延実行（つつく入力の対策）</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetInputBan(bool unactive, bool isDelayMode);
 
         /// <summary>
         /// パワー状態をセット

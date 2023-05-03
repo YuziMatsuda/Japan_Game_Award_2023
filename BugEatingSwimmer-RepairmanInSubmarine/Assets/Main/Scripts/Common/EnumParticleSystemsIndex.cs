@@ -14,5 +14,6 @@ namespace Main.Common
         ParticlesOfLightGatherAround,
         Explosion,
         CorrectOrWrong,
+        ParticleJigglyBubbleSoapy,
     }
 }

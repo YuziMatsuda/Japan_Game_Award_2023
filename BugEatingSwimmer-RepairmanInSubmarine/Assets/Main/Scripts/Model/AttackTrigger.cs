@@ -37,6 +37,11 @@ namespace Main.Model
             throw new System.NotImplementedException();
         }
 
+        public bool SetInputBan(bool unactive, bool isDelayMode)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public bool SetIsBanMoveVelocity(bool unactive)
         {
             throw new System.NotImplementedException();
