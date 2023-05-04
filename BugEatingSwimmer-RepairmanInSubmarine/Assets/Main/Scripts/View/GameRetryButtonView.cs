@@ -60,5 +60,26 @@ namespace Main.View
                 return false;
             }
         }
+
+        /// <summary>
+        /// 拡大アニメーションを再生
+        /// </summary>
+        /// <returns>成功／失敗</returns>
+        public bool SetScale()
+        {
+            try
+            {
+                if (_transform == null)
+                    _transform = transform;
+                _transform.localScale = Vector3.one * size;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
     }
 }

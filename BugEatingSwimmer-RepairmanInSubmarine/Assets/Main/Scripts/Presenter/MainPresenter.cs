@@ -280,14 +280,26 @@ namespace Main.Presenter
                         gameSelectButtonView.gameObject.SetActive(false);
                         // 一定時間後に表示するUI
                         await System.Threading.Tasks.Task.Delay(clearContentsRenderingDelayTime);
-                        gameProceedButtonView.gameObject.SetActive(true);
                         // 初回のみ最初から拡大表示
-                        gameProceedButtonView.SetScale();
+                        if (!common.IsFinalLevelOrEndOfAreaAndNotReadedScenario())
+                        {
+                            gameProceedButtonView.gameObject.SetActive(true);
+                            gameProceedButtonView.SetScale();
+                        }
+                        else
+                        {
+                            if (!cursorIconView.SetSelect(gameRetryButtonView.transform.position))
+                                Debug.LogError("カーソル配置位置の変更呼び出しの失敗");
+                            gameRetryButtonView.SetScale();
+                        }
                         gameRetryButtonView.gameObject.SetActive(true);
                         gameSelectButtonView.gameObject.SetActive(true);
                         cursorIconView.gameObject.SetActive(true);
                         // 初回のみ最初から選択状態
-                        gameProceedButtonModel.SetSelectedGameObject();
+                        if (!common.IsFinalLevelOrEndOfAreaAndNotReadedScenario())
+                            gameProceedButtonModel.SetSelectedGameObject();
+                        else
+                            gameRetryButtonModel.SetSelectedGameObject();
                     }
                 });
 
