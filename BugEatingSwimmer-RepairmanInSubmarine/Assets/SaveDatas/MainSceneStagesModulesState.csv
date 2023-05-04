@@ -7,3 +7,14 @@
 0,4,StartNode_1/Code_4/Code_1/Code_2/Code_3/Code_6/GoalNode_1,0
 1,4,StartNode_1/Code_4/Code_1/Code_2/Code_5/Code_6/GoalNode_1,0
 2,4,StartNode_1/Code_4/Code_7/Code_8/Code_5/Code_6/GoalNode_1,0
+0,5,StartNode_1/Code_1/Code_2/Code_6/Code_7/Code_3/Code_4/Code_8/Code_12/Code_16/GoalNode_1,0
+1,5,StartNode_1/Code_1/Code_5/Code_6/Code_7/Code_8/Code_12/Code_16/GoalNode_1,0
+2,5,StartNode_1/Code_1/Code_5/Code_9/Code_10/Code_14/Code_15/Code_16/GoalNode_1,0
+0,6,StartNode_1/Code_1/Code_2/Code_3/Code_6/Code_9,0
+1,6,StartNode_1/Code_1/Code_2/Code_5/Code_8/Code_9,0
+2,6,StartNode_1/Code_1/Code_4/Code_7/Code_8/Code_9,0
+3,6,StartNode_1/Code_1/Code_4/Code_7/Code_8/Code_5/Code_6/Code_9,0
+4,6,StartNode_1/Code_1/Code_2/Code_5/Code_4/Code_7/Code_8/Code_9,0
+0,7,StartNode_1/Code_5/Code_1/Code_2/Code_3/Code_4/Code_8/GoalNode_1,0
+1,7,StartNode_1/Code_5/Code_6/Code_7/Code_11/Code_12/Code_8/GoalNode_1,0
+2,7,StartNode_1/Code_5/Code_9/Code_10/Code_11/Code_12/Code_8/GoalNode_1,0

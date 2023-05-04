@@ -896,7 +896,7 @@ namespace Main.Presenter
                                                     if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, false))
                                                         Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
                                                     // スタートからゴールまで繋がっている状態ならリセットしない
-                                                    //Debug.Log($"クリア条件:{string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray())}");
+                                                    Debug.Log($"クリア条件:{string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray())}");
                                                     var isBugFixed = false;
                                                     // HistorySignalsPostedからノードコードの組み合わせを参照
                                                     foreach (var item in mainSceneStagesModulesState.Where(q => q[EnumMainSceneStagesModulesState.SceneId].Equals(currentStageDic[EnumSystemCommonCash.SceneId] + "") &&
