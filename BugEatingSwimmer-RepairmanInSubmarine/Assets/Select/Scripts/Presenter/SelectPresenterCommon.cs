@@ -14,6 +14,27 @@ namespace Select.Common
     /// </summary>
     public class SelectPresenterCommon : ISelectPresenterCommon
     {
+        public int GetContentsCountInPage()
+        {
+            try
+            {
+                var temp = new SelectTemplateResourcesAccessory();
+                // 現在選択されているステージ番号を取得
+                var systemCommonCash = SelectGameManager.Instance.SceneOwner.GetSystemCommonCash();
+                var areaUnits = temp.GetAreaUnits(temp.LoadSaveDatasCSV(ConstResorcesNames.AREA_UNITS));
+                // ステージIDを元にエリアIDを取得
+                return areaUnits.Where(q => q[EnumAreaUnits.StageID] == systemCommonCash[EnumSystemCommonCash.SceneId])
+                    .Select(q => q[EnumAreaUnits.UnitID])
+                    .Distinct()
+                    .ToArray()[0];
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return -1;
+            }
+        }
+
         public Dictionary<EnumAreaOpenedAndITState, string>[] LoadSaveDatasCSVAndGetAreaOpenedAndITState()
         {
             var tResourcesAccessory = new SelectTemplateResourcesAccessory();
@@ -142,5 +163,10 @@ namespace Select.Common
         /// </summary>
         /// <returns>格納オブジェクト配列</returns>
         public Dictionary<EnumAreaOpenedAndITState, string>[] LoadSaveDatasCSVAndGetAreaOpenedAndITState();
+        /// <summary>
+        /// ステージIDに基づいたページ番号を取得する
+        /// </summary>
+        /// <returns>ページ番号</returns>
+        public int GetContentsCountInPage();
     }
 }

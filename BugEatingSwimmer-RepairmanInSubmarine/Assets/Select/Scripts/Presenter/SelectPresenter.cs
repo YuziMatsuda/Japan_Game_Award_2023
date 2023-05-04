@@ -37,8 +37,6 @@ namespace Select.Presenter
         [SerializeField] private FadeImageView fadeImageView;
         /// <summary>Fadeimageのモデル</summary>
         [SerializeField] private FadeImageModel fadeImageModel;
-        /// <summary>1ページあたりのコンテンツ数</summary>
-        [SerializeField] private int contentsCountInPage = 5;
         /// <summary>プレイヤーのフレームのビュー</summary>
         [SerializeField] private PlayerView playerView;
         /// <summary>ロゴステージの統括パネルのビュー</summary>
@@ -211,7 +209,9 @@ namespace Select.Presenter
                 .Subscribe(x =>
                 {
                     // ページ表示切り替え
-                    var pageIdx = ((x - 1) / contentsCountInPage) + 1;
+                    var pageIdx = common.GetContentsCountInPage();
+                    if (pageIdx < 1)
+                        Debug.LogError("ステージIDに基づいたページ番号を取得する呼び出しの失敗");
                     for (var i = 0; i < pageViews.Length; i++)
                     {
                         if (i == 0)
