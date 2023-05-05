@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Main.Common;
 
 namespace Main.Model
 {
@@ -12,12 +13,20 @@ namespace Main.Model
     /// </summary>
     [RequireComponent(typeof(Button))]
     [RequireComponent(typeof(EventTrigger))]
+    [RequireComponent(typeof(GameContentsConfig))]
     public class GameSelectButtonModel : UIEventController
     {
         /// <summary>ボタン</summary>
         private Button _button;
         /// <summary>イベントトリガー</summary>
         private EventTrigger _eventTrigger;
+        /// <summary>設定ファイル</summary>
+        [SerializeField] private GameContentsConfig gameContentsConfig;
+
+        private void Reset()
+        {
+            gameContentsConfig = GetComponent<GameContentsConfig>();
+        }
 
         /// <summary>
         /// ボタンのステータスを変更

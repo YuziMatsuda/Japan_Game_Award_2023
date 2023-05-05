@@ -64,6 +64,8 @@ namespace Select.Audio
         se_decided,
         /// <summary>ステージセレクト</summary>
         se_select,
+        /// <summary>スイマーがコードを突いた時に発生する音</summary>
+        se_code_normal,
     }
 
     /// <summary>

@@ -150,9 +150,13 @@ namespace Main.Model
             {
                 // 向いている先がエラーならエラー演出
                 if (IsErrorDirection(GetComponent<PivotConfig>().ErrorDirections, (EnumDirectionMode)_enumDirectionMode.Value))
+                {
+                    // エラーSE
+                    MainGameManager.Instance.AudioOwner.PlaySFX(Audio.ClipToPlay.se_code_error);
                     Observable.FromCoroutine<bool>(observer => lightCodeCell.PlayErrorLightFlashAnimation(observer))
                         .Subscribe(_ => { })
                         .AddTo(gameObject);
+                }
             }
         }
 

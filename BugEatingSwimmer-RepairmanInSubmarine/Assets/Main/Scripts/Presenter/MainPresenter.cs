@@ -10,6 +10,7 @@ using Main.Audio;
 using System.Linq;
 using Main.InputSystem;
 using System.Threading.Tasks;
+using Fungus;
 
 namespace Main.Presenter
 {
@@ -77,6 +78,10 @@ namespace Main.Presenter
         [SerializeField] private AssignedSeastarCountView assignedSeastarCountView;
         /// <summary>CinemachineVirtualCameraのビュー</summary>
         [SerializeField] private CinemachineVirtualCameraView cinemachineVirtualCameraView;
+        /// <summary>Fungusのレシーバー</summary>
+        [SerializeField] private MessageReceived[] receivers;
+        /// <summary>Fungusのフローチャートモデル</summary>
+        [SerializeField] private FlowchartModel flowchartModel;
 
         private void Reset()
         {
@@ -117,6 +122,8 @@ namespace Main.Presenter
             fadeImageModel = GameObject.Find("FadeImage").GetComponent<FadeImageModel>();
             assignedSeastarCountView = GameObject.Find("AssignedSeastarCount").GetComponent<AssignedSeastarCountView>();
             cinemachineVirtualCameraView = GameObject.Find("CinemachineVirtualCamera").GetComponent<CinemachineVirtualCameraView>();
+            receivers = GameObject.FindObjectsOfType<Fungus.MessageReceived>();
+            flowchartModel = GameObject.Find("Flowchart").GetComponent<FlowchartModel>();
         }
 
         public void OnStart()
@@ -272,15 +279,27 @@ namespace Main.Presenter
                         gameRetryButtonView.gameObject.SetActive(false);
                         gameSelectButtonView.gameObject.SetActive(false);
                         // 一定時間後に表示するUI
-                        await Task.Delay(clearContentsRenderingDelayTime);
-                        gameProceedButtonView.gameObject.SetActive(true);
+                        await System.Threading.Tasks.Task.Delay(clearContentsRenderingDelayTime);
                         // 初回のみ最初から拡大表示
-                        gameProceedButtonView.SetScale();
+                        if (!common.IsFinalLevelOrEndOfAreaAndNotReadedScenario())
+                        {
+                            gameProceedButtonView.gameObject.SetActive(true);
+                            gameProceedButtonView.SetScale();
+                        }
+                        else
+                        {
+                            if (!cursorIconView.SetSelect(gameRetryButtonView.transform.position))
+                                Debug.LogError("カーソル配置位置の変更呼び出しの失敗");
+                            gameRetryButtonView.SetScale();
+                        }
                         gameRetryButtonView.gameObject.SetActive(true);
                         gameSelectButtonView.gameObject.SetActive(true);
                         cursorIconView.gameObject.SetActive(true);
                         // 初回のみ最初から選択状態
-                        gameProceedButtonModel.SetSelectedGameObject();
+                        if (!common.IsFinalLevelOrEndOfAreaAndNotReadedScenario())
+                            gameProceedButtonModel.SetSelectedGameObject();
+                        else
+                            gameRetryButtonModel.SetSelectedGameObject();
                     }
                 });
 
@@ -673,6 +692,8 @@ namespace Main.Presenter
                                                         Debug.LogError("チャージ開始呼び出しの失敗");
                                                     if (!playerView.ChangeChargeMode(0, true))
                                                         Debug.LogError("チャージ開始呼び出しの失敗");
+                                                    // パワーチャージSE
+                                                    MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_energy_store, true);
                                                     break;
                                                 case 1:
                                                     // 処理無し
@@ -684,6 +705,8 @@ namespace Main.Presenter
                                                 case -1:
                                                     if (!playerView.StopCharge())
                                                         Debug.LogError("チャージ停止呼び出しの失敗");
+                                                    // パワーチャージSE停止
+                                                    MainGameManager.Instance.AudioOwner.StopSFX(ClipToPlay.se_energy_store);
                                                     for (var i = 0; i < playerView.Halos.PlayerHalos.Length; i++)
                                                         if (!playerView.ChangeChargeMode(i, false))
                                                             Debug.LogError("チャージ状態を切り替え呼び出しの失敗");
@@ -696,8 +719,15 @@ namespace Main.Presenter
                                         .Subscribe(x =>
                                         {
                                             if (x)
-                                                if (!playerView.PlayPowerAttackEffect())
-                                                    Debug.LogError("パワーアタックのエフェクト発生呼び出しの失敗");
+                                            {
+                                                // パワーチャージSE停止
+                                                MainGameManager.Instance.AudioOwner.StopSFX(ClipToPlay.se_energy_store);
+                                                // T.B.D パワー解放エフェクトは不要？一旦コメントアウト
+                                                //if (!playerView.PlayPowerAttackEffect())
+                                                //    Debug.LogError("パワーアタックのエフェクト発生呼び出しの失敗");
+                                                // パワー解放SE
+                                                MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_energy_release);
+                                            }
                                         });
                                     playerModel.OnTurn.ObserveEveryValueChanged(x => x.Value)
                                         .Subscribe(x =>
@@ -708,6 +738,21 @@ namespace Main.Presenter
                                                     Debug.LogError("ターン状態をセット呼び出しの失敗");
                                                 if (!playerView.PlayTurnAnimation())
                                                     Debug.LogError("ターン用のアニメーション再生呼び出しの失敗");
+                                                // 泳ぐSE
+                                                MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_swim);
+                                                if (!playerView.InstanceBubble())
+                                                    Debug.LogError("泡が発生呼び出しの失敗");
+                                            }
+                                        });
+                                    playerModel.IsSwimming.ObserveEveryValueChanged(x => x.Value)
+                                        .Subscribe(x =>
+                                        {
+                                            if (x)
+                                            {
+                                                // 泳ぐSE
+                                                MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_swim);
+                                                if (!playerView.InstanceBubble())
+                                                    Debug.LogError("泡が発生呼び出しの失敗");
                                             }
                                         });
                                 }
@@ -863,7 +908,7 @@ namespace Main.Presenter
                                                     if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, false))
                                                         Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
                                                     // スタートからゴールまで繋がっている状態ならリセットしない
-                                                    //Debug.Log($"クリア条件:{string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray())}");
+                                                    Debug.Log($"クリア条件:{string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray())}");
                                                     var isBugFixed = false;
                                                     // HistorySignalsPostedからノードコードの組み合わせを参照
                                                     foreach (var item in mainSceneStagesModulesState.Where(q => q[EnumMainSceneStagesModulesState.SceneId].Equals(currentStageDic[EnumSystemCommonCash.SceneId] + "") &&
@@ -882,12 +927,14 @@ namespace Main.Presenter
                                                         {
                                                             if (x)
                                                             {
-                                                            // HistorySignalsPostedの内容を保存する
-                                                            foreach (var item in mainSceneStagesModulesState.Where(q => q[EnumMainSceneStagesModulesState.SceneId].Equals(currentStageDic[EnumSystemCommonCash.SceneId] + "") &&
+                                                                // HistorySignalsPostedの内容を保存する
+                                                                foreach (var item in mainSceneStagesModulesState.Where(q => q[EnumMainSceneStagesModulesState.SceneId].Equals(currentStageDic[EnumSystemCommonCash.SceneId] + "") &&
                                                                     q[EnumMainSceneStagesModulesState.Terms].Equals(string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray()))).Select(q => q))
                                                                 {
                                                                     item[EnumMainSceneStagesModulesState.Fixed] = ConstGeneric.DIGITFORM_TRUE;
                                                                 }
+                                                                if (!playerModel.AutoPlayPunchAction())
+                                                                    Debug.LogError("自動攻撃をセット呼び出しの失敗");
                                                                 if (!playerModel.SetInputBan(true))
                                                                     Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
                                                                 if (!playerModel.SetIsBanMoveVelocity(true))
@@ -975,6 +1022,8 @@ namespace Main.Presenter
                                     {
                                         if (x)
                                         {
+                                            // コード回転のSE
+                                            MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_code_normal);
                                             // IsPostingがTrueならバグフィックス状態
                                             // バグフィックス状態でコードをつつく　⇒　回転によりコードが繋がらなくなる
                                             // Histroyに含まないコード回転は無視する
@@ -1196,6 +1245,77 @@ namespace Main.Presenter
                                     }
                                 }
                             });
+                        // ルール貝
+                        var ruleShellfish = GameObject.Find(ConstTagNames.RULESHELLFISH);
+                        if (ruleShellfish != null)
+                        {
+                            if (!ruleShellfish.GetComponent<RuleShellfishView>().SetColorSpriteIsVisible(!ruleShellfish.GetComponent<RuleShellfishModel>().IsOnlyOnceHint ||
+                                common.IsTutorialMode(currentStageDic, mainSceneStagesState)))
+                                Debug.LogError("スプライトの表示／非表示設定呼び出しの失敗");
+                            if (ruleShellfish.GetComponent<RuleShellfishView>().IsVisible)
+                                ruleShellfish.GetComponent<RuleShellfishModel>().IsInRange.ObserveEveryValueChanged(x => x.Value)
+                                    .Subscribe(x =>
+                                    {
+                                        if (x)
+                                        {
+                                            if (!playerModel.SetInputBan(true))
+                                                Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
+                                            if (!playerModel.SetIsBanMoveVelocity(true))
+                                                Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
+                                            Observable.FromCoroutine<bool>(observer => ruleShellfish.GetComponent<RuleShellfishView>().PlayChangeSpriteCloseBetweenOpen(observer))
+                                                .Subscribe(_ =>
+                                                {
+                                                    // シナリオのレシーバーへ送信
+                                                    foreach (var receiver in receivers)
+                                                    {
+                                                        var n = flowchartModel.GetBlockName(currentStageDic[EnumSystemCommonCash.SceneId]);
+                                                        if (!string.IsNullOrEmpty(n))
+                                                            receiver.OnSendFungusMessage(n);
+                                                        else
+                                                            Debug.LogWarning("取得ブロック名無し");
+                                                    }
+                                                })
+                                                .AddTo(gameObject);
+                                        }
+                                    });
+                            else
+                                Debug.LogWarning("クリア済みのためルール貝非表示");
+                        }
+                        else
+                        {
+                            Debug.LogWarning("ルール貝無しステージ");
+                        }
+                    }
+                });
+            // シナリオ管理
+            flowchartModel.ReadedScenarioNo.ObserveEveryValueChanged(x => x.Value)
+                .Subscribe(x =>
+                {
+                    if (0 < x)
+                    {
+                        switch (x)
+                        {
+                            case 1:
+                                // 実績履歴を更新
+                                if (common.AddMissionHistory() < 1)
+                                    Debug.LogError("実績履歴を更新呼び出しの失敗");
+                                Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                    .Subscribe(_ =>
+                                    {
+                                        // イベント完了後の処理
+                                        MainGameManager.Instance.SceneOwner.LoadSelectScene();
+                                    })
+                                    .AddTo(gameObject);
+                                break;
+                            case 2:
+                                if (!playerModel.SetInputBan(false, true))
+                                    Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
+                                if (!playerModel.SetIsBanMoveVelocity(false))
+                                    Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 });
 

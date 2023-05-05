@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Main.Common;
 
 namespace Main.Model
 {
@@ -12,12 +13,27 @@ namespace Main.Model
     /// </summary>
     [RequireComponent(typeof(Button))]
     [RequireComponent(typeof(EventTrigger))]
+    [RequireComponent(typeof(GameContentsConfig))]
     public class GameRetryButtonModel : UIEventController
     {
         /// <summary>ボタン</summary>
         private Button _button;
         /// <summary>イベントトリガー</summary>
         private EventTrigger _eventTrigger;
+        /// <summary>設定ファイル</summary>
+        [SerializeField] private GameContentsConfig gameContentsConfig;
+
+        private void Reset()
+        {
+            gameContentsConfig = GetComponent<GameContentsConfig>();
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            if (new MainPresenterCommon().IsFinalLevelOrEndOfAreaAndNotReadedScenario())
+                GetComponent<Button>().navigation = gameContentsConfig.Navigations[0];
+        }
 
         /// <summary>
         /// ボタンのステータスを変更

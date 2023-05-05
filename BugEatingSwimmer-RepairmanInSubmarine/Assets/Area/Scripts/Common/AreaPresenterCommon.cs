@@ -523,17 +523,26 @@ namespace Area.Common
                 var mission = temp.GetMission(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION));
                 var updateCount = 0;
                 // T.B.D ミッションごとに条件が異なるため洗いだす
-                if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == (int)EnumUnitID.Head &&
-                    int.Parse(q[EnumAreaOpenedAndITState.State]) == (int)EnumAreaOpenedAndITStateState.Cleared)
-                    .Select(q => q)
-                    .ToArray().Length &&
-                    0 < mission.Where(q => q[EnumMission.MissionID].Equals($"{EnumMissionID.MI0001}") &&
-                    q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_FALSE))
-                    .Select(q => q)
-                    .ToArray().Length)
+                if (CheckMissionUnitClearAndMissionUnlock(EnumUnitID.Head, EnumMissionID.MI0001, areaOpenedAndITState, mission))
                 {
                     // MI0001
                     mission.Where(q => q[EnumMission.MissionID].Equals($"{EnumMissionID.MI0001}"))
+                        .Select(q => q)
+                        .ToArray()[0][EnumMission.Unlock] = ConstGeneric.DIGITFORM_TRUE;
+                    updateCount++;
+                }
+                else if (CheckMissionUnitClearAndMissionUnlock(EnumUnitID.Body, EnumMissionID.MI0002, areaOpenedAndITState, mission))
+                {
+                    // MI0002
+                    mission.Where(q => q[EnumMission.MissionID].Equals($"{EnumMissionID.MI0002}"))
+                        .Select(q => q)
+                        .ToArray()[0][EnumMission.Unlock] = ConstGeneric.DIGITFORM_TRUE;
+                    updateCount++;
+                }
+                else if (CheckMissionUnitITAndMissionUnlock(EnumUnitID.Head, EnumMissionID.MI0003, areaOpenedAndITState, mission))
+                {
+                    // MI0003
+                    mission.Where(q => q[EnumMission.MissionID].Equals($"{EnumMissionID.MI0003}"))
                         .Select(q => q)
                         .ToArray()[0][EnumMission.Unlock] = ConstGeneric.DIGITFORM_TRUE;
                     updateCount++;
@@ -549,6 +558,48 @@ namespace Area.Common
                 Debug.LogError(e);
                 return false;
             }
+        }
+
+        /// <summary>
+        /// ミッションチェック
+        /// ユニットのクリア状態かつ、ミッションのアンロック状態
+        /// </summary>
+        /// <param name="enumUnitID">エリアID</param>
+        /// <param name="enumMissionID">ミッションID</param>
+        /// <param name="areaOpenedAndITState">エリア解放・結合テスト済みデータ</param>
+        /// <param name="mission">実績一覧管理データ</param>
+        /// <returns>ミッションの更新対象か</returns>
+        private bool CheckMissionUnitClearAndMissionUnlock(EnumUnitID enumUnitID, EnumMissionID enumMissionID, Dictionary<EnumAreaOpenedAndITState, string>[] areaOpenedAndITState, Dictionary<EnumMission, string>[] mission)
+        {
+            return 0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == (int)enumUnitID &&
+                    int.Parse(q[EnumAreaOpenedAndITState.State]) == (int)EnumAreaOpenedAndITStateState.Cleared)
+                    .Select(q => q)
+                    .ToArray().Length &&
+                    0 < mission.Where(q => q[EnumMission.MissionID].Equals($"{enumMissionID}") &&
+                    q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_FALSE))
+                    .Select(q => q)
+                    .ToArray().Length;
+        }
+
+        /// <summary>
+        /// ミッションチェック
+        /// ユニットのIT状態かつ、ミッションのアンロック状態
+        /// </summary>
+        /// <param name="enumUnitID">エリアID</param>
+        /// <param name="enumMissionID">ミッションID</param>
+        /// <param name="areaOpenedAndITState">エリア解放・結合テスト済みデータ</param>
+        /// <param name="mission">実績一覧管理データ</param>
+        /// <returns>ミッションの更新対象か</returns>
+        private bool CheckMissionUnitITAndMissionUnlock(EnumUnitID enumUnitID, EnumMissionID enumMissionID, Dictionary<EnumAreaOpenedAndITState, string>[] areaOpenedAndITState, Dictionary<EnumMission, string>[] mission)
+        {
+            return 0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == (int)enumUnitID &&
+                    int.Parse(q[EnumAreaOpenedAndITState.State]) == (int)EnumAreaOpenedAndITStateState.ITFixed)
+                    .Select(q => q)
+                    .ToArray().Length &&
+                    0 < mission.Where(q => q[EnumMission.MissionID].Equals($"{enumMissionID}") &&
+                    q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_FALSE))
+                    .Select(q => q)
+                    .ToArray().Length;
         }
     }
 

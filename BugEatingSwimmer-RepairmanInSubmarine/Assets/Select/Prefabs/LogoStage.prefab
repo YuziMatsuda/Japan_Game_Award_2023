@@ -243,7 +243,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -416, y: -185}
-  m_SizeDelta: {x: 374, y: 257}
+  m_SizeDelta: {x: 360, y: 240}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3491794860666535241
 CanvasRenderer:
@@ -354,6 +354,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2fdb9562a5c2f4e8d9bd99cf92ce87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  navigationOfError:
+    m_Mode: 0
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  navigationOfIT:
+    m_Mode: 0
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  isFinalInArea: 0
 --- !u!114 &3491794860666535245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -541,3 +556,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 8068956498304967438}
+  mesColors:
+  - {r: 1, g: 0, b: 0, a: 1}
+  - {r: 0, g: 1, b: 0, a: 1}
+  - {r: 0, g: 0, b: 1, a: 1}

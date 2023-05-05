@@ -15,6 +15,7 @@ TagManager:
   - DustConnectSignal
   - PowerShell
   - SeastarGage
+  - RuleShellfish
   layers:
   - Default
   - TransparentFX

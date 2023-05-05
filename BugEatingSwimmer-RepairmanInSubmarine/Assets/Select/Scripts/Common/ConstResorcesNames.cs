@@ -25,5 +25,9 @@ namespace Select.Common
         public static readonly string AREA_UNITS = "AreaUnits";
         /// <summary>エリア解放・結合テスト</summary>
         public static readonly string AREA_OPENED_AND_IT_STATE = "AreaOpenedAndITState";
+        /// <summary>実績一覧管理</summary>
+        public static readonly string MISSION = "Mission";
+        /// <summary>実績履歴</summary>
+        public static readonly string MISSION_HISTORY = "MissionHistory";
     }
 }
