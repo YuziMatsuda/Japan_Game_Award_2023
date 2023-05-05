@@ -8,6 +8,7 @@ using UniRx;
 using UniRx.Triggers;
 using Select.Audio;
 using System.Linq;
+using Fungus;
 
 namespace Select.Presenter
 {
@@ -45,6 +46,10 @@ namespace Select.Presenter
         [SerializeField] private AssignedSeastarCountView assignedSeastarCountView;
         /// <summary>ヒトデゲージのビュー</summary>
         [SerializeField] private SeastarGageView[] seastarGageViews;
+        /// <summary>Fungusのレシーバー</summary>
+        [SerializeField] private MessageReceived[] receivers;
+        /// <summary>Fungusのフローチャートモデル</summary>
+        [SerializeField] private FlowchartModel flowchartModel;
 
         private void Reset()
         {
@@ -113,6 +118,8 @@ namespace Select.Presenter
             }
             seastarGageViews = seastarGageViewList.ToArray();
             assignedSeastarCountView = GameObject.Find("AssignedSeastarCount").GetComponent<AssignedSeastarCountView>();
+            receivers = GameObject.FindObjectsOfType<Fungus.MessageReceived>();
+            flowchartModel = GameObject.Find("Flowchart").GetComponent<FlowchartModel>();
         }
 
         public void OnStart()
@@ -141,6 +148,8 @@ namespace Select.Presenter
                 item.OnStart();
             if (SelectGameManager.Instance.AlgorithmOwner.SetPivotAndCodeIShortUIs(pivotAndCodeIShortUIViews.Select(q => q.transform).ToArray()) < 1)
                 Debug.LogError("支点とコード配列をセット呼び出しの失敗");
+            if (!common.CheckMissionAndSaveDatasCSVOfMission())
+                Debug.LogError("ミッションの更新チェック呼び出しの失敗");
 
             SelectGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_select);
             // シーン読み込み時のアニメーション
@@ -156,6 +165,21 @@ namespace Select.Presenter
                         }
                     if (!common.SetCounterBetweenAndFillAmountAllGage(seastarGageViews))
                         Debug.LogError("全ヒトデゲージのカウンターとフィルターをセット呼び出しの失敗");
+                    // T.B.D コア解放演出
+                    if (common.IsConnectedAnimation())
+                    {
+                        Debug.LogWarning("T.B.D コア解放演出");
+                        // 実績履歴を更新
+                        if (common.AddMissionHistory() < 1)
+                            Debug.LogError("実績履歴を更新呼び出しの失敗");
+                        //Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                        //    .Subscribe(_ =>
+                        //    {
+                        //        // イベント完了後の処理
+                        //        SelectGameManager.Instance.SceneOwner.ReLoadScene();
+                        //    })
+                        //    .AddTo(gameObject);
+                    }
                 })
                 .AddTo(gameObject);
 
@@ -517,17 +541,52 @@ namespace Select.Presenter
                                         pivotAndCodeIShortUIModels[idx].Selected();
 
                                         var result = SelectGameManager.Instance.AlgorithmOwner.CheckIT();
-                                        if (0 < result)
+                                        if (0 < result.areaIDToUpdated)
                                         {
-                                            // 各エリア情報の更新
-                                            areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == result)
-                                                .Select(q => q)
-                                                .ToArray()[0][EnumAreaOpenedAndITState.State] = $"{(int)EnumAreaOpenedAndITStateState.ITFixed}";
-                                            if (!SelectGameManager.Instance.SceneOwner.SetAreaOpenedAndITState(areaOpenedAndITState))
-                                                Debug.LogError("エリア解放・結合テスト済みデータを更新呼び出しの失敗");
-                                            // T.B.D IT演出（フェードアウトしてエリアセレクトシーンへ遷移する？）
+                                            if (result.areaIDToUpdated == (int)EnumUnitID.Head)
+                                            {
+                                                if (!result.isAssigned)
+                                                {
+                                                    // UI操作を許可しない
+                                                    foreach (var child in pivotAndCodeIShortUIModels)
+                                                        if (child != null)
+                                                        {
+                                                            child.SetButtonEnabled(false);
+                                                            child.SetEventTriggerEnabled(false);
+                                                        }
+                                                    // シナリオのレシーバーへ送信
+                                                    foreach (var receiver in receivers)
+                                                    {
+                                                        var n = flowchartModel.GetBlockName(0);
+                                                        if (!string.IsNullOrEmpty(n))
+                                                            receiver.OnSendFungusMessage(n);
+                                                        else
+                                                            Debug.LogWarning("取得ブロック名無し");
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    // 各エリア情報の更新
+                                                    areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == result.areaIDToUpdated)
+                                                        .Select(q => q)
+                                                        .ToArray()[0][EnumAreaOpenedAndITState.State] = $"{(int)EnumAreaOpenedAndITStateState.ITFixed}";
+                                                    if (!SelectGameManager.Instance.SceneOwner.SetAreaOpenedAndITState(areaOpenedAndITState))
+                                                        Debug.LogError("エリア解放・結合テスト済みデータを更新呼び出しの失敗");
+                                                    // T.B.D IT演出（フェードアウトしてエリアセレクトシーンへ遷移する？）
+                                                }
+                                            }
+                                            else
+                                            {
+                                                // 各エリア情報の更新
+                                                areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == result.areaIDToUpdated)
+                                                    .Select(q => q)
+                                                    .ToArray()[0][EnumAreaOpenedAndITState.State] = $"{(int)EnumAreaOpenedAndITStateState.ITFixed}";
+                                                if (!SelectGameManager.Instance.SceneOwner.SetAreaOpenedAndITState(areaOpenedAndITState))
+                                                    Debug.LogError("エリア解放・結合テスト済みデータを更新呼び出しの失敗");
+                                                // T.B.D IT演出（フェードアウトしてエリアセレクトシーンへ遷移する？）
+                                            }
                                         }
-                                        else if (-1 < result)
+                                        else if (-1 < result.areaIDToUpdated)
                                         {
                                             // 更新済み
                                         }
@@ -543,6 +602,31 @@ namespace Select.Presenter
                         }
                     });
             }
+            // シナリオ管理
+            flowchartModel.ReadedScenarioNo.ObserveEveryValueChanged(x => x.Value)
+                .Subscribe(x =>
+                {
+                    if (0 < x)
+                    {
+                        switch (x)
+                        {
+                            case 0:
+                                // 処理無し
+                                break;
+                            case 1:
+                                // UI操作を許可する
+                                foreach (var child in pivotAndCodeIShortUIModels)
+                                    if (child != null)
+                                    {
+                                        child.SetButtonEnabled(true);
+                                        child.SetEventTriggerEnabled(true);
+                                    }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                });
         }
     }
 }
