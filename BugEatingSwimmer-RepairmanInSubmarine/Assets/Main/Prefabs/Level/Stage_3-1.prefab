@@ -9,7 +9,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1719542981527175233, guid: 2f3c888a3912f8247ac7305b1d417c80, type: 3}
       propertyPath: m_RootOrder
-      value: 21
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 1719542981527175233, guid: 2f3c888a3912f8247ac7305b1d417c80, type: 3}
       propertyPath: m_LocalPosition.x
@@ -111,6 +111,10 @@ PrefabInstance:
     - target: {fileID: 3861951771426835086, guid: 20a18ae11e16e2740a184885331be827, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7453025132582565660, guid: 20a18ae11e16e2740a184885331be827, type: 3}
+      propertyPath: enumNodeCodeId
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 20a18ae11e16e2740a184885331be827, type: 3}
@@ -219,7 +223,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8251454376550168470, guid: afa4cab702f079d48b393b735256967e, type: 3}
       propertyPath: enumNodeCodeId
-      value: 2
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 8251454376550168470, guid: afa4cab702f079d48b393b735256967e, type: 3}
       propertyPath: enumDirectionModeDefault
@@ -348,7 +352,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8251454376550168470, guid: afa4cab702f079d48b393b735256967e, type: 3}
       propertyPath: enumNodeCodeId
-      value: 2
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8251454376550168470, guid: afa4cab702f079d48b393b735256967e, type: 3}
       propertyPath: enumDirectionModeDefault
@@ -426,6 +430,10 @@ PrefabInstance:
     - target: {fileID: 2920669391105521703, guid: 63912b28b064b4c4bb9b8f73e2ce7201, type: 3}
       propertyPath: m_Name
       value: Seastar_2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3103067910923516208, guid: 63912b28b064b4c4bb9b8f73e2ce7201, type: 3}
+      propertyPath: enumSeastar
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 63912b28b064b4c4bb9b8f73e2ce7201, type: 3}
@@ -530,7 +538,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8251454376550168470, guid: afa4cab702f079d48b393b735256967e, type: 3}
       propertyPath: enumNodeCodeId
-      value: 2
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 8251454376550168470, guid: afa4cab702f079d48b393b735256967e, type: 3}
       propertyPath: enumDirectionModeDefault
@@ -700,7 +708,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8251454376550168470, guid: afa4cab702f079d48b393b735256967e, type: 3}
       propertyPath: enumNodeCodeId
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8251454376550168470, guid: afa4cab702f079d48b393b735256967e, type: 3}
       propertyPath: enumDirectionModeDefault
@@ -708,67 +716,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: afa4cab702f079d48b393b735256967e, type: 3}
---- !u!1001 &5561497676709414940
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 1165231264877812372}
-    m_Modifications:
-    - target: {fileID: 4856454757343088561, guid: 33c2ecf85895db447b7c677b9290ffec, type: 3}
-      propertyPath: m_Name
-      value: SeastartGage
-      objectReference: {fileID: 0}
-    - target: {fileID: 7161825899246243926, guid: 33c2ecf85895db447b7c677b9290ffec, type: 3}
-      propertyPath: m_RootOrder
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 7161825899246243926, guid: 33c2ecf85895db447b7c677b9290ffec, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 7161825899246243926, guid: 33c2ecf85895db447b7c677b9290ffec, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 7161825899246243926, guid: 33c2ecf85895db447b7c677b9290ffec, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7161825899246243926, guid: 33c2ecf85895db447b7c677b9290ffec, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7161825899246243926, guid: 33c2ecf85895db447b7c677b9290ffec, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7161825899246243926, guid: 33c2ecf85895db447b7c677b9290ffec, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7161825899246243926, guid: 33c2ecf85895db447b7c677b9290ffec, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7161825899246243926, guid: 33c2ecf85895db447b7c677b9290ffec, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7161825899246243926, guid: 33c2ecf85895db447b7c677b9290ffec, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7161825899246243926, guid: 33c2ecf85895db447b7c677b9290ffec, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9080758381136103175, guid: 33c2ecf85895db447b7c677b9290ffec, type: 3}
-      propertyPath: denominator
-      value: 3
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 33c2ecf85895db447b7c677b9290ffec, type: 3}
 --- !u!1001 &5858145099208487538
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -823,6 +770,10 @@ PrefabInstance:
     - target: {fileID: 2920669391105521703, guid: 63912b28b064b4c4bb9b8f73e2ce7201, type: 3}
       propertyPath: m_Name
       value: Seastar_4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3103067910923516208, guid: 63912b28b064b4c4bb9b8f73e2ce7201, type: 3}
+      propertyPath: enumSeastar
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 63912b28b064b4c4bb9b8f73e2ce7201, type: 3}
@@ -1073,7 +1024,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8251454376550168470, guid: afa4cab702f079d48b393b735256967e, type: 3}
       propertyPath: enumNodeCodeId
-      value: 2
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 8251454376550168470, guid: afa4cab702f079d48b393b735256967e, type: 3}
       propertyPath: enumDirectionModeDefault
@@ -1151,6 +1102,10 @@ PrefabInstance:
     - target: {fileID: 2920669391105521703, guid: 63912b28b064b4c4bb9b8f73e2ce7201, type: 3}
       propertyPath: m_Name
       value: Seastar_3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3103067910923516208, guid: 63912b28b064b4c4bb9b8f73e2ce7201, type: 3}
+      propertyPath: enumSeastar
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 63912b28b064b4c4bb9b8f73e2ce7201, type: 3}
@@ -1255,7 +1210,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8251454376550168470, guid: afa4cab702f079d48b393b735256967e, type: 3}
       propertyPath: enumNodeCodeId
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8251454376550168470, guid: afa4cab702f079d48b393b735256967e, type: 3}
       propertyPath: enumDirectionModeDefault
@@ -1596,7 +1551,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8251454376550168470, guid: afa4cab702f079d48b393b735256967e, type: 3}
       propertyPath: enumNodeCodeId
-      value: 2
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8251454376550168470, guid: afa4cab702f079d48b393b735256967e, type: 3}
       propertyPath: enumDirectionModeDefault
