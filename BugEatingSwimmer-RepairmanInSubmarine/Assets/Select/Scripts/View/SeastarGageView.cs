@@ -8,6 +8,7 @@ namespace Select.View
     /// ビュー
     /// ヒトデゲージ
     /// </summary>
+    [RequireComponent(typeof(SeastarGageConfig))]
     public class SeastarGageView : PivotAndCodeIShortUIViewParent, ISeastarGageFillAmount, ISeastarGageCounter
     {
         /// <summary>ヒトデゲージのサイクルゲージ</summary>
@@ -20,6 +21,10 @@ namespace Select.View
         private int _numerator;
         /// <summary>カウント中</summary>
         public bool IsCounting => _numerator < denominator;
+        /// <summary>設定</summary>
+        [SerializeField] private SeastarGageConfig seastarGageConfig;
+        /// <summary>設定</summary>
+        public SeastarGageConfig SeastarGageConfig => seastarGageConfig;
 
         public bool PlayCounterBetweenAnimation(int numerator)
         {
@@ -61,6 +66,7 @@ namespace Select.View
         {
             seastarGageFillAmount = transform.GetComponentInChildren<SeastarGageFillAmount>();
             seastarGageCounter = transform.GetComponentInChildren<SeastarGageCounter>();
+            seastarGageConfig = GetComponent<SeastarGageConfig>();
         }
     }
 }

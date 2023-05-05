@@ -42,5 +42,10 @@ namespace Select.Common
         {
             return seastarLeader.GetAssinedCounter();
         }
+
+        public int GetAssinedCounter(int unitID)
+        {
+            return ((ISeastarLeader)seastarLeader).GetAssinedCounter(unitID);
+        }
     }
 }

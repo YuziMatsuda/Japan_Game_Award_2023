@@ -69,9 +69,12 @@ namespace Select.Common
             {
                 foreach (var item in seastarGageViews.Where(q => q != null))
                 {
-                    if (!item.PlayCounterBetweenAnimation(SelectGameManager.Instance.GimmickOwner.GetAssinedCounter()))
+                    var counter = item.SeastarGageConfig.EnumUnitID.Equals(EnumUnitID.Head) ?
+                        SelectGameManager.Instance.GimmickOwner.GetAssinedCounter((int)EnumUnitID.Head) :
+                        SelectGameManager.Instance.GimmickOwner.GetAssinedCounter();
+                    if (!item.PlayCounterBetweenAnimation(counter))
                         throw new System.Exception("カウンターをセット呼び出しの失敗");
-                    float seastarGageCountValue = (float)SelectGameManager.Instance.GimmickOwner.GetAssinedCounter();
+                    float seastarGageCountValue = (float)counter;
                     if (!item.PlayFillAmountAnimation(seastarGageCountValue))
                         throw new System.Exception("フィルターゲージの値をセット呼び出しの失敗");
                 }

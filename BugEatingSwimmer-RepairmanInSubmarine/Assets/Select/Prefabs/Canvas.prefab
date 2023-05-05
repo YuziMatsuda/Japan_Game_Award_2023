@@ -6093,6 +6093,10 @@ PrefabInstance:
       propertyPath: m_FillAmount
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 488380086461638136, guid: 62f98fe64b97db54898e2c4dea0eae7b, type: 3}
+      propertyPath: enumUnitID
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4348030481141256032, guid: 62f98fe64b97db54898e2c4dea0eae7b, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -14221,6 +14225,10 @@ PrefabInstance:
     - target: {fileID: 396900829298116849, guid: 62f98fe64b97db54898e2c4dea0eae7b, type: 3}
       propertyPath: m_FillAmount
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 488380086461638136, guid: 62f98fe64b97db54898e2c4dea0eae7b, type: 3}
+      propertyPath: enumUnitID
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4348030481141256032, guid: 62f98fe64b97db54898e2c4dea0eae7b, type: 3}
       propertyPath: m_Pivot.x

@@ -425,6 +425,7 @@ GameObject:
   - component: {fileID: 4348030481141256032}
   - component: {fileID: 8351751612555369884}
   - component: {fileID: 5183872322433457968}
+  - component: {fileID: 488380086461638136}
   m_Layer: 5
   m_Name: SeastarGageUI
   m_TagString: Untagged
@@ -479,3 +480,17 @@ MonoBehaviour:
   seastarGageFillAmount: {fileID: 5698103574319106188}
   seastarGageCounter: {fileID: 8069901753760205313}
   denominator: 10
+  seastarGageConfig: {fileID: 488380086461638136}
+--- !u!114 &488380086461638136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7959973438643728745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c49638595dea4744b6ceebe7185c4ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enumUnitID: 0

@@ -506,7 +506,7 @@ namespace Select.Presenter
                                 break;
                             case EnumEventCommand.Submited:
                                 // 決定SEを再生
-                                SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_decided);
+                                SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_code_normal);
                                 if (!pivotAndCodeIShortUIViews[idx].SetAsSemiLastSibling())
                                     Debug.LogError("SetSiblingIndexでparent配下の子オブジェクト数-1へ配置呼び出しの失敗");
                                 Observable.FromCoroutine<bool>(observer => pivotAndCodeIShortUIViews[idx].PlaySpinAnimationAndUpdateTurnValue(observer))
