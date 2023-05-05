@@ -200,15 +200,21 @@ namespace Main.Common
                                 .Select(q => q)
                                 .ToArray()[0][EnumAreaOpenedAndITState.State] = $"{(int)EnumAreaOpenedAndITStateState.Cleared}";
                         // 最終エリアでないなら次のエリアを1にする
-                        var nextUnitID = unitID + 1;
-                        if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == nextUnitID &&
-                            int.Parse(q[EnumAreaOpenedAndITState.State]) < (int)EnumAreaOpenedAndITStateState.Select)
-                            .Select(q => q)
-                            .ToArray().Length)
-                            areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == nextUnitID &&
-                                int.Parse(q[EnumAreaOpenedAndITState.State]) < (int)EnumAreaOpenedAndITStateState.Select)
-                                .Select(q => q)
-                                .ToArray()[0][EnumAreaOpenedAndITState.State] = $"{(int)EnumAreaOpenedAndITStateState.Select}";
+                        if (unitID != (int)EnumUnitID.Body)
+                        {
+                            var nextUnitID = unitID + 1;
+                            areaOpenedAndITState = UpdateEnumAreaOpenedAndITStateStateToSelect(areaOpenedAndITState, nextUnitID);
+                        }
+                        else
+                        {
+                            var nextUnitID = unitID;
+                            // ボディの場合はライトアーム／レフトアームのエリアを解放
+                            for (var i = 0; i < 2; i++)
+                            {
+                                nextUnitID++;
+                                areaOpenedAndITState = UpdateEnumAreaOpenedAndITStateStateToSelect(areaOpenedAndITState, nextUnitID);
+                            }
+                        }
                     }
                 }
                 if (!temp.SaveDatasCSVOfAreaOpenedAndITState(ConstResorcesNames.AREA_OPENED_AND_IT_STATE, areaOpenedAndITState))
@@ -222,6 +228,27 @@ namespace Main.Common
                 return false;
             }
 
+        }
+
+        /// <summary>
+        /// エリア解放・結合テスト済みデータを更新する
+        /// 非選択状態を選択可能状態へ
+        /// </summary>
+        /// <param name="areaOpenedAndITState">エリア解放・結合テスト済みデータ</param>
+        /// <param name="nextUnitID">次のエリアID</param>
+        /// <returns></returns>
+        private Dictionary<EnumAreaOpenedAndITState, string>[] UpdateEnumAreaOpenedAndITStateStateToSelect(Dictionary<EnumAreaOpenedAndITState, string>[] areaOpenedAndITState, int nextUnitID)
+        {
+            if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == nextUnitID &&
+                int.Parse(q[EnumAreaOpenedAndITState.State]) < (int)EnumAreaOpenedAndITStateState.Select)
+                .Select(q => q)
+                .ToArray().Length)
+                areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == nextUnitID &&
+                    int.Parse(q[EnumAreaOpenedAndITState.State]) < (int)EnumAreaOpenedAndITStateState.Select)
+                    .Select(q => q)
+                    .ToArray()[0][EnumAreaOpenedAndITState.State] = $"{(int)EnumAreaOpenedAndITStateState.Select}";
+
+            return areaOpenedAndITState;
         }
 
         public int AddMissionHistory()
