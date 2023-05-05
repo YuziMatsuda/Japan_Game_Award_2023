@@ -166,7 +166,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 8589
+  controlID: 1582
 --- !u!114 &5
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -186,8 +186,8 @@ MonoBehaviour:
     y: 0
     width: 1008
     height: 515
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 201, y: 221}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 6}
   m_Panes:
   - {fileID: 6}
@@ -473,9 +473,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 802.4627, y: 553.53723, z: -3.0769532}
+    m_Target: {x: -1.4033964, y: 0.397742, z: -0.010599823}
     speed: 2
-    m_Value: {x: 802.4627, y: 553.53723, z: -3.0769532}
+    m_Value: {x: -1.4033964, y: 0.397742, z: -0.010599823}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -526,9 +526,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 642.1558
+    m_Target: 1.5210973
     speed: 2
-    m_Value: 642.1558
+    m_Value: 1.5210973
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -610,9 +610,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: ae8e0000
+      m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: c86cfeff6ca1feff6ea1feff086effff8871ffff9871ffff9e71ffffb071ffffea71fffff071fffff271ffffeac7ffffecc7ffff0afbffff
+      m_ExpandedIDs: 6ef2ffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -799,8 +799,7 @@ MonoBehaviour:
   m_SearchFilter:
     m_NameFilter: 
     m_ClassNames: []
-    m_AssetLabels:
-    - SaveData
+    m_AssetLabels: []
     m_AssetBundleNames: []
     m_VersionControlStates: []
     m_SoftLockControlStates: []
@@ -810,22 +809,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Area/Scripts/Presenter
+    - Assets/Main/Prefabs/Level/Gimmick
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Area/Scripts/Presenter
+  - Assets/Main/Prefabs/Level/Gimmick
   m_LastFoldersGridSize: 16
   m_LastProjectPath: C:\Users\kzpaqu\Documents\Japan_Game_Award_2023\BugEatingSwimmer-RepairmanInSubmarine
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 199}
-    m_SelectedIDs: 288f0000
-    m_LastClickedID: 36648
-    m_ExpandedIDs: 000000006c8d00006e8d0000708d0000728d0000748d0000768d0000788d00007a8d00007c8d00007e8d0000808d0000828d0000848d0000868d0000888d00008a8d00008c8d0000328e00009491000000ca9a3b
+    scrollPos: {x: 0, y: 137}
+    m_SelectedIDs: 5ac80000
+    m_LastClickedID: 51290
+    m_ExpandedIDs: 000000005ac100005cc100005ec1000060c1000062c1000064c1000066c1000068c100006ac100006cc100006ec1000070c1000072c1000038c2000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -853,7 +852,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000006c8d00006e8d0000708d0000728d0000748d0000768d0000788d00007a8d00007c8d00007e8d0000808d0000828d0000848d0000868d0000888d00008a8d00008c8d000000ca9a3b
+    m_ExpandedIDs: 000000005ac100005cc100005ec1000060c1000062c1000064c1000066c1000068c100006ac100006cc100006ec1000070c1000072c1000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -878,24 +877,24 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: ae8e0000
-    m_LastClickedInstanceID: 36526
+    m_SelectedInstanceIDs: 
+    m_LastClickedInstanceID: 0
     m_HadKeyboardFocusLastEvent: 1
-    m_ExpandedInstanceIDs: c62300002c6d000096fa0000407d0000
+    m_ExpandedInstanceIDs: c62300002c6d000096fa0000407d0000f0b7000088cf0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: AreaOpenedAndITState
-      m_OriginalName: AreaOpenedAndITState
+      m_Name: 
+      m_OriginalName: 
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 36512
+      m_UserData: 0
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 0
+      m_OriginalEventType: 11
       m_IsRenamingFilename: 1
       m_ClientGUIView: {fileID: 13}
     m_CreateAssetUtility:
@@ -928,8 +927,8 @@ MonoBehaviour:
     y: 0
     width: 472
     height: 947
-  m_MinSize: {x: 276, y: 71}
-  m_MaxSize: {x: 4001, y: 4021}
+  m_MinSize: {x: 275, y: 50}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 16}
   m_Panes:
   - {fileID: 16}

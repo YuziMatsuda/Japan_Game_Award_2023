@@ -16,6 +16,7 @@ TagManager:
   - PowerShell
   - SeastarGage
   - RuleShellfish
+  - ShrimpDance
   layers:
   - Default
   - TransparentFX
