@@ -32,12 +32,22 @@ namespace Main.Audio
 
         public void PlaySFX(ClipToPlay clipToPlay)
         {
-            sfxPlayer.PlaySFX(clipToPlay);
+            sfxPlayer.PlaySFX(clipToPlay, false);
+        }
+
+        public void PlaySFX(ClipToPlay clipToPlay, bool isLoopmode)
+        {
+            sfxPlayer.PlaySFX(clipToPlay, isLoopmode);
         }
 
         public void PlayBGM(ClipToPlayBGM clipToPlay)
         {
             bgmPlayer.PlayBGM(clipToPlay);
+        }
+
+        public void StopSFX(ClipToPlay clipToPlay)
+        {
+            sfxPlayer.StopSFX(clipToPlay);
         }
 
         /// <summary>
@@ -60,6 +70,17 @@ namespace Main.Audio
         /// </summary>
         /// <param name="clipToPlay">SE</param>
         public void PlaySFX(ClipToPlay clipToPlay) { }
+        /// <summary>
+        /// 指定されたSEを再生する
+        /// </summary>
+        /// <param name="clipToPlay">SE</param>
+        /// <param name="isLoopmode">ループモード</param>
+        public void PlaySFX(ClipToPlay clipToPlay, bool isLoopmode) { }
+        /// <summary>
+        /// 指定されたSEを停止する
+        /// </summary>
+        /// <param name="clipToPlay">SE</param>
+        public void StopSFX(ClipToPlay clipToPlay) { }
     }
 
     /// <summary>
@@ -85,6 +106,18 @@ namespace Main.Audio
         se_retry,
         /// <summary>ステージセレクト</summary>
         se_select,
+        /// <summary>スイマーが泳いでいる時、泡が出る音</summary>
+        se_swim,
+        /// <summary>スイマーがコードを突いた時に発生する音</summary>
+        se_code_normal,
+        /// <summary>信号のエフェクトがエラーコードに到達した時に発生する音</summary>
+        se_code_error,
+        /// <summary>信号がコードの上を走るように流れる音</summary>
+        se_signal,
+        /// <summary>スイマーがパワーシェルを消費してエネルギーをチャージする音</summary>
+        se_energy_store,
+        /// <summary>スイマーがサンショウコードを壊す為にエネルギーを解放する時の音</summary>
+        se_energy_release,
     }
 
     /// <summary>
@@ -104,15 +137,9 @@ namespace Main.Audio
     /// </summary>
     public enum ClipToPlayBGM
     {
-        /// <summary>ステージ1～10のBGM</summary>
-        bgm_stage_vol1,
-        /// <summary>ステージ11～20のBGM</summary>
-        bgm_stage_vol2,
-        /// <summary>ステージ21～30のBGM</summary>
-        bgm_stage_vol3,
-        /// <summary>ステージ31～40のBGM</summary>
-        bgm_stage_vol4,
-        /// <summary>ステージ41～50のBGM</summary>
-        bgm_stage_vol5,
+        /// <summary>メインBGM（エリア１～４）</summary>
+        bgm_main,
+        /// <summary>深海BGM（エリア５）</summary>
+        bgm_shinkai,
     }
 }

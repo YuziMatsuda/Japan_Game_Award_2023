@@ -28,15 +28,43 @@ namespace Main.Audio
 
         public void PlaySFX(ClipToPlay clipToPlay)
         {
+            PlaySFX(clipToPlay, false);
+        }
+
+        public void PlaySFX(ClipToPlay clipToPlay, bool isLoopmode)
+        {
             try
             {
                 if ((int)clipToPlay <= (clip.Length - 1))
                 {
                     var audio = GetSFXSource(clipToPlay);
                     audio.clip = clip[(int)clipToPlay];
+                    audio.loop = isLoopmode;
 
                     // SEを再生
                     audio.Play();
+                }
+                else
+                    throw new System.Exception($"対象のファイルが見つかりません:[{clipToPlay}]");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning(e);
+            }
+        }
+
+        public void StopSFX(ClipToPlay clipToPlay)
+        {
+            try
+            {
+                if ((int)clipToPlay <= (clip.Length - 1))
+                {
+                    var audio = GetSFXSource(clipToPlay);
+                    audio.clip = clip[(int)clipToPlay];
+                    audio.loop = false;
+
+                    // SEを停止
+                    audio.Stop();
                 }
                 else
                     throw new System.Exception($"対象のファイルが見つかりません:[{clipToPlay}]");

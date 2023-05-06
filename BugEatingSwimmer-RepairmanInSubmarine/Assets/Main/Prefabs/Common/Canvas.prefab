@@ -111,7 +111,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   counter: {fileID: 7359096671075384925}
   title: "\u53D6\u5F97\u6570\uFF1A"
-  defaultValue: "\uFF0A\uFF0A"
 --- !u!1 &3116255075449860561
 GameObject:
   m_ObjectHideFlags: 0
@@ -3063,6 +3062,7 @@ GameObject:
   - component: {fileID: 3116255075830100521}
   - component: {fileID: 3116255075830100520}
   - component: {fileID: 3116255075830100518}
+  - component: {fileID: 4607939641912755155}
   m_Layer: 5
   m_Name: GameProceedButton
   m_TagString: Untagged
@@ -3199,6 +3199,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9df439c11c27a474992d14e837b25c41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameContentsConfig: {fileID: 4607939641912755155}
 --- !u!114 &3116255075830100518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3276,6 +3277,19 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!114 &4607939641912755155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3116255075830100527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4334bde4ff8e7c548ab46d92e9369666, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  navigations: []
 --- !u!1 &3116255075836033975
 GameObject:
   m_ObjectHideFlags: 0
@@ -4027,7 +4041,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u6B21\u306E\u30B9\u30C6\u30FC\u30B8\u3092\u9078\u3076"
+  m_Text: "\u6B21\u306E\u30B9\u30C6\u30FC\u30B8\u306B\u9032\u3080"
 --- !u!114 &3116255075907924079
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4766,6 +4780,7 @@ GameObject:
   - component: {fileID: 3116255076051718358}
   - component: {fileID: 3116255076051718361}
   - component: {fileID: 3116255076051718360}
+  - component: {fileID: 6939821945818434182}
   m_Layer: 5
   m_Name: GameRetryButton
   m_TagString: Untagged
@@ -4902,6 +4917,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0eeb0949391d22f4bb6330966872fc0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameContentsConfig: {fileID: 6939821945818434182}
 --- !u!114 &3116255076051718360
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4979,6 +4995,25 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!114 &6939821945818434182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3116255076051718367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4334bde4ff8e7c548ab46d92e9369666, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  navigations:
+  - m_Mode: 4
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 3116255076115935085}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
 --- !u!1 &3116255076052081353
 GameObject:
   m_ObjectHideFlags: 0
@@ -5151,6 +5186,7 @@ GameObject:
   - component: {fileID: 3116255076115935081}
   - component: {fileID: 3116255076115935080}
   - component: {fileID: 3116255076115935078}
+  - component: {fileID: 9194254017017202991}
   m_Layer: 5
   m_Name: GameSelectButton
   m_TagString: Untagged
@@ -5287,6 +5323,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 237ca3c3f4a6414409d151535f45bb1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameContentsConfig: {fileID: 9194254017017202991}
 --- !u!114 &3116255076115935078
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5364,6 +5401,19 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!114 &9194254017017202991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3116255076115935087}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4334bde4ff8e7c548ab46d92e9369666, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  navigations: []
 --- !u!1 &3116255076128009726
 GameObject:
   m_ObjectHideFlags: 0

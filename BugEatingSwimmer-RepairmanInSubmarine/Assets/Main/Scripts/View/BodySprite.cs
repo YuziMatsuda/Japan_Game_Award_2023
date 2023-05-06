@@ -13,7 +13,7 @@ namespace Main.View
     public class BodySprite : MonoBehaviour, IBodySprite
     {
         /// <summary>フェードアニメーション時間</summary>
-        [SerializeField] private float fadeDuration = .5f;
+        [SerializeField] protected float fadeDuration = .5f;
 
         public IEnumerator PlayFadeAnimation(IObserver<bool> observer)
         {

@@ -77,19 +77,18 @@ namespace Main.Model
         private readonly BoolReactiveProperty _onTurn = new BoolReactiveProperty();
         /// <summary>ターン実行状態</summary>
         public IReactiveProperty<bool> OnTurn => _onTurn;
+        /// <summary>遅延実行の時間</summary>
+        [SerializeField] private float delayDoDuration = .25f;
+        /// <summary>泳ぐ状態であるか</summary>
+        private readonly BoolReactiveProperty _isSwimming = new BoolReactiveProperty();
+        /// <summary>泳ぐ状態であるか</summary>
+        public IReactiveProperty<bool> IsSwimming => _isSwimming;
+        /// <summary>最後に入力された速度ベクター（向きの判定用）</summary>
+        private Vector2ReactiveProperty _moveVelocityLast = new Vector2ReactiveProperty();
 
         public bool SetInputBan(bool unactive)
         {
-            try
-            {
-                _inputBan = unactive;
-                return true;
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError(e);
-                return false;
-            }
+            return SetInputBan(unactive, false);
         }
 
         private void Start()
@@ -102,7 +101,6 @@ namespace Main.Model
             var rigidbodyGravityScale = rigidbody.gravityScale;
             // 移動制御のベロシティ
             var moveVelocity = new Vector2ReactiveProperty();
-            var moveVelocityLast = new Vector2ReactiveProperty();
             // 最後に参照された移動向き（デフォルトは右向き）
             var toDirectionLast = new Vector3ReactiveProperty(Vector3.right);
             // 位置・スケールのキャッシュ
@@ -114,7 +112,7 @@ namespace Main.Model
 
                     if (!_inputBan)
                     {
-                        if (!AttackMovement(_isPlayingAction, moveVelocity, moveVelocityLast, movementDirectionMode, _isPower, _inputPowerChargeTime, _isPressAndHoldAndReleased, powerChargePhaseTimes))
+                        if (!AttackMovement(_isPlayingAction, moveVelocity, _moveVelocityLast, movementDirectionMode, _isPower, _inputPowerChargeTime, _isPressAndHoldAndReleased, powerChargePhaseTimes))
                             Debug.LogError("攻撃のモーション呼び出しの失敗");
                     }
                     else
@@ -126,6 +124,14 @@ namespace Main.Model
                 {
                     if (!_isBanMoveVelocity.Value)
                     {
+                        // 加速（泳ぎ出す）状態ならSEとパーティクルを発生させる
+                        if (!_isSwimming.Value &&
+                            0f < moveVelocity.Value.magnitude)
+                        {
+                            _isSwimming.Value = true;
+                        }
+                        else if (moveVelocity.Value.magnitude == 0f)
+                            _isSwimming.Value = false;
                         // 歩く走る挙動
                         rigidbody.AddForce(moveVelocity.Value * (forceMode.Equals(ForceMode2D.Force) ? 1f : Time.fixedDeltaTime), forceMode);
                         // Axis指定がゼロなら位置移動の減衰値を高めて止まり安くする
@@ -211,6 +217,22 @@ namespace Main.Model
                     if (1037f < inputPowerChargeTime.Value)
                         inputPowerChargeTime.Value = 1.1f;
                 }
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool AutoPlayPunchAction()
+        {
+            try
+            {
+                var isPlayingAction = new BoolReactiveProperty();
+                PlayPunchAction(isPlayingAction, _moveVelocityLast, movementDirectionMode);
 
                 return true;
             }
@@ -379,6 +401,24 @@ namespace Main.Model
             }
         }
 
+        public bool SetInputBan(bool unactive, bool isDelayMode)
+        {
+            try
+            {
+                if (!isDelayMode)
+                    _inputBan = unactive;
+                else
+                    DOVirtual.DelayedCall(delayDoDuration, () => _inputBan = unactive);
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
         /// <summary>
         /// 移動向きモード
         /// </summary>
@@ -412,6 +452,14 @@ namespace Main.Model
         /// <param name="unactive">許可／禁止</param>
         /// <returns>成功／失敗</returns>
         public bool SetInputBan(bool unactive);
+
+        /// <summary>
+        /// 操作禁止フラグをセット
+        /// </summary>
+        /// <param name="unactive">許可／禁止</param>
+        /// <param name="isDelayMode">遅延実行（つつく入力の対策）</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetInputBan(bool unactive, bool isDelayMode);
 
         /// <summary>
         /// パワー状態をセット

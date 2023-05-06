@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Main.Common;
+using DG.Tweening;
 
 namespace Main.View
 {
@@ -18,6 +19,8 @@ namespace Main.View
         [SerializeField] private Color alreadyClearedColor = Color.blue;
         /// <summary>ボディのスプライト</summary>
         [SerializeField] private BodySprite bodySprite;
+        /// <summary>演出</summary>
+        [SerializeField] private float[] durations = { .25f, .25f };
 
         /// <summary>トランスフォーム</summary>
         private Transform _transform;
@@ -50,8 +53,12 @@ namespace Main.View
             {
                 if (_transform == null)
                     _transform = transform;
-                if (!MainGameManager.Instance.ParticleSystemsOwner.PlayParticleSystems(GetInstanceID(), EnumParticleSystemsIndex.CorrectOrWrong, _transform.position))
-                    Debug.LogError("指定されたパーティクルシステムを再生する呼び出しの失敗");
+                Direction();
+                DOVirtual.DelayedCall(durations[0], () => Direction())
+                    .OnComplete(() =>
+                    {
+                        DOVirtual.DelayedCall(durations[1], () => Direction());
+                    });
 
                 return true;
             }
@@ -60,6 +67,13 @@ namespace Main.View
                 Debug.LogError(e);
                 return false;
             }
+        }
+
+        private void Direction()
+        {
+            if (!MainGameManager.Instance.ParticleSystemsOwner.PlayParticleSystems(GetInstanceID(), EnumParticleSystemsIndex.ParticleJigglyBubbleSoapyPlayer, _transform.position))
+                Debug.LogError("指定されたパーティクルシステムを再生する呼び出しの失敗");
+            MainGameManager.Instance.AudioOwner.PlaySFX(Audio.ClipToPlay.se_swim);
         }
     }
 

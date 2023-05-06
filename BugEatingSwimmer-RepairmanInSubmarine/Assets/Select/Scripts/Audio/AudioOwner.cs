@@ -64,6 +64,8 @@ namespace Select.Audio
         se_decided,
         /// <summary>ステージセレクト</summary>
         se_select,
+        /// <summary>スイマーがコードを突いた時に発生する音</summary>
+        se_code_normal,
     }
 
     /// <summary>
@@ -83,6 +85,8 @@ namespace Select.Audio
     /// </summary>
     public enum ClipToPlayBGM
     {
+        /// <summary>回想</summary>
+        bgm_kaiso,
         /// <summary>タイトル</summary>
         bgm_select,
     }

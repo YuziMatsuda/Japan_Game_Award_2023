@@ -12,12 +12,20 @@ namespace Main.Model
     /// </summary>
     [RequireComponent(typeof(Button))]
     [RequireComponent(typeof(EventTrigger))]
+    [RequireComponent(typeof(GameContentsConfig))]
     public class GameProceedButtonModel : UIEventController
     {
         /// <summary>ボタン</summary>
         private Button _button;
         /// <summary>イベントトリガー</summary>
         private EventTrigger _eventTrigger;
+        /// <summary>設定ファイル</summary>
+        [SerializeField] private GameContentsConfig gameContentsConfig;
+
+        private void Reset()
+        {
+            gameContentsConfig = GetComponent<GameContentsConfig>();
+        }
 
         /// <summary>
         /// ボタンのステータスを変更

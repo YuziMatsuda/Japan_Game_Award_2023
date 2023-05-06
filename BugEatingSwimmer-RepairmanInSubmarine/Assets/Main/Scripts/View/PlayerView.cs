@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Main.Common;
+using Effect;
 
 namespace Main.View
 {
@@ -111,6 +112,36 @@ namespace Main.View
         {
             return bodySpritePlayer.PlayTurnAnimation();
         }
+
+        public bool InstanceBubble()
+        {
+            try
+            {
+                if (_transform == null)
+                    _transform = transform;
+
+                // 泡をプレイヤーへ追尾させる
+                if (!MainGameManager.Instance.ParticleSystemsOwner.PlayParticleSystems(GetInstanceID(), EnumParticleSystemsIndex.ParticleJigglyBubbleSoapyPlayer, _transform.position))
+                    throw new System.Exception("指定されたパーティクルシステムを再生する呼び出しの失敗");
+                var bubble = MainGameManager.Instance.ParticleSystemsOwner.GetParticleSystemsTransform(GetInstanceID(), EnumParticleSystemsIndex.ParticleJigglyBubbleSoapyPlayer);
+                if (bubble.GetComponent<TrackMovement>() == null)
+                {
+                    bubble.gameObject.AddComponent<TrackMovement>();
+                    if (bubble.GetComponent<TrackMovement>().Target == null ||
+                        (bubble.GetComponent<TrackMovement>().Target != null &&
+                            !bubble.GetComponent<TrackMovement>().Target.Equals(transform)))
+                        if (!bubble.GetComponent<TrackMovement>().SetTarget(transform))
+                            throw new System.Exception("ターゲットをセットする呼び出しの失敗");
+                }
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
     }
 
     public interface IPlayerView
@@ -139,5 +170,10 @@ namespace Main.View
         /// </summary>
         /// <returns>成功／失敗</returns>
         public bool PlayPowerAttackEffect();
+        /// <summary>
+        /// 泡が発生
+        /// </summary>
+        /// <returns>成功／失敗</returns>
+        public bool InstanceBubble();
     }
 }

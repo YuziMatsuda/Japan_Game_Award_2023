@@ -19,5 +19,15 @@ namespace Main.Common
         Seastar_8,
         Seastar_9,
         Seastar_10,
+        Seastar_11,
+        Seastar_12,
+        Seastar_13,
+        Seastar_14,
+        Seastar_15,
+        Seastar_16,
+        Seastar_17,
+        Seastar_18,
+        Seastar_19,
+        Seastar_20,
     }
 }

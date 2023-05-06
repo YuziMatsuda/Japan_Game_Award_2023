@@ -9,20 +9,8 @@ namespace Main.View
     /// ビュー
     /// ヒトデ
     /// </summary>
-    public class SeastarView : MonoBehaviour, ISeastarView
+    public class SeastarView : AbstractGimmickView, ISeastarView
     {
-        /// <summary>ボディのスプライト</summary>
-        [SerializeField] private BodySprite bodySprite;
-        /// <summary>アサイン済みカラー</summary>
-        [SerializeField] private Color assignedColor = Color.white;
-        /// <summary>未アサインカラー</summary>
-        [SerializeField] private Color unAssignColor;
-
-        private void Reset()
-        {
-            bodySprite = transform.GetChild(0).GetComponent<BodySprite>();
-        }
-
         public bool SetColorSpriteRenderer(Color color)
         {
             return bodySprite.SetColorSpriteRenderer(color);

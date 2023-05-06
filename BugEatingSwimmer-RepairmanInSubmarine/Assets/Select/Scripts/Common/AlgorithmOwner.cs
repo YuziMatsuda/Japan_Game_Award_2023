@@ -51,12 +51,16 @@ namespace Select.Common
             }
         }
 
-        public int CheckIT()
+        public ResultIT CheckIT()
         {
+            var result = new ResultIT();
             try
             {
                 if (_pivotAndCodeIShortUI.Length < 1)
-                    return -1;
+                {
+                    result.areaIDToUpdated = -1;
+                    return result;
+                }
 
                 var areaOpenedAndITState = SelectGameManager.Instance.SceneOwner.GetAreaOpenedAndITState();
                 for (int i = 0; i < moduleTracers.Length; i++)
@@ -66,24 +70,39 @@ namespace Select.Common
                         case 0:
                             var quasiAssignmentForm = new SelectPresenterCommon().LoadSaveDatasCSVAndGetQuasiAssignmentForm();
                             if (FindNodeCodeIDAndEqualsDirection(moduleTracers[i], _pivotAndCodeIShortUI) &&
-                                int.Parse(areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 1)
+                                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == (int)EnumUnitID.Head &&
+                                int.Parse(q[EnumAreaOpenedAndITState.State]) == (int)EnumAreaOpenedAndITStateState.Cleared)
                                     .Select(q => q)
-                                    .ToArray()[0][EnumAreaOpenedAndITState.State]) == (int)EnumAreaOpenedAndITStateState.Cleared &&
-                                quasiAssignmentForm.Where(q => int.Parse(q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex]) == 1)
+                                    .ToArray().Length &&
+                                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == (int)EnumUnitID.Body &&
+                                int.Parse(q[EnumAreaOpenedAndITState.State]) == (int)EnumAreaOpenedAndITStateState.Cleared)
+                                    .Select(q => q)
+                                    .ToArray().Length)
+                            {
+                                result.areaIDToUpdated = (int)EnumUnitID.Head;
+                                result.isAssigned = quasiAssignmentForm.Where(q => int.Parse(q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex]) == 1)
                                     .Select(q => q)
                                     .ToArray()
                                     .Length == quasiAssignmentForm.Where(q => int.Parse(q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex]) == 1 &&
                                         q[EnumQuasiAssignmentForm.Assigned].Equals(ConstGeneric.DIGITFORM_TRUE))
                                     .Select(q => q)
                                     .ToArray()
-                                    .Length)
-                            {
-                                return 1;
+                                    .Length;
+                                return result;
                             }
                             break;
-                        //case 1:
-                        //    // T.B.D ノードコードIDと向きのチェック
-                        //    return 3;
+                        case 1:
+                            var quasiAssignmentForm_1 = new SelectPresenterCommon().LoadSaveDatasCSVAndGetQuasiAssignmentForm();
+                            if (FindNodeCodeIDAndEqualsDirection(moduleTracers[i], _pivotAndCodeIShortUI) &&
+                                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == (int)EnumUnitID.RightArm &&
+                                int.Parse(q[EnumAreaOpenedAndITState.State]) == (int)EnumAreaOpenedAndITStateState.Cleared)
+                                    .Select(q => q)
+                                    .ToArray().Length)
+                            {
+                                result.areaIDToUpdated = (int)EnumUnitID.RightArm;
+                                return result;
+                            }
+                            return result;
                         //case 2:
                         //    // T.B.D ノードコードIDと向きのチェック
                         //    return 4;
@@ -94,12 +113,14 @@ namespace Select.Common
                 }
 
                 // 見つからない＆既に更新済み
-                return 0;
+                result.areaIDToUpdated = 0;
+                return result;
             }
             catch (System.Exception e)
             {
                 Debug.LogError(e);
-                return -1;
+                result.areaIDToUpdated = -1;
+                return result;
             }
         }
 
@@ -129,6 +150,17 @@ namespace Select.Common
     }
 
     /// <summary>
+    /// IT実施結果
+    /// </summary>
+    public struct ResultIT
+    {
+        /// <summary>更新対象エリアID</summary>
+        public int areaIDToUpdated;
+        /// <summary>ヒトデが配属済みか</summary>
+        public bool isAssigned;
+    }
+
+    /// <summary>
     /// アルゴリズムのオーナー
     /// インターフェース
     /// </summary>
@@ -147,6 +179,6 @@ namespace Select.Common
         /// エリアのステータスがクリア状態なら更新対象エリアIDを返す
         /// </summary>
         /// <returns>更新対象エリアID（0より小さい値はエラー）</returns>
-        public int CheckIT();
+        public ResultIT CheckIT();
     }
 }

@@ -296,7 +296,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 2}
+  m_Size: {x: 414, y: 830}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -314,6 +314,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac2d0bbdbc14c1c4e9a6538e9b477722, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fadeDuration: 0.5
   animator: {fileID: 6729104904619620249}
 --- !u!95 &6729104904619620249
 Animator:
@@ -489,7 +490,6 @@ MonoBehaviour:
   attackDistance: 1
   enumAttackMotionMode: 0
   inputAngleFrontal: 60
-  isPowerDemo: 0
   powerChargePhaseTimes:
   - 0
   - 0.5

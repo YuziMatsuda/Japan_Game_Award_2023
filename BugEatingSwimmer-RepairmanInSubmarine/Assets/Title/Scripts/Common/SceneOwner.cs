@@ -12,7 +12,7 @@ namespace Title.Common
     public class SceneOwner : MonoBehaviour, ITitleGameManager
     {
         /// <summary>次のシーン名</summary>
-        [SerializeField] private string nextSceneName = "SelectScene";
+        [SerializeField] private string nextSceneName = "AreaScene";
 
         public void OnStart()
         {
