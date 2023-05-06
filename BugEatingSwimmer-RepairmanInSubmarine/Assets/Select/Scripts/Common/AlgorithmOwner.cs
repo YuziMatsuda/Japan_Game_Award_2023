@@ -70,16 +70,16 @@ namespace Select.Common
                         case 0:
                             var quasiAssignmentForm = new SelectPresenterCommon().LoadSaveDatasCSVAndGetQuasiAssignmentForm();
                             if (FindNodeCodeIDAndEqualsDirection(moduleTracers[i], _pivotAndCodeIShortUI) &&
-                                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 1 &&
+                                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == (int)EnumUnitID.Head &&
                                 int.Parse(q[EnumAreaOpenedAndITState.State]) == (int)EnumAreaOpenedAndITStateState.Cleared)
                                     .Select(q => q)
                                     .ToArray().Length &&
-                                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 2 &&
+                                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == (int)EnumUnitID.Body &&
                                 int.Parse(q[EnumAreaOpenedAndITState.State]) == (int)EnumAreaOpenedAndITStateState.Cleared)
                                     .Select(q => q)
                                     .ToArray().Length)
                             {
-                                result.areaIDToUpdated = 1;
+                                result.areaIDToUpdated = (int)EnumUnitID.Head;
                                 result.isAssigned = quasiAssignmentForm.Where(q => int.Parse(q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex]) == 1)
                                     .Select(q => q)
                                     .ToArray()
@@ -91,9 +91,18 @@ namespace Select.Common
                                 return result;
                             }
                             break;
-                        //case 1:
-                        //    // T.B.D ノードコードIDと向きのチェック
-                        //    return 3;
+                        case 1:
+                            var quasiAssignmentForm_1 = new SelectPresenterCommon().LoadSaveDatasCSVAndGetQuasiAssignmentForm();
+                            if (FindNodeCodeIDAndEqualsDirection(moduleTracers[i], _pivotAndCodeIShortUI) &&
+                                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == (int)EnumUnitID.RightArm &&
+                                int.Parse(q[EnumAreaOpenedAndITState.State]) == (int)EnumAreaOpenedAndITStateState.Cleared)
+                                    .Select(q => q)
+                                    .ToArray().Length)
+                            {
+                                result.areaIDToUpdated = (int)EnumUnitID.RightArm;
+                                return result;
+                            }
+                            return result;
                         //case 2:
                         //    // T.B.D ノードコードIDと向きのチェック
                         //    return 4;

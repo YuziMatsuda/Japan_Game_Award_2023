@@ -398,11 +398,16 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
   pageModels:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
   logoStageViews:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -420,13 +425,21 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   pivotAndCodeIShortUIViews:
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   pivotAndCodeIShortUIModels:
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
   captionStageViews:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -444,12 +457,16 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   fadeImageView: {fileID: 0}
   fadeImageModel: {fileID: 0}
   playerView: {fileID: 0}
   logoStagesView: {fileID: 0}
   assignedSeastarCountView: {fileID: 0}
   seastarGageViews:
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
