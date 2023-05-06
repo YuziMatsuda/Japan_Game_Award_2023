@@ -321,6 +321,10 @@ namespace Main.Model
                             _toListLength.Value = 0;
                         }
                     }
+                    else
+                    {
+                        _toListLength.Value = 0;
+                    }
                 }
                 else
                 {

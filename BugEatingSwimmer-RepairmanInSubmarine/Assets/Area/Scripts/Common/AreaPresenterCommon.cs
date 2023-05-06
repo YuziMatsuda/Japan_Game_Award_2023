@@ -547,6 +547,14 @@ namespace Area.Common
                         .ToArray()[0][EnumMission.Unlock] = ConstGeneric.DIGITFORM_TRUE;
                     updateCount++;
                 }
+                else if (CheckMissionUnitITAndMissionUnlock(EnumUnitID.RightArm, EnumMissionID.MI0004, areaOpenedAndITState, mission))
+                {
+                    // MI0004
+                    mission.Where(q => q[EnumMission.MissionID].Equals($"{EnumMissionID.MI0004}"))
+                        .Select(q => q)
+                        .ToArray()[0][EnumMission.Unlock] = ConstGeneric.DIGITFORM_TRUE;
+                    updateCount++;
+                }
                 if (0 < updateCount)
                     if (!temp.SaveDatasCSVOfMission(ConstResorcesNames.MISSION, mission))
                         throw new System.Exception("実績一覧管理データをCSVデータへ保存呼び出しの失敗");

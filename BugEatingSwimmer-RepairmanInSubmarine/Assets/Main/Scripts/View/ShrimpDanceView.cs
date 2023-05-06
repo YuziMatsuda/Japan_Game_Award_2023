@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,13 +6,14 @@ namespace Main.View
 {
     /// <summary>
     /// ビュー
-    /// ヒトデ
+    /// エビダンス
     /// </summary>
-    public class SeastarView : AbstractGimmickView, ISeastarView
+    public class ShrimpDanceView : AbstractGimmickView, IShrimpDanceView, IBodySpriteShrimpDance
     {
-        public bool SetColorSpriteRenderer(Color color)
+        protected override void Reset()
         {
-            return bodySprite.SetColorSpriteRenderer(color);
+            base.Reset();
+            bodySprite = transform.GetChild(0).GetComponent<BodySpriteShrimpDance>();
         }
 
         public bool SetColorAssigned()
@@ -25,9 +25,24 @@ namespace Main.View
         {
             return bodySprite.SetColorSpriteRenderer(unAssignColor);
         }
+
+        public bool PlayDanceAnimation()
+        {
+            return ((BodySpriteShrimpDance)bodySprite).PlayDanceAnimation();
+        }
+
+        public bool StopDanceAnimation()
+        {
+            return ((BodySpriteShrimpDance)bodySprite).StopDanceAnimation();
+        }
     }
 
-    public interface ISeastarView
+    /// <summary>
+    /// ビュー
+    /// エビダンス
+    /// インターフェース
+    /// </summary>
+    public interface IShrimpDanceView
     {
         /// <summary>
         /// アサイン済みのカラー設定

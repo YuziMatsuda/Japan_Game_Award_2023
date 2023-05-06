@@ -35,5 +35,7 @@ namespace Main.Common
         public static readonly string TAG_NAME_POWERSHELL = "PowerShell";
         /// <summary>ルール貝</summary>
         public static readonly string RULESHELLFISH = "RuleShellfish";
+        /// <summary>エビダンス</summary>
+        public static readonly string TAG_NAME_SHRIMPDANCE = "ShrimpDance";
     }
 }

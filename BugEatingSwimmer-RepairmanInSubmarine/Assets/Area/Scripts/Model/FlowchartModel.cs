@@ -41,7 +41,7 @@ namespace Area.Model
         /// <summary>
         /// シナリオ読み込まれた
         /// </summary>
-        public void OnReadedScenerio()
+        public void OnReadedScenario()
         {
             // T.B.D シナリオの管理方法を検討
             // シナリオごとにメソッドを用意する必要があるか？

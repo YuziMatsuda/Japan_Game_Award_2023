@@ -18,3 +18,6 @@ PartId,SceneId,Terms,Fixed
 0,7,StartNode_1/Code_5/Code_1/Code_2/Code_3/Code_4/Code_8/GoalNode_1,0
 1,7,StartNode_1/Code_5/Code_6/Code_7/Code_11/Code_12/Code_8/GoalNode_1,0
 2,7,StartNode_1/Code_5/Code_9/Code_10/Code_11/Code_12/Code_8/GoalNode_1,0
+0,8,StartNode_1/Code_1/Code_4/Code_7/Code_8/Code_9/Code_6/Code_5/Code_2/Code_3/GoalNode_1,0
+0,9,StartNode_1/Code_1/Code_2/Code_3/Code_4/Code_8/Code_7/Code_6/Code_10/Code_11/Code_12/GoalNode_1,0
+0,10,StartNode_1/Code_5/Code_6/Code_2/Code_3/Code_4/Code_8/Code_7/Code_11/Code_10/Code_9/Code_13/Code_14/Code_15/Code_14/Code_13/Code_9/Code_10/Code_11/Code_12/GoalNode_1,0

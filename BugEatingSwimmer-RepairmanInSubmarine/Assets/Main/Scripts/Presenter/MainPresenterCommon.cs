@@ -426,6 +426,21 @@ namespace Main.Common
                 throw new System.Exception("例外エラー");
             throw new System.Exception("例外エラー");
         }
+
+        public bool IsOvercounterOfSeastarGage(SeastarGageView seastarGageView)
+        {
+            return seastarGageView == null ||
+                (seastarGageView != null &&
+                !seastarGageView.IsCounting);
+        }
+
+        public bool IsOvercounterOfShrimpDance(int shrimpGageCount, int shrimpGageCountMax)
+        {
+            if (shrimpGageCountMax < 1)
+                return true;
+
+            return shrimpGageCountMax <= shrimpGageCount;
+        }
     }
 
     /// <summary>
@@ -509,5 +524,18 @@ namespace Main.Common
         /// </summary>
         /// <returns>成功／失敗</returns>
         public bool IsFinalLevelOrEndOfAreaAndNotReadedScenario();
+        /// <summary>
+        /// ヒトデゲージが上限を超えているか
+        /// </summary>
+        /// <param name="seastarGageView">ヒトデゲージのビュー</param>
+        /// <returns>超えている</returns>
+        public bool IsOvercounterOfSeastarGage(SeastarGageView seastarGageView);
+        /// <summary>
+        /// エビダンスの数が上限か
+        /// </summary>
+        /// <param name="shrimpGageCount">エビダンス通過数</param>
+        /// <param name="shrimpGageCountMax">エビダンス総数</param>
+        /// <returns></returns>
+        public bool IsOvercounterOfShrimpDance(int shrimpGageCount, int shrimpGageCountMax);
     }
 }

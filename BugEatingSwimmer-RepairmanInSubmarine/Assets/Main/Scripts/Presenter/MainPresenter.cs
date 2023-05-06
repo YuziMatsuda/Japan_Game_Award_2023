@@ -808,6 +808,44 @@ namespace Main.Presenter
                                     }
                                 });
                         }
+                        // エビダンス
+                        List<ShrimpDanceModel> shrimpDanceModels = new List<ShrimpDanceModel>();
+                        List<ShrimpDanceView> shrimpDanceViews = new List<ShrimpDanceView>();
+                        foreach (var item in GameObject.FindGameObjectsWithTag(ConstTagNames.TAG_NAME_SHRIMPDANCE)
+                            .Where(q => q != null)
+                            .Select(q => q))
+                        {
+                            shrimpDanceViews.Add(item.GetComponent<ShrimpDanceView>());
+                            shrimpDanceModels.Add(item.GetComponent<ShrimpDanceModel>());
+                        }
+                        var shrimpGageCount = new IntReactiveProperty(0);
+                        var shrimpGageCountMax = shrimpDanceModels.Count;
+                        for (var i = 0; i < shrimpGageCountMax; i++)
+                        {
+                            var idx = i;
+                            shrimpDanceModels[idx].IsAssignedLocal.ObserveEveryValueChanged(x => x.Value)
+                                .Subscribe(x =>
+                                {
+                                    if (x)
+                                    {
+                                        if (!shrimpDanceViews[idx].SetColorAssigned())
+                                            Debug.LogError("アサイン済みのカラー設定呼び出しの失敗");
+                                        if (!shrimpDanceViews[idx].PlayDanceAnimation())
+                                            Debug.LogError("ダンスアニメーションを再生呼び出しの失敗");
+                                        shrimpGageCount.Value++;
+                                    }
+                                    else
+                                    {
+                                        if (!shrimpDanceViews[idx].SetColorUnAssign())
+                                            Debug.LogError("未アサイン状態のカラー設定呼び出しの失敗");
+                                        if (!shrimpDanceViews[idx].StopDanceAnimation())
+                                            Debug.LogError("ダンスアニメーションを停止呼び出しの失敗");
+                                        // リセットした時のみtrue⇒falseへ変化
+                                        // カウンターもリセットさせる
+                                        shrimpGageCount.Value = 0;
+                                    }
+                                });
+                        }
                         // Getプロセスの実行状態（false:初期状態／停止、true:実行中）
                         var isGetProcessStart = new BoolReactiveProperty();
                         // スタートノード
@@ -901,9 +939,8 @@ namespace Main.Presenter
                                         Observable.FromCoroutine<bool>(observer => MainGameManager.Instance.AlgorithmOwner.PlayRunLightningSignal(observer))
                                             .Subscribe(_ =>
                                             {
-                                                if (seastarGageView == null ||
-                                                    (seastarGageView != null &&
-                                                    !seastarGageView.IsCounting))
+                                                if (common.IsOvercounterOfSeastarGage(seastarGageView) &&
+                                                    common.IsOvercounterOfShrimpDance(shrimpGageCount.Value, shrimpGageCountMax))
                                                 {
                                                     if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, false))
                                                         Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
@@ -957,6 +994,9 @@ namespace Main.Presenter
                                                     if (!common.ResetAllPostingState(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted))
                                                         Debug.LogError("POSTのリセット呼び出しの失敗");
                                                     foreach (var item in seastarModels)
+                                                        if (!item.ResetIsAssigned())
+                                                            Debug.LogError("アサイン情報をリセット呼び出しの失敗");
+                                                    foreach (var item in shrimpDanceModels)
                                                         if (!item.ResetIsAssigned())
                                                             Debug.LogError("アサイン情報をリセット呼び出しの失敗");
                                                 }
@@ -1042,6 +1082,9 @@ namespace Main.Presenter
                                                         if (!common.ResetAllPostingState(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted))
                                                             Debug.LogError("POSTのリセット呼び出しの失敗");
                                                         foreach (var item in seastarModels)
+                                                            if (!item.ResetIsAssigned())
+                                                                Debug.LogError("アサイン情報をリセット呼び出しの失敗");
+                                                        foreach (var item in shrimpDanceModels)
                                                             if (!item.ResetIsAssigned())
                                                                 Debug.LogError("アサイン情報をリセット呼び出しの失敗");
                                                     })
@@ -1170,6 +1213,9 @@ namespace Main.Presenter
                                                 foreach (var item in seastarModels)
                                                     if (!item.ResetIsAssigned())
                                                         Debug.LogError("アサイン情報をリセット呼び出しの失敗");
+                                                foreach (var item in shrimpDanceModels)
+                                                    if (!item.ResetIsAssigned())
+                                                        Debug.LogError("アサイン情報をリセット呼び出しの失敗");
                                             });
                                     }
                                 }
@@ -1193,6 +1239,9 @@ namespace Main.Presenter
                                             foreach (var item in seastarModels)
                                                 if (!item.ResetIsAssigned())
                                                     Debug.LogError("アサイン情報をリセット呼び出しの失敗");
+                                            foreach (var item in shrimpDanceModels)
+                                                if (!item.ResetIsAssigned())
+                                                    Debug.LogError("アサイン情報をリセット呼び出しの失敗");
                                         }
                                         else
                                         {
@@ -1206,6 +1255,9 @@ namespace Main.Presenter
                                                     if (!common.ResetAllPostingState(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted))
                                                         Debug.LogError("POSTのリセット呼び出しの失敗");
                                                     foreach (var item in seastarModels)
+                                                        if (!item.ResetIsAssigned())
+                                                            Debug.LogError("アサイン情報をリセット呼び出しの失敗");
+                                                    foreach (var item in shrimpDanceModels)
                                                         if (!item.ResetIsAssigned())
                                                             Debug.LogError("アサイン情報をリセット呼び出しの失敗");
                                                 });
