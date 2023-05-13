@@ -908,10 +908,14 @@ namespace Main.Presenter
                                                                         Debug.LogError("カラーを設定呼び出しの失敗");
                                                                     if (!jawsHiViews[item.Index].SetSpriteIndex(EnumEnemySpriteIndex.Attack))
                                                                         Debug.LogError("スプライト配列の番号をセット呼び出しの失敗");
+                                                                    if (!jawsHiModels[item.Index].SetCollider2DEnabled(true))
+                                                                        Debug.LogError("向き変更を無効状態をセット呼び出しの失敗");
                                                                     break;
                                                                 case EnumPlayAttackAnimation.Returning:
                                                                     if (!jawsHiViews[item.Index].SetSpriteIndex(EnumEnemySpriteIndex.Normal))
                                                                         Debug.LogError("スプライト配列の番号をセット呼び出しの失敗");
+                                                                    if (!jawsHiModels[item.Index].SetCollider2DEnabled(false))
+                                                                        Debug.LogError("向き変更を無効状態をセット呼び出しの失敗");
                                                                     break;
                                                                 case EnumPlayAttackAnimation.OnCompleted:
                                                                     // ルーティングへ戻った後

@@ -14,7 +14,7 @@ namespace Main.Model
     /// </summary>
     [RequireComponent(typeof(LoinclothConfig))]
     [RequireComponent(typeof(Rigidbody2D))]
-    public class JawsHiModel : MonoBehaviour, IJawsHiModel, ISearchCollider
+    public class JawsHiModel : MonoBehaviour, IJawsHiModel, ISearchCollider, IDangerCollider
     {
         /// <summary>設定</summary>
         [SerializeField] private LoinclothConfig loinclothConfig;
@@ -153,6 +153,11 @@ namespace Main.Model
                 Debug.LogError(e);
                 return false;
             }
+        }
+
+        public bool SetCollider2DEnabled(bool isEnabled)
+        {
+            return ((IDangerCollider)dangerCollider).SetCollider2DEnabled(isEnabled);
         }
     }
 
