@@ -77,7 +77,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 819e920fb8bf922479e62dc3b9b81c22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clearedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  clearedColor: {r: 1, g: 1, b: 1, a: 1}
   alreadyClearedColor: {r: 0, g: 0, b: 1, a: 1}
   bodySprite: {fileID: 770826558294334067}
   durations:

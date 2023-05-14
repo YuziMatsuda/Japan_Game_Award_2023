@@ -37,5 +37,13 @@ namespace Main.Common
         public static readonly string RULESHELLFISH = "RuleShellfish";
         /// <summary>エビダンス</summary>
         public static readonly string TAG_NAME_SHRIMPDANCE = "ShrimpDance";
+        /// <summary>コシギンチャク</summary>
+        public static readonly string TAG_NAME_LOINCLOTH = "Loincloth";
+        /// <summary>ジョーシー</summary>
+        public static readonly string TAG_NAME_JAWSHI = "JawsHi";
+        /// <summary>暗闇</summary>
+        public static readonly string TAG_NAME_DARKLIGHT = "DarkLight";
+        /// <summary>暗闇トリガー</summary>
+        public static readonly string TAG_NAME_DARKLIGHTTRIGGER = "DarkLightTrigger";
     }
 }
