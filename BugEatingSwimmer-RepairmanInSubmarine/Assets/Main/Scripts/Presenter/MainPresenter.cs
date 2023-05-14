@@ -617,6 +617,25 @@ namespace Main.Presenter
                 {
                     if (x)
                     {
+                        // 暗闇
+                        var darkLight = GameObject.FindGameObjectWithTag(ConstTagNames.TAG_NAME_DARKLIGHT);
+                        var darkLightTriggers = GameObject.FindGameObjectsWithTag(ConstTagNames.TAG_NAME_DARKLIGHTTRIGGER);
+                        if (darkLightTriggers != null)
+                        {
+                            var models = darkLightTriggers.Select(q => q.GetComponent<DarkLightTriggerModel>());
+                            foreach (var item in models)
+                            {
+                                item.IsHit.ObserveEveryValueChanged(x => x.Value)
+                                    .Subscribe(x =>
+                                    {
+                                        if (x)
+                                            if (darkLight != null)
+                                                if (darkLight.GetComponent<DarkLightView>().PlayLightDown() < 0)
+                                                    Debug.LogError("暗闇レベルを一つ落とす呼び出しの失敗");
+                                    });
+                            }
+                        }
+
                         // プレイヤーがインスタンス状態
                         playerStartPointView = GameObject.Find(ConstGameObjectNames.GAMEOBJECT_NAME_PLAYERSTARTPOINT).GetComponent<PlayerStartPointView>();
                         isStartDirectionCompleted.Value++;
@@ -655,6 +674,19 @@ namespace Main.Presenter
                                                                 Debug.LogError("見えない状態に描画呼び出しの失敗");
                                                         }
                                                     });
+                                                if (darkLight != null)
+                                                {
+                                                    if (!darkLight.GetComponent<DarkLightView>().HoverTarget(playerView.transform))
+                                                        Debug.LogError("ターゲットを追尾（一度のみ）呼び出しの失敗");
+                                                    Observable.FromCoroutine<int>(observer => darkLight.GetComponent<DarkLightModel>().SetStartTimer(observer))
+                                                        .Subscribe(x =>
+                                                        {
+                                                            if (-1 < x)
+                                                                if (darkLight.GetComponent<DarkLightView>().PlayLightDown() < 0)
+                                                                    Debug.LogError("暗闇レベルを一つ落とす呼び出しの失敗");
+                                                        })
+                                                        .AddTo(gameObject);
+                                                }
                                             }
                                         });
                                     var attackTrigger = GameObject.FindGameObjectWithTag(ConstTagNames.TAG_NAME_ATTACK_TRIGGER).GetComponent<AttackTrigger>();

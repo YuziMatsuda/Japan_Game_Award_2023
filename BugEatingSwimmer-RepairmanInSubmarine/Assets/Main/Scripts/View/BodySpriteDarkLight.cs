@@ -7,11 +7,25 @@ namespace Main.View
     /// <summary>
     /// 暗闇のスプライト
     /// </summary>
-    public class BodySpriteDarkLight : BodySprite, IBodySpriteDarkLight
+    public class BodySpriteDarkLight : BodySprite, IBodySpriteDarkLight, IBodySpriteMask
     {
-        [SerializeField] private Vector3[] scales;
+        /// <summary>スプライトマスク</summary>
+        [SerializeField] private BodySpriteMask bodySpriteMask;
 
+        public bool HoverTarget(Transform target)
+        {
+            return ((IBodySpriteMask)bodySpriteMask).HoverTarget(target);
+        }
 
+        public int PlayLightDown()
+        {
+            return ((IBodySpriteMask)bodySpriteMask).PlayLightDown();
+        }
+
+        private void Reset()
+        {
+            bodySpriteMask = GetComponentInChildren<BodySpriteMask>();
+        }
     }
 
     /// <summary>
@@ -20,6 +34,5 @@ namespace Main.View
     /// </summary>
     public interface IBodySpriteDarkLight
     {
-        
     }
 }

@@ -19,6 +19,8 @@ TagManager:
   - ShrimpDance
   - Loincloth
   - JawsHi
+  - DarkLight
+  - DarkLightTrigger
   layers:
   - Default
   - TransparentFX

@@ -41,5 +41,9 @@ namespace Main.Common
         public static readonly string TAG_NAME_LOINCLOTH = "Loincloth";
         /// <summary>ジョーシー</summary>
         public static readonly string TAG_NAME_JAWSHI = "JawsHi";
+        /// <summary>暗闇</summary>
+        public static readonly string TAG_NAME_DARKLIGHT = "DarkLight";
+        /// <summary>暗闇トリガー</summary>
+        public static readonly string TAG_NAME_DARKLIGHTTRIGGER = "DarkLightTrigger";
     }
 }
