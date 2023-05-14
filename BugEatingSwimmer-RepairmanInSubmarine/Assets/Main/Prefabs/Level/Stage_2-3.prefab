@@ -57,7 +57,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3103067910923516208, guid: 63912b28b064b4c4bb9b8f73e2ce7201, type: 3}
       propertyPath: enumSeastar
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 63912b28b064b4c4bb9b8f73e2ce7201, type: 3}

@@ -1182,7 +1182,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3103067910923516208, guid: 63912b28b064b4c4bb9b8f73e2ce7201, type: 3}
       propertyPath: enumSeastar
-      value: 8
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 63912b28b064b4c4bb9b8f73e2ce7201, type: 3}
@@ -1425,7 +1425,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3103067910923516208, guid: 63912b28b064b4c4bb9b8f73e2ce7201, type: 3}
       propertyPath: enumSeastar
-      value: 10
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 63912b28b064b4c4bb9b8f73e2ce7201, type: 3}
@@ -2526,7 +2526,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3103067910923516208, guid: 63912b28b064b4c4bb9b8f73e2ce7201, type: 3}
       propertyPath: enumSeastar
-      value: 11
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 63912b28b064b4c4bb9b8f73e2ce7201, type: 3}
@@ -2591,7 +2591,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3103067910923516208, guid: 63912b28b064b4c4bb9b8f73e2ce7201, type: 3}
       propertyPath: enumSeastar
-      value: 9
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 63912b28b064b4c4bb9b8f73e2ce7201, type: 3}
