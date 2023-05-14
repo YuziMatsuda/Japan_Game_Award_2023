@@ -92,7 +92,6 @@ namespace Select.Common
                             }
                             break;
                         case 1:
-                            var quasiAssignmentForm_1 = new SelectPresenterCommon().LoadSaveDatasCSVAndGetQuasiAssignmentForm();
                             if (FindNodeCodeIDAndEqualsDirection(moduleTracers[i], _pivotAndCodeIShortUI) &&
                                 0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == (int)EnumUnitID.RightArm &&
                                 int.Parse(q[EnumAreaOpenedAndITState.State]) == (int)EnumAreaOpenedAndITStateState.Cleared)
@@ -102,10 +101,18 @@ namespace Select.Common
                                 result.areaIDToUpdated = (int)EnumUnitID.RightArm;
                                 return result;
                             }
-                            return result;
-                        //case 2:
-                        //    // T.B.D ノードコードIDと向きのチェック
-                        //    return 4;
+                            break;
+                        case 2:
+                            if (FindNodeCodeIDAndEqualsDirection(moduleTracers[i], _pivotAndCodeIShortUI) &&
+                                0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == (int)EnumUnitID.LeftArm &&
+                                int.Parse(q[EnumAreaOpenedAndITState.State]) == (int)EnumAreaOpenedAndITStateState.Cleared)
+                                    .Select(q => q)
+                                    .ToArray().Length)
+                            {
+                                result.areaIDToUpdated = (int)EnumUnitID.LeftArm;
+                                return result;
+                            }
+                            break;
                         default:
                             // 未到達
                             break;

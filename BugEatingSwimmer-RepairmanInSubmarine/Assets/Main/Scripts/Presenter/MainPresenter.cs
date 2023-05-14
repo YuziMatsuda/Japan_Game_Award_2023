@@ -846,6 +846,121 @@ namespace Main.Presenter
                                     }
                                 });
                         }
+                        // ジョーシー
+                        var jawsHis = GameObject.FindGameObjectsWithTag(ConstTagNames.TAG_NAME_JAWSHI);
+                        if (jawsHis != null)
+                        {
+                            var jawsHiModels = jawsHis.Where(q => q.GetComponent<JawsHiModel>() != null)
+                                .Select(q => q.GetComponent<JawsHiModel>())
+                                .ToArray();
+                            var jawsHiViews = jawsHis.Where(q => q.GetComponent<JawsHiView>() != null)
+                                .Select(q => q.GetComponent<JawsHiView>())
+                                .ToArray();
+                            var isDeadDirectioned = new BoolReactiveProperty();
+                            foreach (var item in jawsHiModels.Select((p, i) => new { Content = p, Index = i }))
+                            {
+                                item.Content.IsHit.ObserveEveryValueChanged(x => x.Value)
+                                    .Subscribe(x =>
+                                    {
+                                        if (x &&
+                                            !isDeadDirectioned.Value)
+                                        {
+                                            isDeadDirectioned.Value = true;
+                                            // エラーSEを再生
+                                            MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_code_error);
+                                            Time.timeScale = 0f;
+                                            Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                                .Subscribe(_ => MainGameManager.Instance.SceneOwner.LoadMainScene())
+                                                .AddTo(gameObject);
+                                        }
+                                    });
+                                item.Content.HitPosition.ObserveEveryValueChanged(x => x.Value)
+                                    .Subscribe(x =>
+                                    {
+                                        if (0f < Mathf.Abs(x.magnitude))
+                                        {
+                                            if (!jawsHiModels[item.Index].StopTrackingMoveAnimation())
+                                                Debug.LogError("追跡移動を止める呼び出しの失敗");
+                                            Observable.FromCoroutine<bool>(observer => jawsHiViews[item.Index].PlayWowAnimation(observer))
+                                                .Subscribe(_ =>
+                                                {
+                                                    if (!jawsHiViews[item.Index].SetColorSpriteRendererTarget(true))
+                                                        Debug.LogError("カラーを設定呼び出しの失敗");
+                                                    Observable.FromCoroutine<bool>(observer => jawsHiViews[item.Index].PlayLockOnAnimation(observer, playerModel.transform.position/*x*/))
+                                                        .Subscribe(_ => { })
+                                                        .AddTo(gameObject);
+                                                    Observable.FromCoroutine<int>(observer => jawsHiViews[item.Index].PlayAttackAnimation(observer, playerModel.transform.position/*x*/))
+                                                        .Subscribe(x =>
+                                                        {
+                                                            switch ((EnumPlayAttackAnimation)x)
+                                                            {
+                                                                case EnumPlayAttackAnimation.Backing:
+                                                                    if (!jawsHiModels[item.Index].SetLookAtDisabled(true))
+                                                                        Debug.LogError("向き変更を無効状態をセット呼び出しの失敗");
+                                                                    break;
+                                                                case EnumPlayAttackAnimation.Rushing:
+                                                                    // ジョーシーの攻撃モード
+                                                                    if (!jawsHiModels[item.Index].SetLookAtDisabled(false))
+                                                                        Debug.LogError("向き変更を無効状態をセット呼び出しの失敗");
+                                                                    if (!jawsHiViews[item.Index].StopLockOnAnimation())
+                                                                        Debug.LogError("ロックオンアニメーションを停止呼び出しの失敗");
+                                                                    if (!jawsHiViews[item.Index].SetColorSpriteRendererTarget(false))
+                                                                        Debug.LogError("カラーを設定呼び出しの失敗");
+                                                                    if (!jawsHiViews[item.Index].SetSpriteIndex(EnumEnemySpriteIndex.Attack))
+                                                                        Debug.LogError("スプライト配列の番号をセット呼び出しの失敗");
+                                                                    if (!jawsHiModels[item.Index].SetCollider2DEnabled(true))
+                                                                        Debug.LogError("向き変更を無効状態をセット呼び出しの失敗");
+                                                                    break;
+                                                                case EnumPlayAttackAnimation.Returning:
+                                                                    if (!jawsHiViews[item.Index].SetSpriteIndex(EnumEnemySpriteIndex.Normal))
+                                                                        Debug.LogError("スプライト配列の番号をセット呼び出しの失敗");
+                                                                    if (!jawsHiModels[item.Index].SetCollider2DEnabled(false))
+                                                                        Debug.LogError("向き変更を無効状態をセット呼び出しの失敗");
+                                                                    break;
+                                                                case EnumPlayAttackAnimation.OnCompleted:
+                                                                    // ルーティングへ戻った後
+                                                                    if (!jawsHiModels[item.Index].SetHitState(false))
+                                                                        Debug.LogError("ヒット状態をセット呼び出しの失敗");
+                                                                    break;
+                                                                default:
+                                                                    break;
+                                                            }
+                                                        })
+                                                        .AddTo(gameObject);
+                                                })
+                                                .AddTo(gameObject);
+                                        }
+                                        else
+                                        {
+                                            // 初期状態は非表示とできるか
+                                            if (!jawsHiViews[item.Index].SetColorSpriteRendererWow(false))
+                                                Debug.LogError("カラーを設定呼び出しの失敗");
+                                            if (!jawsHiModels[item.Index].PlayTrackingMoveAnimation())
+                                                Debug.LogError("追跡移動するアニメーションを再生呼び出しの失敗");
+                                        }
+                                    });
+                                item.Content.IsBack.ObserveEveryValueChanged(x => x.Value)
+                                    .Subscribe(x =>
+                                    {
+                                        if (!jawsHiViews[item.Index].SetScale(x ? Vector3.one : new Vector3(-1f, 1f, 1f)))
+                                            Debug.LogError("大きさをセット呼び出しの失敗");
+                                    });
+                            }
+                        }
+                        // コシギンチャク
+                        var loincloths = GameObject.FindGameObjectsWithTag(ConstTagNames.TAG_NAME_LOINCLOTH);
+                        if (loincloths != null)
+                        {
+                            var loinclothModels = loincloths.Where(q => q.GetComponent<LoinclothModel>() != null)
+                                .Select(q => q.GetComponent<LoinclothModel>())
+                                .ToArray();
+                            var loinclothViews = loincloths.Where(q => q.GetComponent<LoinclothView>() != null)
+                                .Select(q => q.GetComponent<LoinclothView>())
+                                .ToArray();
+                            foreach (var item in loinclothModels.Select((p, i) => new { Content = p, Index = i }))
+                                if (!loinclothViews[item.Index].PlaySwing())
+                                    Debug.LogError("揺らすアニメーションを再生呼び出しの失敗");
+                        }
                         // Getプロセスの実行状態（false:初期状態／停止、true:実行中）
                         var isGetProcessStart = new BoolReactiveProperty();
                         // スタートノード
@@ -959,6 +1074,8 @@ namespace Main.Presenter
                                                     var bug = goalNode.GetComponent<GoalNodeView>().InstanceBug;
                                                     if (!bug.GetComponent<BugView>().SetColorCleared(isBugFixed))
                                                         Debug.LogError("カラーを設定呼び出しの失敗");
+                                                    if (!bug.GetComponent<BugView>().PlayBugAura())
+                                                        Debug.LogError("バグオーラを発生呼び出しの失敗");
                                                     bug.GetComponent<BugModel>().IsEated.ObserveEveryValueChanged(x => x.Value)
                                                         .Subscribe(x =>
                                                         {
@@ -978,6 +1095,8 @@ namespace Main.Presenter
                                                                     Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
                                                                 if (!bug.GetComponent<BugView>().PlayCorrectOrWrong())
                                                                     Debug.LogError("バグ消失パーティクルを再生呼び出しの失敗");
+                                                                if (!bug.GetComponent<BugView>().StopBugAura())
+                                                                    Debug.LogError("バグオーラを停止呼び出しの失敗");
                                                                 Observable.FromCoroutine<bool>(observer => bug.GetComponent<BugView>().PlayFadeAnimation(observer))
                                                                     .Subscribe(_ =>
                                                                     {
@@ -1074,6 +1193,8 @@ namespace Main.Presenter
                                                     .Length)
                                             {
                                                 var bug = goalNode.GetComponent<GoalNodeView>().InstanceBug;
+                                                if (!bug.GetComponent<BugView>().StopBugAura())
+                                                    Debug.LogError("バグオーラを停止呼び出しの失敗");
                                                 Observable.FromCoroutine<bool>(observer => goalNode.GetComponent<GoalNodeView>().degrad(observer))
                                                     .Subscribe(_ =>
                                                     {
