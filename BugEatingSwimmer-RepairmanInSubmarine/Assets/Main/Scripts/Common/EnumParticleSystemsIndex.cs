@@ -16,5 +16,6 @@ namespace Main.Common
         CorrectOrWrong,
         ParticleJigglyBubbleSoapy,
         ParticleJigglyBubbleSoapyPlayer,
+        BugAura,
     }
 }

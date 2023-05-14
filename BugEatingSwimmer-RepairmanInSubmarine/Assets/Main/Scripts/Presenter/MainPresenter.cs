@@ -1074,6 +1074,8 @@ namespace Main.Presenter
                                                     var bug = goalNode.GetComponent<GoalNodeView>().InstanceBug;
                                                     if (!bug.GetComponent<BugView>().SetColorCleared(isBugFixed))
                                                         Debug.LogError("カラーを設定呼び出しの失敗");
+                                                    if (!bug.GetComponent<BugView>().PlayBugAura())
+                                                        Debug.LogError("バグオーラを発生呼び出しの失敗");
                                                     bug.GetComponent<BugModel>().IsEated.ObserveEveryValueChanged(x => x.Value)
                                                         .Subscribe(x =>
                                                         {
@@ -1093,6 +1095,8 @@ namespace Main.Presenter
                                                                     Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
                                                                 if (!bug.GetComponent<BugView>().PlayCorrectOrWrong())
                                                                     Debug.LogError("バグ消失パーティクルを再生呼び出しの失敗");
+                                                                if (!bug.GetComponent<BugView>().StopBugAura())
+                                                                    Debug.LogError("バグオーラを停止呼び出しの失敗");
                                                                 Observable.FromCoroutine<bool>(observer => bug.GetComponent<BugView>().PlayFadeAnimation(observer))
                                                                     .Subscribe(_ =>
                                                                     {
@@ -1189,6 +1193,8 @@ namespace Main.Presenter
                                                     .Length)
                                             {
                                                 var bug = goalNode.GetComponent<GoalNodeView>().InstanceBug;
+                                                if (!bug.GetComponent<BugView>().StopBugAura())
+                                                    Debug.LogError("バグオーラを停止呼び出しの失敗");
                                                 Observable.FromCoroutine<bool>(observer => goalNode.GetComponent<GoalNodeView>().degrad(observer))
                                                     .Subscribe(_ =>
                                                     {

@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using Main.Common;
 using DG.Tweening;
+using Effect;
 
 namespace Main.View
 {
@@ -75,6 +76,48 @@ namespace Main.View
                 Debug.LogError("指定されたパーティクルシステムを再生する呼び出しの失敗");
             MainGameManager.Instance.AudioOwner.PlaySFX(Audio.ClipToPlay.se_swim);
         }
+
+        public bool PlayBugAura()
+        {
+            try
+            {
+                if (!MainGameManager.Instance.ParticleSystemsOwner.PlayParticleSystems(GetInstanceID(), EnumParticleSystemsIndex.BugAura, _transform.position))
+                    Debug.LogError("指定されたパーティクルシステムを再生する呼び出しの失敗");
+                var bugAura = MainGameManager.Instance.ParticleSystemsOwner.GetParticleSystemsTransform(GetInstanceID(), EnumParticleSystemsIndex.BugAura);
+                if (bugAura.GetComponent<TrackMovement>() == null)
+                {
+                    bugAura.gameObject.AddComponent<TrackMovement>();
+                    if (bugAura.GetComponent<TrackMovement>().Target == null ||
+                        (bugAura.GetComponent<TrackMovement>().Target != null &&
+                            !bugAura.GetComponent<TrackMovement>().Target.Equals(transform)))
+                        if (!bugAura.GetComponent<TrackMovement>().SetTarget(transform))
+                            throw new System.Exception("ターゲットをセットする呼び出しの失敗");
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool StopBugAura()
+        {
+            try
+            {
+                if (!MainGameManager.Instance.ParticleSystemsOwner.StopParticleSystems(GetInstanceID(), EnumParticleSystemsIndex.BugAura))
+                    Debug.LogError("指定されたパーティクルシステムを再生する呼び出しの失敗");
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
     }
 
     /// <summary>
@@ -90,11 +133,20 @@ namespace Main.View
         /// <param name="isAlreadyCleared">クリア済みならTrue</param>
         /// <returns>成功／失敗</returns>
         public bool SetColorCleared(bool isAlreadyCleared);
-
         /// <summary>
         /// バグ消失パーティクルを再生
         /// </summary>
         /// <returns>成功／失敗</returns>
         public bool PlayCorrectOrWrong();
+        /// <summary>
+        /// バグオーラを発生
+        /// </summary>
+        /// <returns>成功／失敗</returns>
+        public bool PlayBugAura();
+        /// <summary>
+        /// バグオーラを停止
+        /// </summary>
+        /// <returns>成功／失敗</returns>
+        public bool StopBugAura();
     }
 }
