@@ -229,12 +229,14 @@ namespace Select.Common
                         // ステージ番号ごとにSeastar情報の配列を取得
                         foreach (var itemChild in itemChilds)
                         {
-                            // ステージ番号ごとのキャプション配列の中でアサイン情報を反映
-                            itemChild.SetIsAssigned(LoadSaveDatasCSVAndGetQuasiAssignmentForm()
-                                .Where(q => q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex].Equals($"{sceneId}") &&
-                                    q[EnumQuasiAssignmentForm.SeastarID].Equals($"{itemChild.SeastarConfig.EnumSeastarID}"))
-                                .Select(q => q)
-                                .ToArray()[0][EnumQuasiAssignmentForm.Assigned].Equals(ConstGeneric.DIGITFORM_TRUE));
+                            var ary = LoadSaveDatasCSVAndGetQuasiAssignmentForm()
+                                    .Where(q => q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex].Equals($"{sceneId}") &&
+                                        q[EnumQuasiAssignmentForm.SeastarID].Equals($"{itemChild.SeastarConfig.EnumSeastarID}"))
+                                    .Select(q => q)
+                                    .ToArray();
+                            if (0 < ary.Length)
+                                // ステージ番号ごとのキャプション配列の中でアサイン情報を反映
+                                itemChild.SetIsAssigned(ary[0][EnumQuasiAssignmentForm.Assigned].Equals(ConstGeneric.DIGITFORM_TRUE));
                         }
                     }
                 }
@@ -257,6 +259,26 @@ namespace Select.Common
                 var mission = temp.GetMission(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION));
                 // 実績履歴を取得
                 var history = temp.GetMissionHistory(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION_HISTORY));
+
+                return IsFindMission(mission, history, false);
+            }
+            catch (System.Exception e)
+            {
+                throw e;
+            }
+        }
+
+        /// <summary>
+        /// 実績一覧と実績履歴に存在するか
+        /// </summary>
+        /// <param name="mission">実績一覧</param>
+        /// <param name="history">実績履歴</param>
+        /// <param name="findMode">実績一覧ありかつ、実績履歴にある／実績一覧ありかつ、実績履歴にない</param>
+        /// <returns>条件一致する／条件一致しない</returns>
+        private bool IsFindMission(Dictionary<EnumMission, string>[] mission, Dictionary<EnumMissionHistory, string>[] history, bool findMode)
+        {
+            if (!findMode)
+            {
                 // 実績一覧管理のアンロック解除している実績IDが履歴に見つからない場合は演出を実行する
                 foreach (var item in mission.Where(q => q[EnumMission.CategoryID].Equals($"{EnumCategoryID.CA0000}") &&
                     q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_TRUE))
@@ -265,13 +287,19 @@ namespace Select.Common
                         .Select(q => q)
                         .ToArray().Length < 1)
                         return true;
-
-                return false;
             }
-            catch (System.Exception e)
+            else
             {
-                throw e;
+                // 実績一覧管理のアンロック解除している実績IDが履歴に見つからない場合は演出を実行する
+                foreach (var item in mission.Where(q => q[EnumMission.CategoryID].Equals($"{EnumCategoryID.CA0000}") &&
+                    q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_TRUE))
+                    .Select(q => q))
+                    if (0 < history.Where(q => q[EnumMissionHistory.History].Equals($"{item[EnumMission.MissionID]}"))
+                        .Select(q => q)
+                        .ToArray().Length)
+                        return true;
             }
+            return false;
         }
 
         public int AddMissionHistory()
@@ -311,6 +339,93 @@ namespace Select.Common
             {
                 Debug.LogError(e);
                 return -1;
+            }
+        }
+
+        public bool IsMissionUnlockAndFoundHistory(EnumMissionID enumMissionID)
+        {
+            try
+            {
+                var temp = new SelectTemplateResourcesAccessory();
+                // 実績一覧管理を取得
+                var mission = temp.GetMission(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION));
+                // 実績履歴を取得
+                var history = temp.GetMissionHistory(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION_HISTORY));
+
+                // 実績一覧管理のアンロック解除している実績IDが履歴に見つからない場合は演出を実行する
+                foreach (var item in mission.Where(q => q[EnumMission.CategoryID].Equals($"{EnumCategoryID.CA0000}") &&
+                    q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_TRUE) &&
+                    q[EnumMission.MissionID].Equals($"{enumMissionID/*EnumMissionID.MI0006*/}"))
+                    .Select(q => q))
+                    if (0 < history.Where(q => q[EnumMissionHistory.History].Equals($"{item[EnumMission.MissionID]}") &&
+                        q[EnumMissionHistory.History].Equals($"{enumMissionID/*EnumMissionID.MI0006*/}"))
+                        .Select(q => q)
+                        .ToArray().Length)
+                        return true;
+
+                return false;
+            }
+            catch (System.Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public bool IsCoreOpened()
+        {
+            try
+            {
+                var temp = new SelectTemplateResourcesAccessory();
+                // 実績一覧管理を取得
+                var mission = temp.GetMission(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION));
+                // 実績履歴を取得
+                var history = temp.GetMissionHistory(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION_HISTORY));
+
+                // 実績一覧管理のからコア解放済みかチェック
+                return 0 < mission.Where(q => q[EnumMission.CategoryID].Equals($"{EnumCategoryID.CA0000}") &&
+                    q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_TRUE) &&
+                    q[EnumMission.MissionID].Equals($"{EnumMissionID.MI0006}"))
+                    .Select(q => q)
+                    .ToArray()
+                    .Length;
+            }
+            catch (System.Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public bool SetSystemCommonCashAndDefaultStageIndex(EnumUnitID enumUnitID)
+        {
+            try
+            {
+                var temp = new SelectTemplateResourcesAccessory();
+                var SystemCommonCash = temp.GetSystemCommonCash(temp.LoadSaveDatasCSV(ConstResorcesNames.SYSTEM_COMMON_CASH));
+                var areaUnits = temp.GetAreaUnits(temp.LoadSaveDatasCSV(ConstResorcesNames.AREA_UNITS));
+                var currentUnitID = (EnumUnitID)areaUnits.Where(q => q[EnumAreaUnits.StageID] == SystemCommonCash[EnumSystemCommonCash.SceneId])
+                    .Distinct()
+                    .Select(q => q[EnumAreaUnits.UnitID])
+                    .ToArray()[0];
+                if (currentUnitID.Equals(enumUnitID))
+                    // 同じエリアへ移動する場合はステージ番号をリセットしない
+                    return true;
+
+                // ユニットIDからステージ番号初期値を取得
+                var defaultStageIndex = areaUnits.Where(q => q[EnumAreaUnits.UnitID] == (int)enumUnitID)
+                    .Select(q => q[EnumAreaUnits.StageID])
+                    .OrderBy(q => q)
+                    .ToArray()[0];
+                // キャッシュをセット
+                SystemCommonCash[EnumSystemCommonCash.SceneId] = defaultStageIndex;
+                if (!temp.SaveDatasCSVOfSystemCommonCash(ConstResorcesNames.SYSTEM_COMMON_CASH, SystemCommonCash))
+                    throw new System.Exception("システム設定キャッシュをCSVデータへ保存呼び出しの失敗");
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
             }
         }
     }
@@ -384,5 +499,24 @@ namespace Select.Common
         /// </summary>
         /// <returns>追加した件数</returns>
         public int AddMissionHistory();
+        /// <summary>
+        /// 実績一覧と実績履歴に対象IDが存在するか
+        /// </summary>
+        /// <param name="enumMissionID">ミッションID</param>
+        /// <returns>実行済み／実行しない</returns>
+        public bool IsMissionUnlockAndFoundHistory(EnumMissionID enumMissionID);
+        /// <summary>
+        /// コア解放済みか
+        /// </summary>
+        /// <returns>実行済み／実行しない</returns>
+        public bool IsCoreOpened();
+        /// <summary>
+        /// キャッシュをセット
+        /// ユニットIDからステージ番号初期値を取得
+        /// 同じエリアへ移動する場合はステージ番号をリセットしない
+        /// </summary>
+        /// <param name="enumUnitID">エリアID</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetSystemCommonCashAndDefaultStageIndex(EnumUnitID enumUnitID);
     }
 }

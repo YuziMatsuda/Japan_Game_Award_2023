@@ -75,6 +75,7 @@ namespace Select.Model
                     int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == currentUnitID[0])
                     .Select(q => q[EnumAreaOpenedAndITState.State])
                     .ToArray()[0];
+                var common = new SelectPresenterCommon();
                 // 未クリアの場合次のステージへナビゲーションしない
                 if (stageState.Value != 2)
                 {
@@ -86,6 +87,26 @@ namespace Select.Model
                     ((EnumAreaOpenedAndITStateState)int.Parse(currentState)).Equals(EnumAreaOpenedAndITStateState.ITFixed))
                 {
                     // 対象ステージに紐づくエリア状態が結合済みかつ、最終ステージの場合IT済み後のボタンナビゲーションへ更新
+                    if (_button == null)
+                        _button = GetComponent<Button>();
+                    _button.navigation = navigationOfIT;
+                }
+                else if (isFinalInArea &&
+                    _index == 7 &&
+                    common.IsCoreOpened())
+                {
+                    // ※※※ボディのラストステージ２－４のみ※※※
+                    // コア解放済みの場合IT済み後のボタンナビゲーションへ更新
+                    if (_button == null)
+                        _button = GetComponent<Button>();
+                    _button.navigation = navigationOfIT;
+                }
+                else if (isFinalInArea &&
+                    _index == 16 &&
+                    common.IsMissionUnlockAndFoundHistory(EnumMissionID.MI0007))
+                {
+                    // ※※※コアのラストステージ５－３のみ※※※
+                    // 対象のミッション更新済みならIT済み後のボタンナビゲーションへ更新
                     if (_button == null)
                         _button = GetComponent<Button>();
                     _button.navigation = navigationOfIT;

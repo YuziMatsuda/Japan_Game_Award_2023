@@ -69,6 +69,9 @@ MonoBehaviour:
   - enumMissionID: 6
     enumRobotPanel: 7
     enumUnitID: 5
+  - enumMissionID: 7
+    enumRobotPanel: 7
+    enumUnitID: 5
 --- !u!1 &1514517309
 GameObject:
   m_ObjectHideFlags: 0
