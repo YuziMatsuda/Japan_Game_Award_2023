@@ -417,6 +417,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d7d417659cd54a6787f70f763950c34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1853407027 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5200036541451183103, guid: e45d6d8dfe00f914682e5ed4198180c4, type: 3}
+  m_PrefabInstance: {fileID: 6400638602551276701}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d7d417659cd54a6787f70f763950c34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1853407046 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7578165073503590626, guid: e45d6d8dfe00f914682e5ed4198180c4, type: 3}
+  m_PrefabInstance: {fileID: 6400638602551276701}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d7d417659cd54a6787f70f763950c34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1963879884 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1963879884, guid: 6500b7f113d2fe14fb1b2c853cdbf44c, type: 3}
@@ -559,27 +581,35 @@ PrefabInstance:
     - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
       propertyPath: receivers.Array.data[0]
       value: 
-      objectReference: {fileID: 1145146466}
+      objectReference: {fileID: 1853407027}
     - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
       propertyPath: receivers.Array.data[1]
       value: 
-      objectReference: {fileID: 1145146467}
+      objectReference: {fileID: 1853407046}
     - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
       propertyPath: receivers.Array.data[2]
       value: 
-      objectReference: {fileID: 1145146468}
+      objectReference: {fileID: 904264626}
     - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
       propertyPath: receivers.Array.data[3]
       value: 
-      objectReference: {fileID: 904264626}
+      objectReference: {fileID: 904264630}
     - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
       propertyPath: receivers.Array.data[4]
       value: 
-      objectReference: {fileID: 904264630}
+      objectReference: {fileID: 904264634}
     - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
       propertyPath: receivers.Array.data[5]
       value: 
-      objectReference: {fileID: 904264634}
+      objectReference: {fileID: 1145146466}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: receivers.Array.data[6]
+      value: 
+      objectReference: {fileID: 1145146467}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: receivers.Array.data[7]
+      value: 
+      objectReference: {fileID: 1145146468}
     - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
       propertyPath: assignedSeastarCountView
       value: 

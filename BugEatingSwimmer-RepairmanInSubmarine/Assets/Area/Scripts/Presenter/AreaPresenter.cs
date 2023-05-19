@@ -205,12 +205,9 @@ namespace Area.Presenter
                     }
                 });
             var sysCommonCash = AreaGameManager.Instance.SceneOwner.GetSystemCommonCash();
-            var stageIndex = sysCommonCash[EnumSystemCommonCash.SceneId] /*new IntReactiveProperty(sysCommonCash[EnumSystemCommonCash.SceneId])*/;
-            //var selectUnitID = new IntReactiveProperty((int)common.GetEnumUnitID(stageIndex));
+            var stageIndex = sysCommonCash[EnumSystemCommonCash.SceneId];
             var areaUnits = common.LoadSaveDatasCSVAndGetAreaUnits();
-            var currentUnitID = new IntReactiveProperty(areaUnits.Where(q => q[EnumAreaUnits.StageID] == stageIndex/*.Value*/)
-                .Select(q => q[EnumAreaUnits.UnitID])
-                .ToArray()[0]);
+            var currentUnitID = new IntReactiveProperty(common.GetUnitIDsButIgnoreVoidInCore(areaUnits, stageIndex));
             // シーン読み込み時のアニメーション
             if (!templetePanelView.SetPositionAndScaleAfterPrevSaveTransform((EnumUnitID)currentUnitID.Value))
                 Debug.LogError("位置とスケールをセットして一つ前の状態を保存する呼び出しの失敗");

@@ -639,6 +639,14 @@ namespace Area.Common
                     .Select(q => q)
                     .ToArray().Length;
         }
+
+        public int GetUnitIDsButIgnoreVoidInCore(Dictionary<EnumAreaUnits, int>[] areaUnits, int stageIndex)
+        {
+            var unitID = areaUnits.Where(q => q[EnumAreaUnits.StageID] == stageIndex)
+                .Select(q => q[EnumAreaUnits.UnitID])
+                .ToArray()[0];
+            return unitID == (int)EnumUnitID.VoidInCore ? (int)EnumUnitID.Core : unitID;
+        }
     }
 
     /// <summary>
@@ -723,5 +731,13 @@ namespace Area.Common
         /// </summary>
         /// <returns>成功／失敗</returns>
         public bool CheckMissionAndSaveDatasCSVOfMission();
+        /// <summary>
+        /// ユニットIDを取得
+        /// 但し、コア（深部）は除く
+        /// </summary>
+        /// <param name="areaUnits">エリアユニット配列</param>
+        /// <param name="stageIndex">ステージ番号</param>
+        /// <returns>ユニットID</returns>
+        public int GetUnitIDsButIgnoreVoidInCore(Dictionary<EnumAreaUnits, int>[] areaUnits, int stageIndex);
     }
 }

@@ -400,7 +400,11 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   pageModels:
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -421,7 +425,15 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   logoStageModels:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -461,7 +473,15 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   captionStageModels:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -487,9 +507,17 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   receivers:
   - {fileID: 0}
   flowchartModel: {fileID: 0}
+  robotHeartViews:
+  - {fileID: 0}
+  - {fileID: 0}
+  robotHeartModels:
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &3906211334646022044
 GameObject:
   m_ObjectHideFlags: 0
@@ -536,6 +564,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nextSceneName: MainScene
   backSceneName: AreaScene
+  currentSceneName: SelectScene
 --- !u!1 &3906211334697514266
 GameObject:
   m_ObjectHideFlags: 0

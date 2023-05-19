@@ -72,6 +72,12 @@ MonoBehaviour:
   - enumMissionID: 7
     enumRobotPanel: 7
     enumUnitID: 5
+  - enumMissionID: 8
+    enumRobotPanel: 7
+    enumUnitID: 5
+  - enumMissionID: 9
+    enumRobotPanel: 7
+    enumUnitID: 5
 --- !u!1 &1514517309
 GameObject:
   m_ObjectHideFlags: 0
@@ -514,6 +520,8 @@ MonoBehaviour:
   robotPanelView: {fileID: 0}
   robotPanelModel: {fileID: 0}
   receivers:
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
