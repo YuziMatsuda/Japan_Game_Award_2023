@@ -299,6 +299,9 @@ namespace Main.Presenter
                         }
                         // 初期処理
                         clearView.gameObject.SetActive(true);
+                        if (common.IsFinalLevel(areaUnits, currentStageDic))
+                            if (!stageClearView.SetMessageCongratulations())
+                                Debug.LogError("最終ステージ用のメッセージをセット呼び出しの失敗");
                         stageClearView.gameObject.SetActive(true);
                         gameProceedButtonView.gameObject.SetActive(false);
                         gameRetryButtonView.gameObject.SetActive(false);
