@@ -246,6 +246,9 @@ namespace Main.Presenter
                 });
             // クリア画面表示のため、ゴール到達のフラグ更新
             var currentStageDic = MainGameManager.Instance.SceneOwner.GetSystemCommonCash();
+            var areaUnits = common.LoadSaveDatasCSVAndGetAreaUnits();
+            // 「この感情（おもい）は、バグか？仕様か？」
+            var isThisEmotionaBug_IsItASpecification = new BoolReactiveProperty();
             var mainSceneStagesState = MainGameManager.Instance.SceneOwner.GetMainSceneStagesState();
             var mainSceneStagesModulesState = MainGameManager.Instance.SceneOwner.GetMainSceneStagesModulesState();
             var isGoalReached = new BoolReactiveProperty();
@@ -272,6 +275,28 @@ namespace Main.Presenter
                             Debug.LogError("アサインを保存呼び出しの失敗");
                         if (!assignedSeastarCountView.SetCounterText(MainGameManager.Instance.GimmickOwner.GetAssinedCounter()))
                             Debug.LogError("ヒトデ総配属人数をセット呼び出しの失敗");
+                        if (common.IsFinalLevel(areaUnits, currentStageDic))
+                        {
+                            var missions = common.LoadSaveDatasCSVAndGetMission();
+                            if (isThisEmotionaBug_IsItASpecification.Value)
+                            {
+                                if (common.IsUnlocked(missions, EnumMissionID.MI0008))
+                                {
+                                    missions = common.SetUnlockState(missions, EnumMissionID.MI0008);
+                                    if (!common.SaveDatasCSVOfMission(ConstResorcesNames.MISSION, missions))
+                                        Debug.LogError("実績一覧管理データをCSVデータへ保存呼び出しの失敗");
+                                }
+                            }
+                            else
+                            {
+                                if (common.IsUnlocked(missions, EnumMissionID.MI0009))
+                                {
+                                    missions = common.SetUnlockState(missions, EnumMissionID.MI0009);
+                                    if (!common.SaveDatasCSVOfMission(ConstResorcesNames.MISSION, missions))
+                                        Debug.LogError("実績一覧管理データをCSVデータへ保存呼び出しの失敗");
+                                }
+                            }
+                        }
                         // 初期処理
                         clearView.gameObject.SetActive(true);
                         stageClearView.gameObject.SetActive(true);
@@ -1240,6 +1265,8 @@ namespace Main.Presenter
                                                         foreach (var item in shrimpDanceModels)
                                                             if (!item.ResetIsAssigned())
                                                                 Debug.LogError("アサイン情報をリセット呼び出しの失敗");
+                                                        if (common.IsFinalLevel(areaUnits, currentStageDic))
+                                                            isThisEmotionaBug_IsItASpecification.Value = false;
                                                     })
                                                     .AddTo(gameObject);
                                             }
@@ -1284,6 +1311,15 @@ namespace Main.Presenter
                                             isGetProcessStart.Value = false;
                                         }
                                     });
+                                // 最終ステージのみ実行
+                                if (common.IsFinalLevel(areaUnits, currentStageDic) &&
+                                    codeObjs[idx].GetComponent<PivotConfig>().EmotionsCodeMode)
+                                    codeObjs[idx].GetComponent<PivotModel>().IsPathEmotions.ObserveEveryValueChanged(x => x.Value)
+                                        .Do(x => Debug.Log(x))
+                                        .Subscribe(x =>
+                                        {
+                                            isThisEmotionaBug_IsItASpecification.Value = x;
+                                        });
                                 //codeObjs[idx].GetComponent<PivotModel>().IsGetting.ObserveEveryValueChanged(x => x.Value)
                                 //    .Subscribe(x =>
                                 //    {

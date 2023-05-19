@@ -35,5 +35,9 @@ namespace Main.Model
         [SerializeField] private Transform[] coralParts;
         /// <summary>サン（ゴ）ショウコード破片</summary>
         public Transform[] CoralParts => coralParts;
+        /// <summary>感情コードであるか</summary>
+        [SerializeField] private bool emotionsCodeMode;
+        /// <summary>感情コードであるか</summary>
+        public bool EmotionsCodeMode => emotionsCodeMode;
     }
 }
