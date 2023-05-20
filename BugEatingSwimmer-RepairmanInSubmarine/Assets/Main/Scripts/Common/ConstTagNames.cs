@@ -45,5 +45,7 @@ namespace Main.Common
         public static readonly string TAG_NAME_DARKLIGHT = "DarkLight";
         /// <summary>暗闇トリガー</summary>
         public static readonly string TAG_NAME_DARKLIGHTTRIGGER = "DarkLightTrigger";
+        /// <summary>ロボットヘッド（修理前）</summary>
+        public static readonly string TAG_NAME_ROBOTHEADBEFORE = "RobotHeadBefore";
     }
 }

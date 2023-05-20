@@ -142,6 +142,22 @@ namespace Main.View
                 return false;
             }
         }
+
+        public Transform InstanceGhost()
+        {
+            var ghost = GameObject.Find("PlayerGhost");
+            if (ghost == null)
+            {
+                ghost = new GameObject();
+                ghost.name = "PlayerGhost";
+                return ghost.transform;
+            }
+            else
+            {
+                ghost.transform.position = transform.position;
+                return ghost.transform;
+            }
+        }
     }
 
     public interface IPlayerView
@@ -175,5 +191,11 @@ namespace Main.View
         /// </summary>
         /// <returns>成功／失敗</returns>
         public bool InstanceBubble();
+        /// <summary>
+        /// 疑似プレイヤーを生成
+        /// ※イベント内でカメラの移動で使用
+        /// </summary>
+        /// <returns>疑似プレイヤーのトランスフォーム</returns>
+        public Transform InstanceGhost();
     }
 }

@@ -6,6 +6,7 @@ using Main.View;
 using UniRx;
 using Main.Template;
 using System.Linq;
+using Fungus;
 
 namespace Main.Common
 {
@@ -498,6 +499,45 @@ namespace Main.Common
                 return false;
             }
         }
+
+        public Dictionary<EnumSystemCommonCash, int> LoadSaveDatasCSVAndGetSystemCommonCash()
+        {
+            var temp = new MainTemplateResourcesAccessory();
+            return temp.GetSystemCommonCash(temp.LoadSaveDatasCSV(ConstResorcesNames.SYSTEM_COMMON_CASH));
+        }
+
+        public bool IsOpeningTutorialMode()
+        {
+            var systemCommonCash = LoadSaveDatasCSVAndGetSystemCommonCash();
+            return systemCommonCash[EnumSystemCommonCash.SceneId] == 0;
+        }
+
+        public bool SendReceiver(MessageReceived[] receivers, FlowchartModel flowchartModel, Dictionary<EnumSystemCommonCash, int> currentStageDic)
+        {
+            return SendReceiver(receivers, flowchartModel, currentStageDic, -1);
+        }
+
+        public bool SendReceiver(MessageReceived[] receivers, FlowchartModel flowchartModel, Dictionary<EnumSystemCommonCash, int> currentStageDic, int subNumber)
+        {
+            try
+            {
+                foreach (var receiver in receivers)
+                {
+                    var n = flowchartModel.GetBlockName(currentStageDic[EnumSystemCommonCash.SceneId], subNumber);
+                    if (!string.IsNullOrEmpty(n))
+                        receiver.OnSendFungusMessage(n);
+                    else
+                        Debug.LogWarning("取得ブロック名無し");
+                }
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
     }
 
     /// <summary>
@@ -632,5 +672,32 @@ namespace Main.Common
         /// <param name="configMaps">格納オブジェクト配列</param>
         /// <returns>成功／失敗</returns>
         public bool SaveDatasCSVOfMission(string resourcesLoadName, Dictionary<EnumMission, string>[] configMaps);
+        /// <summary>
+        /// システム設定のファイルへ一時セット
+        /// </summary>
+        /// <returns>格納オブジェクト</returns>
+        public Dictionary<EnumSystemCommonCash, int> LoadSaveDatasCSVAndGetSystemCommonCash();
+        /// <summary>
+        /// チュートリアルモードか
+        /// </summary>
+        /// <returns>チュートリアルモード／通常モード</returns>
+        public bool IsOpeningTutorialMode();
+        /// <summary>
+        /// シナリオのレシーバーへ送信
+        /// </summary>
+        /// <param name="receivers">Fungusのレシーバー</param>
+        /// <param name="flowchartModel">フローチャートのモデル</param>
+        /// <param name="currentStageDic">選択ステージ</param>
+        /// <returns>成功／失敗</returns>
+        public bool SendReceiver(MessageReceived[] receivers, FlowchartModel flowchartModel, Dictionary<EnumSystemCommonCash, int> currentStageDic);
+        /// <summary>
+        /// シナリオのレシーバーへ送信
+        /// </summary>
+        /// <param name="receivers">Fungusのレシーバー</param>
+        /// <param name="flowchartModel">フローチャートのモデル</param>
+        /// <param name="currentStageDic">選択ステージ</param>
+        /// <param name="subNumber">サブ番号</param>
+        /// <returns>成功／失敗</returns>
+        public bool SendReceiver(MessageReceived[] receivers, FlowchartModel flowchartModel, Dictionary<EnumSystemCommonCash, int> currentStageDic, int subNumber);
     }
 }

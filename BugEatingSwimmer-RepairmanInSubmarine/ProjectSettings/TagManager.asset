@@ -21,6 +21,7 @@ TagManager:
   - JawsHi
   - DarkLight
   - DarkLightTrigger
+  - RobotHeadBefore
   layers:
   - Default
   - TransparentFX

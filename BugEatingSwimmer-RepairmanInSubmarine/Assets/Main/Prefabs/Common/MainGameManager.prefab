@@ -189,7 +189,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   level: {fileID: 0}
   levelPrefabs:
-  - {fileID: 0}
+  - {fileID: 3369585648178246440, guid: 49d6c00cd2055e04aa4350bdfc2a25c3, type: 3}
   - {fileID: 360757283206218720, guid: d8007b7d976ee9f48b210463e0af80f2, type: 3}
   - {fileID: 360757283206218720, guid: ec87aefe31b033b47a13302e0613860c, type: 3}
   - {fileID: 2198966657046190896, guid: 9f036dabc24006547aa78405882c5609, type: 3}
@@ -457,7 +457,10 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   flowchartModel: {fileID: 0}
+  mareBlanketSeaView: {fileID: 0}
 --- !u!1 &1369696454729978949
 GameObject:
   m_ObjectHideFlags: 0
