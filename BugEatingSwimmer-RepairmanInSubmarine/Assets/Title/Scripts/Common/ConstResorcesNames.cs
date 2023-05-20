@@ -21,5 +21,13 @@ namespace Title.Common
         public static readonly string MAIN_SCENE_STAGES_STATE = "MainSceneStagesState";
         /// <summary>ステージクリア済みデータ（全ステージ解放）</summary>
         public static readonly string MAIN_SCENE_STAGES_STATE_ALL = "MainSceneStagesStateAll";
+        /// <summary>実績一覧管理</summary>
+        public static readonly string MISSION = "Mission";
+        /// <summary>実績履歴</summary>
+        public static readonly string MISSION_HISTORY = "MissionHistory";
+        /// <summary>準委任帳票</summary>
+        public static readonly string QUASI_ASSIGNMENT_FORM = "QuasiAssignmentForm";
+        /// <summary>エリアユニット</summary>
+        public static readonly string AREA_UNITS = "AreaUnits";
     }
 }
