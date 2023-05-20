@@ -55,6 +55,10 @@ namespace Main.Model
         /// ミッションIDに紐づくシナリオブロック名称を管理
         /// </summary>
         [SerializeField] private BlockNamesFromMissionID[] blockNamesFromMissionIDs;
+        /// <summary>自動移動する際のポイント配列</summary>
+        [SerializeField] private AutoMoveTracker[] autoMoveTrackers;
+        /// <summary>自動移動する際のポイント配列</summary>
+        public AutoMoveTracker[] AutoMoveTrackers => autoMoveTrackers;
 
         /// <summary>
         /// シナリオ読み込まれた
@@ -80,14 +84,14 @@ namespace Main.Model
 
         public void OnOtherAdditions_1()
         {
-            // T.B.D ステータスを管理
-            //_readedScenarioNo.Value = ?;
+            // スイマー、ロボに近づく
+            _readedScenarioNo.Value = 3;
         }
 
         public void OnOtherAdditions_2()
         {
-            // T.B.D ステータスを管理
-            //_readedScenarioNo.Value = ?;
+            // スイマー、ロボに飛び込む
+            _readedScenarioNo.Value = 4;
         }
 
         public void OnOtherAdditions_3()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 using DG.Tweening;
+using UniRx;
 
 namespace Main.View
 {
@@ -58,21 +59,14 @@ namespace Main.View
             }
         }
 
-        public bool SetFollowAnimation(Transform target)
+        public IEnumerator SetFollowAnimation(System.IObserver<bool> observer, Transform target)
         {
-            try
-            {
-                if (_cinemachineVirtualCamera == null)
-                    _cinemachineVirtualCamera = GetComponent<CinemachineVirtualCamera>();
-                _cinemachineVirtualCamera.Follow.DOMove(target.position, durations[0]);
+            if (_cinemachineVirtualCamera == null)
+                _cinemachineVirtualCamera = GetComponent<CinemachineVirtualCamera>();
+            _cinemachineVirtualCamera.Follow.DOMove(target.position, durations[0])
+                .OnComplete(() => observer.OnNext(true));
 
-                return true;
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError(e);
-                return false;
-            }
+            yield return null;
         }
 
         public bool SetLookAt(Transform target)
@@ -92,21 +86,14 @@ namespace Main.View
             }
         }
 
-        public bool SetLookAtAnimation(Transform target)
+        public IEnumerator SetLookAtAnimation(System.IObserver<bool> observer, Transform target)
         {
-            try
-            {
-                if (_cinemachineVirtualCamera == null)
-                    _cinemachineVirtualCamera = GetComponent<CinemachineVirtualCamera>();
-                _cinemachineVirtualCamera.LookAt.DOMove(target.position, durations[0]);
+            if (_cinemachineVirtualCamera == null)
+                _cinemachineVirtualCamera = GetComponent<CinemachineVirtualCamera>();
+            _cinemachineVirtualCamera.LookAt.DOMove(target.position, durations[0])
+                .OnComplete(() => observer.OnNext(true));
 
-                return true;
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError(e);
-                return false;
-            }
+            yield return null;
         }
 
         private void Reset()
@@ -139,13 +126,13 @@ namespace Main.View
         /// </summary>
         /// <param name="target">追従するターゲット</param>
         /// <returns>成功／失敗</returns>
-        public bool SetFollowAnimation(Transform target);
+        public IEnumerator SetFollowAnimation(System.IObserver<bool> observer, Transform target);
         /// <summary>
         /// 標準ををセットアニメーション
         /// </summary>
         /// <param name="target">追従するターゲット</param>
         /// <returns>成功／失敗</returns>
-        public bool SetLookAtAnimation(Transform target);
+        public IEnumerator SetLookAtAnimation(System.IObserver<bool> observer, Transform target);
         /// <summary>
         /// カメラのオフセットをセット
         /// </summary>

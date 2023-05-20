@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Main.Common;
 using Effect;
+using DG.Tweening;
 
 namespace Main.View
 {
@@ -18,6 +19,8 @@ namespace Main.View
         public Halos Halos => halos;
         /// <summary>プレイヤーのボディのスプライト</summary>
         [SerializeField] private BodySpritePlayer bodySpritePlayer;
+        /// <summary>アニメーション終了時間</summary>
+        [SerializeField] private float[] durations = { 1.5f };
 
         private void Reset()
         {
@@ -158,6 +161,15 @@ namespace Main.View
                 return ghost.transform;
             }
         }
+
+        public IEnumerator PlayMoveAnimation(System.IObserver<bool> observer, Vector3 target)
+        {
+            transform.DOMove(target, durations[0])
+                .SetEase(Ease.InOutQuad)
+                .OnComplete(() => observer.OnNext(true));
+
+            yield return null;
+        }
     }
 
     public interface IPlayerView
@@ -197,5 +209,12 @@ namespace Main.View
         /// </summary>
         /// <returns>疑似プレイヤーのトランスフォーム</returns>
         public Transform InstanceGhost();
+        /// <summary>
+        /// 移動アニメーションを再生
+        /// </summary>
+        /// <param name="observer">バインド</param>
+        /// <param name="target">位置</param>
+        /// <returns>コルーチン</returns>
+        public IEnumerator PlayMoveAnimation(System.IObserver<bool> observer, Vector3 target);
     }
 }

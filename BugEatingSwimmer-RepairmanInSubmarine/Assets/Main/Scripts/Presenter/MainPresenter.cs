@@ -687,12 +687,37 @@ namespace Main.Presenter
                                         {
                                             if (x)
                                             {
-                                                if (!cinemachineVirtualCameraView.SetFollow(playerModel.transform))
-                                                    Debug.LogError("フォローをセット呼び出しの失敗");
-                                                if (!cinemachineVirtualCameraView.SetLookAt(playerModel.transform))
-                                                    Debug.LogError("フォローをセット呼び出しの失敗");
                                                 if (!cinemachineVirtualCameraView.SetBodyTrackedObjectOffsets(EnumBodyTrackedObjectOffsetIndex.PlayerTracked))
                                                     Debug.LogError("カメラのオフセットをセット呼び出しの失敗");
+                                                if (!common.IsOpeningTutorialMode())
+                                                {
+                                                    if (!cinemachineVirtualCameraView.SetFollow(playerModel.transform))
+                                                        Debug.LogError("フォローをセット呼び出しの失敗");
+                                                    if (!cinemachineVirtualCameraView.SetLookAt(playerModel.transform))
+                                                        Debug.LogError("フォローをセット呼び出しの失敗");
+                                                }
+                                                else
+                                                {
+                                                    var target = playerView.InstanceGhost();
+                                                    if (!cinemachineVirtualCameraView.SetFollow(target))
+                                                        Debug.LogError("フォローをセット呼び出しの失敗");
+                                                    if (!cinemachineVirtualCameraView.SetLookAt(target))
+                                                        Debug.LogError("フォローをセット呼び出しの失敗");
+                                                    Observable.FromCoroutine<bool>(observer => cinemachineVirtualCameraView.SetFollowAnimation(observer, playerModel.transform))
+                                                        .Subscribe(_ =>
+                                                        {
+                                                            if (!cinemachineVirtualCameraView.SetFollow(playerModel.transform))
+                                                                Debug.LogError("フォローをセット呼び出しの失敗");
+                                                        })
+                                                        .AddTo(gameObject);
+                                                    Observable.FromCoroutine<bool>(observer => cinemachineVirtualCameraView.SetLookAtAnimation(observer, playerModel.transform))
+                                                        .Subscribe(_ =>
+                                                        {
+                                                            if (!cinemachineVirtualCameraView.SetLookAt(playerModel.transform))
+                                                                Debug.LogError("標準ををセット呼び出しの失敗");
+                                                        })
+                                                        .AddTo(gameObject);
+                                                }
                                                 targetPointerView = playerModel.TargetPointer.GetComponent<TargetPointerView>();
                                                 playerModel.MoveVelocityReactiveProperty.ObserveEveryValueChanged(x => x.Value)
                                                     .Subscribe(x =>
@@ -1573,10 +1598,16 @@ namespace Main.Presenter
                                             Debug.LogError("フォローをセット呼び出しの失敗");
                                         if (!cinemachineVirtualCameraView.SetLookAt(target))
                                             Debug.LogError("フォローをセット呼び出しの失敗");
-                                        if (!cinemachineVirtualCameraView.SetFollowAnimation(robotHeadBefore.transform.GetChild(0)))
-                                            Debug.LogError("フォローをセット呼び出しの失敗");
-                                        if (!cinemachineVirtualCameraView.SetLookAtAnimation(robotHeadBefore.transform.GetChild(0)))
-                                            Debug.LogError("フォローをセット呼び出しの失敗");
+                                        Observable.FromCoroutine<bool>(observer => cinemachineVirtualCameraView.SetFollowAnimation(observer, robotHeadBefore.transform.GetChild(0)))
+                                            .Subscribe(_ =>
+                                            {
+                                            })
+                                            .AddTo(gameObject);
+                                        Observable.FromCoroutine<bool>(observer => cinemachineVirtualCameraView.SetLookAtAnimation(observer, robotHeadBefore.transform.GetChild(0)))
+                                            .Subscribe(_ =>
+                                            {
+                                            })
+                                            .AddTo(gameObject);
                                         if (!playerModel.SetInputBan(true))
                                             Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
                                         if (!playerModel.SetIsBanMoveVelocity(true))
@@ -1624,6 +1655,19 @@ namespace Main.Presenter
                                     if (!flowchartModel.SetReadedScenarioNo(0))
                                         Debug.LogError("シナリオ番号をセット呼び出しの失敗");
                                 }
+                                break;
+                            case 3:
+                                Observable.FromCoroutine<bool>(observer => playerView.PlayMoveAnimation(observer, flowchartModel.AutoMoveTrackers[0].transform.position))
+                                    .Subscribe(_ => { })
+                                    .AddTo(gameObject);
+                                break;
+                            case 4:
+                                Observable.FromCoroutine<bool>(observer => playerView.PlayMoveAnimation(observer, flowchartModel.AutoMoveTrackers[1].transform.position))
+                                    .Subscribe(_ =>
+                                    {
+                                        MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_decided);
+                                    })
+                                    .AddTo(gameObject);
                                 break;
                             default:
                                 break;
