@@ -84,6 +84,8 @@ namespace Main.Presenter
         [SerializeField] private FlowchartModel flowchartModel;
         /// <summary>メイン画面の背景のビュー</summary>
         [SerializeField] private MareBlanketSeaView mareBlanketSeaView;
+        /// <summary>ショートカットキーUIのビュー</summary>
+        [SerializeField] private ShortcutGuideView shortcutGuideView;
 
         private void Reset()
         {
@@ -127,6 +129,7 @@ namespace Main.Presenter
             receivers = GameObject.FindObjectsOfType<Fungus.MessageReceived>();
             flowchartModel = GameObject.Find("Flowchart").GetComponent<FlowchartModel>();
             mareBlanketSeaView = GameObject.Find("MareBlanketSea").GetComponent<MareBlanketSeaView>();
+            shortcutGuideView = GameObject.Find("ShortcutGuide").GetComponent<ShortcutGuideView>();
         }
 
         public void OnStart()
@@ -145,6 +148,11 @@ namespace Main.Presenter
             moveGuideView.gameObject.SetActive(false);
             jumpGuideView.SetAlpha(EnumFadeState.Close);
             jumpGuideView.gameObject.SetActive(false);
+            if (common.IsOpeningTutorialMode())
+            {
+                assignedSeastarCountView.gameObject.SetActive(false);
+                shortcutGuideView.gameObject.SetActive(false);
+            }
             if (!assignedSeastarCountView.SetCounterText(MainGameManager.Instance.GimmickOwner.GetAssinedCounter()))
                 Debug.LogError("ヒトデ総配属人数をセット呼び出しの失敗");
             if (common.IsOpeningTutorialMode())
@@ -460,29 +468,32 @@ namespace Main.Presenter
             // ショートカットキー
             var inputUIPushedTime = new FloatReactiveProperty();
             var inputUIActionsState = new IntReactiveProperty((int)EnumShortcuActionMode.None);
-            inputUIActionsState.ObserveEveryValueChanged(x => x.Value)
-                .Subscribe(x =>
-                {
+            if (!common.IsOpeningTutorialMode())
+            {
+                inputUIActionsState.ObserveEveryValueChanged(x => x.Value)
+                    .Subscribe(x =>
+                    {
                     // 押下されるボタンが切り替わったら押下時間リセット
                     inputUIPushedTime.Value = 0f;
-                });
-            inputUIPushedTime.ObserveEveryValueChanged(x => x.Value)
-                .Subscribe(x =>
-                {
-                    if (0f < x)
+                    });
+                inputUIPushedTime.ObserveEveryValueChanged(x => x.Value)
+                    .Subscribe(x =>
                     {
+                        if (0f < x)
+                        {
                         // いずれかのボタンが押されている
                         if (!((EnumShortcuActionMode)inputUIActionsState.Value).Equals(EnumShortcuActionMode.None))
-                            for (var j = 0; j < pushTimeGageViews.Length; j++)
-                                if (!pushTimeGageViews[j].EnabledPushGageAndGetFillAmount(j == inputUIActionsState.Value ? x : 0f))
-                                    Debug.LogError("ゲージ更新呼び出しの失敗");
-                    }
-                    else
+                                for (var j = 0; j < pushTimeGageViews.Length; j++)
+                                    if (!pushTimeGageViews[j].EnabledPushGageAndGetFillAmount(j == inputUIActionsState.Value ? x : 0f))
+                                        Debug.LogError("ゲージ更新呼び出しの失敗");
+                        }
+                        else
                         // 全てのボタンから指を離している
                         for (var j = 0; j < pushTimeGageViews.Length; j++)
-                            if (!pushTimeGageViews[j].EnabledPushGageAndGetFillAmount(0f))
-                                Debug.LogError("ゲージ更新呼び出しの失敗");
-                });
+                                if (!pushTimeGageViews[j].EnabledPushGageAndGetFillAmount(0f))
+                                    Debug.LogError("ゲージ更新呼び出しの失敗");
+                    });
+            }
             // ショートカットキー -> 実行中のアクションを管理
             for (var i = 0; i < pushTimeGageViews.Length; i++)
             {

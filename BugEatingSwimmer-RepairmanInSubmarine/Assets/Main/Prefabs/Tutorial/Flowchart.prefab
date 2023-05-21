@@ -215,7 +215,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   version: 1
-  scrollPos: {x: -85.57674, y: -1102.2244}
+  scrollPos: {x: 162.42326, y: 283.77563}
   variablesScrollPos: {x: 0, y: 0}
   variablesExpanded: 1
   blockViewHeight: 400
@@ -227,8 +227,9 @@ MonoBehaviour:
     width: 1114
     height: 859
   selectedBlocks:
-  - {fileID: 4759248741728402723}
-  selectedCommands: []
+  - {fileID: 8841403048471529283}
+  selectedCommands:
+  - {fileID: 2506508753625063552}
   variables: []
   description: "\u4F1A\u8A71\u30C6\u30AD\u30B9\u30C8"
   stepPause: 0
@@ -1944,7 +1945,7 @@ MonoBehaviour:
   storyText: "\u304A\u3084\uFF1F\u3042\u308C\u306F\u2026\uFF1F"
   description: 
   character: {fileID: 4579061302539529678}
-  portrait: {fileID: 21300000, guid: 6eb6da740fa24e849997c94868963dd1, type: 3}
+  portrait: {fileID: 21300000, guid: 3cd00fa3680469349a6ead7d219dcec4, type: 3}
   voiceOverClip: {fileID: 0}
   showAlways: 1
   showCount: 1
@@ -2020,7 +2021,7 @@ MonoBehaviour:
   storyText: "\u3053\u308C\u306F\u904B\u304C\u3044\u3044\u3002\u58CA\u308C\u305F\u6A5F\u68B0\u306B\u306F\u305F\u304F\u3055\u3093\u306E\u30D0\u30B0\uFF08\u866B\uFF09\u304C\u96A0\u308C\u3066\u3044\u308B\u306F\u305A\u3060"
   description: 
   character: {fileID: 4579061302539529678}
-  portrait: {fileID: 21300000, guid: 6eb6da740fa24e849997c94868963dd1, type: 3}
+  portrait: {fileID: 21300000, guid: 3cd00fa3680469349a6ead7d219dcec4, type: 3}
   voiceOverClip: {fileID: 0}
   showAlways: 1
   showCount: 1
@@ -2047,7 +2048,7 @@ MonoBehaviour:
   storyText: "\u3055\u3063\u305D\u304F\u98DB\u3073\u8FBC\u3093\u3067\u3001\u4E2D\u3092\u8ABF\u3079\u3066\u307F\u308B\u3068\u3057\u3088\u3046"
   description: 
   character: {fileID: 4579061302539529678}
-  portrait: {fileID: 21300000, guid: 6eb6da740fa24e849997c94868963dd1, type: 3}
+  portrait: {fileID: 21300000, guid: 3cd00fa3680469349a6ead7d219dcec4, type: 3}
   voiceOverClip: {fileID: 0}
   showAlways: 1
   showCount: 1

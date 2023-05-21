@@ -1,5 +1,5 @@
 ﻿MainSceneStagesModulesStateIndex,SeastarID,Assigned
-1,Seastar_1,1
+1,Seastar_1,0
 1,Seastar_2,0
 3,Seastar_1,0
 3,Seastar_2,0
@@ -93,10 +93,10 @@
 15,Seastar_17,0
 15,Seastar_18,0
 15,Seastar_19,0
-17,Seastar_1,1
+17,Seastar_1,0
 17,Seastar_2,0
 17,Seastar_3,0
-17,Seastar_4,1
-17,Seastar_5,1
-17,Seastar_6,1
-17,Seastar_7,1
+17,Seastar_4,0
+17,Seastar_5,0
+17,Seastar_6,0
+17,Seastar_7,0
