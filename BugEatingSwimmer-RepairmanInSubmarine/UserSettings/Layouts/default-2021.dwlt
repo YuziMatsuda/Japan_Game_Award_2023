@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 997
   m_ShowMode: 4
-  m_Title: Project
+  m_Title: Inspector
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 371}
   m_MaxSize: {x: 10000, y: 10000}
@@ -119,7 +119,7 @@ MonoBehaviour:
   m_MinSize: {x: 400, y: 200}
   m_MaxSize: {x: 32384, y: 16192}
   vertical: 0
-  controlID: 13945
+  controlID: 154
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -144,7 +144,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 200}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 1
-  controlID: 14096
+  controlID: 64
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -169,7 +169,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 14097
+  controlID: 65
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -215,8 +215,8 @@ MonoBehaviour:
     y: 0
     width: 447
     height: 515
-  m_MinSize: {x: 202, y: 221}
-  m_MaxSize: {x: 4002, y: 4021}
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 17}
   m_Panes:
   - {fileID: 17}
@@ -247,7 +247,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 8096}
   vertical: 0
-  controlID: 14050
+  controlID: 107
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -267,8 +267,8 @@ MonoBehaviour:
     y: 0
     width: 712
     height: 432
-  m_MinSize: {x: 201, y: 221}
-  m_MaxSize: {x: 4001, y: 4021}
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 15}
   m_Panes:
   - {fileID: 15}
@@ -293,8 +293,8 @@ MonoBehaviour:
     y: 0
     width: 306
     height: 432
-  m_MinSize: {x: 102, y: 121}
-  m_MaxSize: {x: 4002, y: 4021}
+  m_MinSize: {x: 100, y: 100}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 18}
   m_Panes:
   - {fileID: 18}
@@ -724,9 +724,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 0, y: 0, z: 0}
+    m_Target: {x: 889.36145, y: 548.32513, z: 16.672293}
     speed: 2
-    m_Value: {x: 0, y: 0, z: 0}
+    m_Value: {x: 889.36145, y: 548.32513, z: 16.672293}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -777,9 +777,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 10
+    m_Target: 551.46075
     speed: 2
-    m_Value: 10
+    m_Value: 551.46075
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -835,23 +835,23 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 26590100
-      m_LastClickedID: 0
-      m_ExpandedIDs: 52faffff92faffff9afaffff08fbffff0afbffff
+      m_SelectedIDs: 901bffff
+      m_LastClickedID: -58480
+      m_ExpandedIDs: 30dbfbff92e7fbfff0ecfbffa2f1fbff94f7fbff7cccfdff2ecdfdff36cdfdff48e0fdffaeedfdff18eefdff7eeefdff94eefdff9adcfeffe2dcfeff82edfeff720dffff900dffff580effff860effffa40effff6c0fffffde0fffff2610ffff5410ffff7210ffff3a11ffff6811ffff8611ffff4e12ffff7c12ffff9a12ffff6213ffff9013ffffae13ffffa414ffffc214ffffb815ffffd615ffff9e16ffffa616ffffd416fffff216ffffba17ffffc217ffffce17ffffd617fffff819ffff8c1affff681bffff781bffff7e1bffff901bffffd81bffff9223ffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: 
-        m_OriginalName: 
+        m_Name: Unit_1
+        m_OriginalName: Unit_1
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: 0
+        m_UserData: -58520
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 11
+        m_OriginalEventType: 0
         m_IsRenamingFilename: 0
         m_ClientGUIView: {fileID: 9}
       m_SearchString: 
@@ -931,22 +931,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Main/Scripts/View
+    - Assets/Select/Textures
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Main/Scripts/View
+  - Assets/Select/Textures
   m_LastFoldersGridSize: 16
   m_LastProjectPath: C:\Users\kzpaqu\Documents\Japan_Game_Award_2023\BugEatingSwimmer-RepairmanInSubmarine
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 233}
-    m_SelectedIDs: 72580100
-    m_LastClickedID: 88178
-    m_ExpandedIDs: 00000000ee570100f0570100f2570100f4570100f6570100f8570100fa570100fc570100fe57010000580100025801000458010006580100085801000a5801000c5801000e580100105801001258010014580100165801001a58010000ca9a3b
+    scrollPos: {x: 0, y: 797}
+    m_SelectedIDs: 88ad0100
+    m_LastClickedID: 109960
+    m_ExpandedIDs: 000000006a6601006c6601006e66010070660100726601007466010076660100786601007a6601007c6601007e66010080660100826601008466010086660100886601008a6601008c6601008e660100906601009266010094660100fc66010000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -974,7 +974,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000ee570100f0570100f2570100f4570100f6570100f8570100fa570100fc570100fe57010000580100025801000458010006580100085801000a5801000c5801000e580100105801001258010014580100165801001a58010000ca9a3b
+    m_ExpandedIDs: 000000006a6601006c6601006e66010070660100726601007466010076660100786601007a6601007c6601007e66010080660100826601008466010086660100886601008a6601008c6601008e660100906601009266010094660100
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1005,15 +1005,15 @@ MonoBehaviour:
     m_ExpandedInstanceIDs: c6230000d41f010064a30000ce7600001a550100b84e0100e250010088500100905001008c5001008e500100fa500100e0500100c65a0100e650010020560100e4500100f850010022e70100185101002a540100985401009c5401009e510100
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: MissionHistory
-      m_OriginalName: MissionHistory
+      m_Name: Textures
+      m_OriginalName: Textures
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 88354
+      m_UserData: 91792
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
       m_OriginalEventType: 0
