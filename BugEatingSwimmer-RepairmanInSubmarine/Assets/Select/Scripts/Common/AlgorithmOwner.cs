@@ -80,14 +80,20 @@ namespace Select.Common
                                     .ToArray().Length)
                             {
                                 result.areaIDToUpdated = (int)EnumUnitID.Head;
-                                result.isAssigned = quasiAssignmentForm.Where(q => int.Parse(q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex]) == 1)
-                                    .Select(q => q)
-                                    .ToArray()
-                                    .Length == quasiAssignmentForm.Where(q => int.Parse(q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex]) == 1 &&
-                                        q[EnumQuasiAssignmentForm.Assigned].Equals(ConstGeneric.DIGITFORM_TRUE))
-                                    .Select(q => q)
-                                    .ToArray()
-                                    .Length;
+                                //Debug.Log($"エリア１で取得可能なヒトデ数_[{quasiAssignmentForm.Where(q => int.Parse(q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex]) == 1).ToArray().Length}]");
+                                //Debug.Log($"取得している数_[{quasiAssignmentForm.Where(q => int.Parse(q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex]) == 1 && q[EnumQuasiAssignmentForm.Assigned].Equals(ConstGeneric.DIGITFORM_TRUE)).Select(q => q).ToArray().Length}]");
+                                //Debug.Log($"owner_{SelectGameManager.Instance.GimmickOwner.GetAssinedCounter((int)EnumUnitID.Head)}");
+                                //    var current = 0;
+                                //var max =~2;
+                                //result.isAssigned = quasiAssignmentForm.Where(q => int.Parse(q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex]) == 1)
+                                //    .Select(q => q)
+                                //    .ToArray()
+                                //    .Length == quasiAssignmentForm.Where(q => int.Parse(q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex]) == 1 &&
+                                //        q[EnumQuasiAssignmentForm.Assigned].Equals(ConstGeneric.DIGITFORM_TRUE))
+                                //    .Select(q => q)
+                                //    .ToArray()
+                                //    .Length;
+                                result.isAssigned = 2 <= SelectGameManager.Instance.GimmickOwner.GetAssinedCounter((int)EnumUnitID.Head);
                                 return result;
                             }
                             break;
