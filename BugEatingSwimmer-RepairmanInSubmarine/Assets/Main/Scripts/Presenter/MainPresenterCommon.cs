@@ -6,6 +6,7 @@ using Main.View;
 using UniRx;
 using Main.Template;
 using System.Linq;
+using Fungus;
 
 namespace Main.Common
 {
@@ -441,6 +442,102 @@ namespace Main.Common
 
             return shrimpGageCountMax <= shrimpGageCount;
         }
+
+        public Dictionary<EnumAreaUnits, int>[] LoadSaveDatasCSVAndGetAreaUnits()
+        {
+            var tResourcesAccessory = new MainTemplateResourcesAccessory();
+            var quasiAssignFormResources = tResourcesAccessory.LoadSaveDatasCSV(ConstResorcesNames.AREA_UNITS);
+            return tResourcesAccessory.GetAreaUnits(quasiAssignFormResources);
+        }
+
+        public Dictionary<EnumMission, string>[] LoadSaveDatasCSVAndGetMission()
+        {
+            var temp = new MainTemplateResourcesAccessory();
+            var quasiAssignFormResources = temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION);
+            return temp.GetMission(quasiAssignFormResources);
+        }
+
+        public bool IsFinalLevel(Dictionary<EnumAreaUnits, int>[] areaUnits, Dictionary<EnumSystemCommonCash, int> currentStageDic)
+        {
+            return areaUnits.Where(q => q[EnumAreaUnits.UnitID] == (int)EnumUnitID.VoidInCore)
+                .Select(q => q[EnumAreaUnits.StageID])
+                .ToArray()[0] == currentStageDic[EnumSystemCommonCash.SceneId];
+        }
+
+        public bool IsUnlocked(Dictionary<EnumMission, string>[] missions, EnumMissionID enumMission)
+        {
+            return 0 < missions.Where(q => q[EnumMission.MissionID].Equals($"{enumMission}") &&
+                q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_FALSE))
+                .Select(q => q)
+                .ToArray()
+                .Length;
+        }
+
+        public Dictionary<EnumMission, string>[] SetUnlockState(Dictionary<EnumMission, string>[] missions, EnumMissionID enumMission)
+        {
+            missions.Where(q => q[EnumMission.MissionID].Equals($"{enumMission}") &&
+                q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_FALSE))
+                .Select(q => q)
+                .ToArray()[0][EnumMission.Unlock] = ConstGeneric.DIGITFORM_TRUE;
+
+            return missions;
+        }
+
+        public bool SaveDatasCSVOfMission(string resourcesLoadName, Dictionary<EnumMission, string>[] configMaps)
+        {
+            try
+            {
+                var temp = new MainTemplateResourcesAccessory();
+                if (!temp.SaveDatasCSVOfMission(ConstResorcesNames.MISSION, configMaps))
+                    throw new System.Exception("実績一覧管理データをCSVデータへ保存呼び出しの失敗");
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public Dictionary<EnumSystemCommonCash, int> LoadSaveDatasCSVAndGetSystemCommonCash()
+        {
+            var temp = new MainTemplateResourcesAccessory();
+            return temp.GetSystemCommonCash(temp.LoadSaveDatasCSV(ConstResorcesNames.SYSTEM_COMMON_CASH));
+        }
+
+        public bool IsOpeningTutorialMode()
+        {
+            var systemCommonCash = LoadSaveDatasCSVAndGetSystemCommonCash();
+            return systemCommonCash[EnumSystemCommonCash.SceneId] == 0;
+        }
+
+        public bool SendReceiver(MessageReceived[] receivers, FlowchartModel flowchartModel, Dictionary<EnumSystemCommonCash, int> currentStageDic)
+        {
+            return SendReceiver(receivers, flowchartModel, currentStageDic, -1);
+        }
+
+        public bool SendReceiver(MessageReceived[] receivers, FlowchartModel flowchartModel, Dictionary<EnumSystemCommonCash, int> currentStageDic, int subNumber)
+        {
+            try
+            {
+                foreach (var receiver in receivers)
+                {
+                    var n = flowchartModel.GetBlockName(currentStageDic[EnumSystemCommonCash.SceneId], subNumber);
+                    if (!string.IsNullOrEmpty(n))
+                        receiver.OnSendFungusMessage(n);
+                    else
+                        Debug.LogWarning("取得ブロック名無し");
+                }
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
     }
 
     /// <summary>
@@ -537,5 +634,70 @@ namespace Main.Common
         /// <param name="shrimpGageCountMax">エビダンス総数</param>
         /// <returns></returns>
         public bool IsOvercounterOfShrimpDance(int shrimpGageCount, int shrimpGageCountMax);
+        /// <summary>
+        /// エリアユニットファイルへ一時セット
+        /// </summary>
+        /// <returns>格納オブジェクト配列</returns>
+        public Dictionary<EnumAreaUnits, int>[] LoadSaveDatasCSVAndGetAreaUnits();
+        /// <summary>
+        /// 実績一覧ファイルへ一時セット
+        /// </summary>
+        /// <returns>格納オブジェクト配列</returns>
+        public Dictionary<EnumMission, string>[] LoadSaveDatasCSVAndGetMission();
+        /// <summary>
+        /// 最終ステージか
+        /// </summary>
+        /// <param name="areaUnits">エリアユニット</param>
+        /// <param name="currentStageDic">現在選択ステージ</param>
+        /// <returns></returns>
+        public bool IsFinalLevel(Dictionary<EnumAreaUnits, int>[] areaUnits, Dictionary<EnumSystemCommonCash, int> currentStageDic);
+        /// <summary>
+        /// アンロック状態か
+        /// </summary>
+        /// <param name="missions">実績一覧配列</param>
+        /// <param name="enumMission">対象ミッションID</param>
+        /// <returns>アンロック状態か</returns>
+        public bool IsUnlocked(Dictionary<EnumMission, string>[] missions, EnumMissionID enumMission);
+        /// <summary>
+        /// アンロック状態をセット
+        /// </summary>
+        /// <param name="missions">実績一覧配列</param>
+        /// <param name="enumMission">対象ミッションID</param>
+        /// <returns>更新後の実績一覧配列</returns>
+        public Dictionary<EnumMission, string>[] SetUnlockState(Dictionary<EnumMission, string>[] missions, EnumMissionID enumMission);
+        /// <summary>
+        /// 実績一覧管理データをCSVデータへ保存
+        /// </summary>
+        /// <param name="resourcesLoadName">リソースCSVファイル名</param>
+        /// <param name="configMaps">格納オブジェクト配列</param>
+        /// <returns>成功／失敗</returns>
+        public bool SaveDatasCSVOfMission(string resourcesLoadName, Dictionary<EnumMission, string>[] configMaps);
+        /// <summary>
+        /// システム設定のファイルへ一時セット
+        /// </summary>
+        /// <returns>格納オブジェクト</returns>
+        public Dictionary<EnumSystemCommonCash, int> LoadSaveDatasCSVAndGetSystemCommonCash();
+        /// <summary>
+        /// チュートリアルモードか
+        /// </summary>
+        /// <returns>チュートリアルモード／通常モード</returns>
+        public bool IsOpeningTutorialMode();
+        /// <summary>
+        /// シナリオのレシーバーへ送信
+        /// </summary>
+        /// <param name="receivers">Fungusのレシーバー</param>
+        /// <param name="flowchartModel">フローチャートのモデル</param>
+        /// <param name="currentStageDic">選択ステージ</param>
+        /// <returns>成功／失敗</returns>
+        public bool SendReceiver(MessageReceived[] receivers, FlowchartModel flowchartModel, Dictionary<EnumSystemCommonCash, int> currentStageDic);
+        /// <summary>
+        /// シナリオのレシーバーへ送信
+        /// </summary>
+        /// <param name="receivers">Fungusのレシーバー</param>
+        /// <param name="flowchartModel">フローチャートのモデル</param>
+        /// <param name="currentStageDic">選択ステージ</param>
+        /// <param name="subNumber">サブ番号</param>
+        /// <returns>成功／失敗</returns>
+        public bool SendReceiver(MessageReceived[] receivers, FlowchartModel flowchartModel, Dictionary<EnumSystemCommonCash, int> currentStageDic, int subNumber);
     }
 }

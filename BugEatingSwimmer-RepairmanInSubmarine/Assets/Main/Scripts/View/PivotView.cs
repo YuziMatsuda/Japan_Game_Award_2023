@@ -1,9 +1,9 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using Main.Common;
+using Main.Model;
 
 namespace Main.View
 {
@@ -15,10 +15,26 @@ namespace Main.View
     {
         /// <summary>信号発生アニメーション時間</summary>
         private bool _isRuning;
+        /// <summary>設定</summary>
+        [SerializeField] private PivotConfig pivotConfig;
 
-        public IEnumerator PlayLightAnimation(IObserver<bool> observer)
+        private void Reset()
         {
-            throw new NotImplementedException();
+            pivotConfig = GetComponent<PivotConfig>();
+        }
+
+        private void Start()
+        {
+            if (pivotConfig.EnumAtomicMode.Equals(EnumAtomicMode.Molecules) &&
+                0 < pivotConfig.ErrorDirections.Length)
+            {
+                // T.B.D 泡出す？
+            }
+        }
+
+        public IEnumerator PlayLightAnimation(System.IObserver<bool> observer)
+        {
+            throw new System.NotImplementedException();
         }
 
         public bool SetIsRuning(bool isRuning)

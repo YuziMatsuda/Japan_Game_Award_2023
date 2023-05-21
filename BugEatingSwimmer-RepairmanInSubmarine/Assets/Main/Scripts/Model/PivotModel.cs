@@ -41,6 +41,10 @@ namespace Main.Model
         [SerializeField] private string[] notLetPassTags = { ConstTagNames.TAG_NAME_DUSTCONNECTSIGNAL };
         /// <summary>読み取り専用フラグ</summary>
         private bool _readonlyCodeMode;
+        /// <summary>感情コードを通過</summary>
+        private readonly BoolReactiveProperty _isPathEmotions = new BoolReactiveProperty();
+        /// <summary>感情コードを通過</summary>
+        public IReactiveProperty<bool> IsPathEmotions => _isPathEmotions;
 
         protected override void Reset()
         {
@@ -156,6 +160,14 @@ namespace Main.Model
                     Observable.FromCoroutine<bool>(observer => lightCodeCell.PlayErrorLightFlashAnimation(observer))
                         .Subscribe(_ => { })
                         .AddTo(gameObject);
+                }
+                // 感情コードの判定
+                if (GetComponent<PivotConfig>().EmotionsCodeMode &&
+                    !_isPathEmotions.Value)
+                {
+                    // エラーSE
+                    //Debug.LogWarning("感情コード");
+                    _isPathEmotions.Value = true;
                 }
             }
         }
@@ -527,6 +539,21 @@ namespace Main.Model
                 return false;
             }
         }
+
+        public bool SetIsPathEmotions(bool enabled)
+        {
+            try
+            {
+                _isPathEmotions.Value = enabled;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
     }
 
     /// <summary>
@@ -553,5 +580,11 @@ namespace Main.Model
         /// <param name="onTriggerEnter2DDisabled">無効とするか</param>
         /// <returns>成功／失敗</returns>
         public bool SetOnTriggerEnter2DDisabled(bool onTriggerEnter2DDisabled);
+        /// <summary>
+        /// 感情コード通過状態をセット
+        /// </summary>
+        /// <param name="enabled">有効／無効</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetIsPathEmotions(bool enabled);
     }
 }

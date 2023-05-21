@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
 
 namespace Select.View
 {
@@ -9,7 +10,7 @@ namespace Select.View
     /// ヒトデゲージ
     /// </summary>
     [RequireComponent(typeof(SeastarGageConfig))]
-    public class SeastarGageView : PivotAndCodeIShortUIViewParent, ISeastarGageFillAmount, ISeastarGageCounter
+    public class SeastarGageView : PivotAndCodeIShortUIViewParent, ISeastarGageFillAmount, ISeastarGageCounter, ISeastarGageBackgroundView
     {
         /// <summary>ヒトデゲージのサイクルゲージ</summary>
         [SerializeField] private SeastarGageFillAmount seastarGageFillAmount;
@@ -25,6 +26,8 @@ namespace Select.View
         [SerializeField] private SeastarGageConfig seastarGageConfig;
         /// <summary>設定</summary>
         public SeastarGageConfig SeastarGageConfig => seastarGageConfig;
+        /// <summary>ヒトデゲージ背景</summary>
+        [SerializeField] private SeastarGageBackgroundView seastarGageBackgroundView;
 
         public bool PlayCounterBetweenAnimation(int numerator)
         {
@@ -67,6 +70,16 @@ namespace Select.View
             seastarGageFillAmount = transform.GetComponentInChildren<SeastarGageFillAmount>();
             seastarGageCounter = transform.GetComponentInChildren<SeastarGageCounter>();
             seastarGageConfig = GetComponent<SeastarGageConfig>();
+            seastarGageBackgroundView = GetComponentInChildren<SeastarGageBackgroundView>();
+        }
+
+        public IEnumerator PlayOpenDirectionAnimations(System.IObserver<bool> observer)
+        {
+            Observable.FromCoroutine<bool>(observer => seastarGageBackgroundView.PlayOpenDirectionAnimations(observer))
+                .Subscribe(_ => observer.OnNext(true))
+                .AddTo(gameObject);
+
+            yield return null;
         }
     }
 }

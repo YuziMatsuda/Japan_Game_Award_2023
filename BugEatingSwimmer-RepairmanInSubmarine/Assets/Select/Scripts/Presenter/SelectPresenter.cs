@@ -50,6 +50,10 @@ namespace Select.Presenter
         [SerializeField] private MessageReceived[] receivers;
         /// <summary>Fungusのフローチャートモデル</summary>
         [SerializeField] private FlowchartModel flowchartModel;
+        /// <summary>コアのビュー</summary>
+        [SerializeField] private RobotHeartView[] robotHeartViews;
+        /// <summary>コアのモデル</summary>
+        [SerializeField] private RobotHeartModel[] robotHeartModels;
 
         private void Reset()
         {
@@ -72,6 +76,9 @@ namespace Select.Presenter
             // 支点とコードのビューとモデルをセット
             List<PivotAndCodeIShortUIView> pivotAndCodeIShortUIViewList = new List<PivotAndCodeIShortUIView>();
             List<PivotAndCodeIShortUIModel> pivotAndCodeIShortUIModelList = new List<PivotAndCodeIShortUIModel>();
+            // コアのビューとモデルをセット
+            List<RobotHeartView> robotHeartViewList = new List<RobotHeartView>();
+            List<RobotHeartModel> robotHeartModelList = new List<RobotHeartModel>();
             foreach (Transform pages in logoStages)
             {
                 foreach (Transform child in pages)
@@ -86,12 +93,19 @@ namespace Select.Presenter
                         pivotAndCodeIShortUIViewList.Add(child.GetComponent<PivotAndCodeIShortUIView>());
                         pivotAndCodeIShortUIModelList.Add(child.GetComponent<PivotAndCodeIShortUIModel>());
                     }
+                    else if (-1 < child.name.IndexOf("RobotHeart"))
+                    {
+                        robotHeartViewList.Add(child.GetComponent<RobotHeartView>());
+                        robotHeartModelList.Add(child.GetComponent<RobotHeartModel>());
+                    }
                 }
             }
             logoStageViews = logoStageViewList.ToArray();
             logoStageModels = logoStageModelList.ToArray();
             pivotAndCodeIShortUIViews = pivotAndCodeIShortUIViewList.ToArray();
             pivotAndCodeIShortUIModels = pivotAndCodeIShortUIModelList.ToArray();
+            robotHeartViews = robotHeartViewList.ToArray();
+            robotHeartModels = robotHeartModelList.ToArray();
 
             // ステージキャプションのビューとモデルをセット
             List<CaptionStageView> captionStageViewList = new List<CaptionStageView>();
@@ -148,6 +162,7 @@ namespace Select.Presenter
                 item.OnStart();
             if (SelectGameManager.Instance.AlgorithmOwner.SetPivotAndCodeIShortUIs(pivotAndCodeIShortUIViews.Select(q => q.transform).ToArray()) < 1)
                 Debug.LogError("支点とコード配列をセット呼び出しの失敗");
+            // 会話イベント発生
             if (!common.CheckMissionAndSaveDatasCSVOfMission())
                 Debug.LogError("ミッションの更新チェック呼び出しの失敗");
 
@@ -165,20 +180,32 @@ namespace Select.Presenter
                         }
                     if (!common.SetCounterBetweenAndFillAmountAllGage(seastarGageViews))
                         Debug.LogError("全ヒトデゲージのカウンターとフィルターをセット呼び出しの失敗");
-                    // T.B.D コア解放演出
+                    // コア解放演出
                     if (common.IsConnectedAnimation())
                     {
-                        Debug.LogWarning("T.B.D コア解放演出");
                         // 実績履歴を更新
                         if (common.AddMissionHistory() < 1)
                             Debug.LogError("実績履歴を更新呼び出しの失敗");
-                        //Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
-                        //    .Subscribe(_ =>
-                        //    {
-                        //        // イベント完了後の処理
-                        //        SelectGameManager.Instance.SceneOwner.ReLoadScene();
-                        //    })
-                        //    .AddTo(gameObject);
+                        foreach (var child in logoStageModels)
+                            if (child != null)
+                                if (!child.LoadStateAndUpdateNavigation())
+                                    Debug.LogError("ステージ状態のロード及びナビゲーション更新呼び出しの失敗");
+                        Observable.FromCoroutine<bool>(observer => seastarGageViews[2].PlayOpenDirectionAnimations(observer))
+                            .Subscribe(_ =>
+                            {
+                            })
+                            .AddTo(gameObject);
+                    }
+                    else if (common.IsMissionUnlockAndFoundHistory(EnumMissionID.MI0006))
+                    {
+                        foreach (var child in logoStageModels)
+                            if (child != null)
+                                if (!child.LoadStateAndUpdateNavigation())
+                                    Debug.LogError("ステージ状態のロード及びナビゲーション更新呼び出しの失敗");
+                        // コア解放済み
+                        Observable.FromCoroutine<bool>(observer => seastarGageViews[2].PlayOpenDirectionAnimations(observer))
+                            .Subscribe(_ => { })
+                            .AddTo(gameObject);
                     }
                 })
                 .AddTo(gameObject);
@@ -598,6 +625,68 @@ namespace Select.Presenter
                                 break;
                             default:
                                 Debug.LogWarning("例外ケース");
+                                break;
+                        }
+                    });
+            }
+            // ロボットのコア
+            foreach (var item in robotHeartModels.Where(q => q != null)
+                .Select((p, i) => new { Content = p, Index = i }))
+            {
+                item.Content.EventState.ObserveEveryValueChanged(x => x.Value)
+                    .Subscribe(x =>
+                    {
+                        switch ((EnumEventCommand)x)
+                        {
+                            case EnumEventCommand.Default:
+                                break;
+                            case EnumEventCommand.Selected:
+                                // 選択SEを再生
+                                if (!playerView.IsSkipMode)
+                                    SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_select);
+                                if (!playerView.SetImageEnabled(false))
+                                    Debug.LogError("イメージのステータスを変更呼び出しの失敗");
+                                Observable.FromCoroutine<bool>(observer => playerView.MoveSelectPlayer(robotHeartViews[item.Index].transform.position, robotHeartViews[item.Index].transform, observer))
+                                    .Subscribe(_ =>
+                                    {
+                                        if (!playerView.SetImageEnabled(true))
+                                            Debug.LogError("イメージのステータスを変更呼び出しの失敗");
+                                        if (!playerView.RedererCursorDirectionAndDistance(robotHeartModels[item.Index].Button.navigation, EnumCursorDistance.Short))
+                                            Debug.LogError("ナビゲーションの状態によってカーソル表示を変更呼び出しの失敗");
+                                        if (playerView.IsSkipMode)
+                                            if (!playerView.SetSkipMode(false))
+                                                Debug.LogError("スキップモードのセット呼び出しの失敗");
+                                    })
+                                    .AddTo(gameObject);
+                                // セレクトシーンへの再読み込み
+                                if (!common.SetSystemCommonCashAndDefaultStageIndex(item.Content.EnumUnitID))
+                                    Debug.LogError("キャッシュをセット呼び出しの失敗");
+                                // UI操作を許可しない
+                                foreach (var child in captionStageModels)
+                                    if (child != null)
+                                    {
+                                        child.SetButtonEnabled(false);
+                                        child.SetEventTriggerEnabled(false);
+                                    }
+                                // シーン読み込み時のアニメーション
+                                Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                    .Subscribe(_ =>
+                                    {
+                                        // メインシーンを実装
+                                        SelectGameManager.Instance.SceneOwner.ReLoadScene();
+                                    })
+                                    .AddTo(gameObject);
+
+                                break;
+                            case EnumEventCommand.DeSelected:
+                                break;
+                            case EnumEventCommand.Submited:
+                                break;
+                            case EnumEventCommand.Canceled:
+                                break;
+                            case EnumEventCommand.AnyKeysPushed:
+                                break;
+                            default:
                                 break;
                         }
                     });

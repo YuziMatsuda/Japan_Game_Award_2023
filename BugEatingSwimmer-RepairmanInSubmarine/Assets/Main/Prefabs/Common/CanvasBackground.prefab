@@ -112,6 +112,8 @@ GameObject:
   - component: {fileID: 5670681813999728204}
   - component: {fileID: 5670681813999728202}
   - component: {fileID: 5670681813999728203}
+  - component: {fileID: 6660483657501301681}
+  - component: {fileID: 8395446997596896530}
   m_Layer: 5
   m_Name: MareBlanketSea
   m_TagString: Untagged
@@ -177,6 +179,34 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6660483657501301681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5670681813999728205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a902bd404086b8e4480a52737d6502c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  image: {fileID: 5670681813999728203}
+  imageConfig: {fileID: 8395446997596896530}
+--- !u!114 &8395446997596896530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5670681813999728205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9eedfa4b474a3f34eb41ff128dce4d7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprites:
+  - {fileID: 21300000, guid: 4038d4655cd3a9542aecac451667fc79, type: 3}
 --- !u!1 &5670681815098805082
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,7 +12,7 @@ namespace Main.Model
     /// モデル
     /// </summary>
     [RequireComponent(typeof(CircleCollider2D))]
-    public class RuleShellfishModel : MonoBehaviour
+    public class RuleShellfishModel : MonoBehaviour, IRuleShellfishModel
     {
         /// <summary>接触対象のオブジェクトタグ</summary>
         [SerializeField] protected string[] tags = { ConstTagNames.TAG_NAME_TOUCH_TRIGGER };
@@ -32,5 +32,35 @@ namespace Main.Model
                 _isInRange.Value = true;
             }
         }
+
+        public bool SetColliderState(bool active)
+        {
+            try
+            {
+                GetComponent<CircleCollider2D>().enabled = active;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// ルール貝
+    /// モデル
+    /// インターフェース
+    /// </summary>
+    public interface IRuleShellfishModel
+    {
+        /// <summary>
+        /// コライダーの状態をセット
+        /// </summary>
+        /// <param name="active">有効／無効</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetColliderState(bool active);
     }
 }
