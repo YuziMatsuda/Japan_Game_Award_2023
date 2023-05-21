@@ -71,5 +71,29 @@ PrefabInstance:
       propertyPath: InitialModule.startSize.minScalar
       value: 0.25
       objectReference: {fileID: 0}
+    - target: {fileID: 199000011340400198, guid: 0d1adb20421ed664b800c8cf3d103e70, type: 3}
+      propertyPath: m_SortingLayer
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 199000011340400198, guid: 0d1adb20421ed664b800c8cf3d103e70, type: 3}
+      propertyPath: m_SortingOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 199000011340400198, guid: 0d1adb20421ed664b800c8cf3d103e70, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 511976337
+      objectReference: {fileID: 0}
+    - target: {fileID: 199000013923932060, guid: 0d1adb20421ed664b800c8cf3d103e70, type: 3}
+      propertyPath: m_SortingLayer
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 199000013923932060, guid: 0d1adb20421ed664b800c8cf3d103e70, type: 3}
+      propertyPath: m_SortingOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 199000013923932060, guid: 0d1adb20421ed664b800c8cf3d103e70, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 511976337
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0d1adb20421ed664b800c8cf3d103e70, type: 3}

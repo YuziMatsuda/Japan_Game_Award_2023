@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
+using UniRx;
+using UniRx.Triggers;
 
 namespace Main.View
 {
@@ -10,16 +12,42 @@ namespace Main.View
     /// ヒトデゲージカウンター
     /// </summary>
     [RequireComponent(typeof(TextMeshPro))]
-    public class SeastarGageCounter : MonoBehaviour, ISeastarGageCounter
+    public class SeastarGageCounter : MonoBehaviour, ISeastarGageCounter, ISeastarGageFillAmountUI
     {
         /// <summary>デフォルト表示</summary>
         [SerializeField] private string slashAndSpace = " / ";
         /// <summary>分母</summary>
         private int _denominator = -1;
         /// <summary>テキストメッシュプロ</summary>
-        private TextMeshPro _textMeshPro;
+        [SerializeField] private TextMeshPro textMeshPro;
         /// <summary>アニメーション時間</summary>
         [SerializeField] private float duration = 1.25f;
+        /// <summary>トランスフォーム</summary>
+        private Transform _transform;
+        /// <summary>ターゲット</summary>
+        private Transform _target;
+        /// <summary>位置補正</summary>
+        [SerializeField] private Vector3 positionOffSet = new Vector3(0f, .5f, 0f);
+
+        private void Reset()
+        {
+            textMeshPro = GetComponent<TextMeshPro>();
+        }
+
+        private void Start()
+        {
+            this.UpdateAsObservable()
+                .Subscribe(_ =>
+                {
+                    if (_transform == null)
+                        _transform = transform;
+
+                    if (_target != null)
+                        _transform.position = _target.position + positionOffSet;
+                    else
+                        textMeshPro.enabled = false;
+                });
+        }
 
         public bool PlayCounterBetweenAnimation(int numerator)
         {
@@ -30,12 +58,10 @@ namespace Main.View
         {
             try
             {
-                if (_textMeshPro == null)
-                    _textMeshPro = GetComponent<TextMeshPro>();
                 if (denominator < 0)
                     throw new System.Exception("分母の未設定");
                 _denominator = denominator;
-                var prev = _textMeshPro.text;
+                var prev = textMeshPro.text;
                 var update = $"{numerator}{slashAndSpace}{_denominator}";
                 if (!prev.Equals(update))
                 {
@@ -43,7 +69,7 @@ namespace Main.View
                     {
                         // 差異があった場合のみ更新
                         DOTween.To(() => int.Parse(prev.Replace($"{slashAndSpace}{_denominator}", "")),
-                            x => _textMeshPro.text = $"{x}{slashAndSpace}{_denominator}",
+                            x => textMeshPro.text = $"{x}{slashAndSpace}{_denominator}",
                             numerator,
                             duration);
                     });
@@ -67,16 +93,44 @@ namespace Main.View
         {
             try
             {
-                if (_textMeshPro == null)
-                    _textMeshPro = GetComponent<TextMeshPro>();
                 if (denominator < 0)
                     throw new System.Exception("分母の未設定");
                 _denominator = denominator;
-                var prev = _textMeshPro.text;
+                var prev = textMeshPro.text;
                 var update = $"{numerator}{slashAndSpace}{_denominator}";
                 if (!prev.Equals(update))
                     // 差異があった場合のみ更新
-                    _textMeshPro.text = update;
+                    textMeshPro.text = update;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool SetTarget(Transform target)
+        {
+            try
+            {
+                _target = target;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool SetImageEnabled(bool enabled)
+        {
+            try
+            {
+                textMeshPro.enabled = enabled;
 
                 return true;
             }

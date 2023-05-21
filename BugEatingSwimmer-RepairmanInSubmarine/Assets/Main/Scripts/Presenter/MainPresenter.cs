@@ -915,6 +915,14 @@ namespace Main.Presenter
                                         // カウンターもリセットさせる
                                         if (!common.PlayCounterBetweenAndFillAmountAnimation(seastarGageView, seastarGageCount, 0))
                                             Debug.LogError("ヒトデゲージのカウンターとフィルターカウンターを更新呼び出しの失敗");
+                                        if (seastarGageView != null)
+                                        {
+                                            if (!seastarGageView.SetImageEnabled())
+                                                Debug.LogError("イメージを非表示呼び出しの失敗");
+                                            if (!seastarGageView.SetSpriteBubble())
+                                                Debug.LogError("泡スプライトをセット呼び出しの失敗");
+
+                                        }
                                     }
                                 });
                         }
@@ -1167,6 +1175,13 @@ namespace Main.Presenter
                                                 if (common.IsOvercounterOfSeastarGage(seastarGageView) &&
                                                     common.IsOvercounterOfShrimpDance(shrimpGageCount.Value, shrimpGageCountMax))
                                                 {
+                                                    if (seastarGageView != null)
+                                                    {
+                                                        if (!seastarGageView.SetImageDisable())
+                                                            Debug.LogError("イメージを非表示呼び出しの失敗");
+                                                        if (!seastarGageView.SetSpriteBreak())
+                                                            Debug.LogError("壊れるスプライトをセット呼び出しの失敗");
+                                                    }
                                                     if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, false))
                                                         Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
                                                     // スタートからゴールまで繋がっている状態ならリセットしない

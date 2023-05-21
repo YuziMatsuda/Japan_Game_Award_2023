@@ -17,5 +17,6 @@ namespace Main.Common
         ParticleJigglyBubbleSoapy,
         ParticleJigglyBubbleSoapyPlayer,
         BugAura,
+        ParticleJigglyBubbleSoapyErrorCode,
     }
 }

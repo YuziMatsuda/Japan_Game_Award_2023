@@ -29,6 +29,8 @@ namespace Main.Common
         public static readonly string TAG_NAME_SEASTAR = "Seastar";
         /// <summary>ヒトデゲージ</summary>
         public static readonly string TAG_NAME_SEASTARGAGE = "SeastarGage";
+        /// <summary>ヒトデゲージUI</summary>
+        public static readonly string TAG_NAME_SEASTARGAGEUI = "SeastarGageUI";
         /// <summary>信号</summary>
         public static readonly string TAG_NAME_DUSTCONNECTSIGNAL = "DustConnectSignal";
         /// <summary>パワーシェル</summary>

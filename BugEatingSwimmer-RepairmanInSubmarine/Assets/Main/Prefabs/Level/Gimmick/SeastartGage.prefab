@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 979868582365829925}
   - component: {fileID: 5345779247825753437}
+  - component: {fileID: 5577416717146449383}
+  - component: {fileID: 4493629174280905337}
   m_Layer: 0
   m_Name: GageBackground
   m_TagString: Untagged
@@ -52,7 +54,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f9ab1347a9ff6d844b486038afa08bc3, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -70,9 +72,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 23018469
+  m_SortingLayer: 3
+  m_SortingOrder: 3
   m_Sprite: {fileID: 21300000, guid: 0fefa8b0d4336e648bf37a26fc31e247, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -84,6 +86,35 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &5577416717146449383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 463530734345090650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9943d7c1cc6d6c4c9b8fd77aba55fea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  seastarGageConfig: {fileID: 4493629174280905337}
+  spriteRenderer: {fileID: 5345779247825753437}
+--- !u!114 &4493629174280905337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 463530734345090650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c57594d308f2baa46b487d1b2158ea6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprites:
+  - {fileID: 21300000, guid: ad0bad40d79b5e14d8374b69863be96d, type: 3}
+  - {fileID: 21300000, guid: 0fefa8b0d4336e648bf37a26fc31e247, type: 3}
 --- !u!1 &668398258999266038
 GameObject:
   m_ObjectHideFlags: 0
@@ -270,7 +301,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slashAndSpace: ' / '
+  textMeshPro: {fileID: 0}
   duration: 1.25
+  positionOffSet: {x: 0, y: 0.1, z: 0}
 --- !u!1 &3288441911755999218
 GameObject:
   m_ObjectHideFlags: 0
@@ -287,7 +320,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7042598735082051429
 Transform:
   m_ObjectHideFlags: 0
@@ -404,9 +437,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 389e8e67e67a7bb4babdb28e594444c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seastarGageFillAmount: {fileID: 2270172718425433858}
-  seastarGageCounter: {fileID: 6004269436284747554}
+  seastarGageFillAmount: {fileID: 0}
+  seastarGageCounter: {fileID: 0}
   denominator: 9
+  seastartGageBackground: {fileID: 5577416717146449383}
 --- !u!1 &7584693209899616503
 GameObject:
   m_ObjectHideFlags: 0
@@ -477,9 +511,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingLayerID: 23018469
+  m_SortingLayer: 3
+  m_SortingOrder: 3
   m_Sprite: {fileID: 21300000, guid: eb4584fc63fc5054cab9e3cc0e10c9ec, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -508,7 +542,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &704921146775355052
 Transform:
   m_ObjectHideFlags: 0

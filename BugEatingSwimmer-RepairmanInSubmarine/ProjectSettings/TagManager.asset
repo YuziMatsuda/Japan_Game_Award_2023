@@ -22,6 +22,7 @@ TagManager:
   - DarkLight
   - DarkLightTrigger
   - RobotHeadBefore
+  - SeastarGageUI
   layers:
   - Default
   - TransparentFX
@@ -58,4 +59,19 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 3035824813
+    locked: 0
+  - name: Environment
+    uniqueID: 2678351167
+    locked: 0
+  - name: Gimmick
+    uniqueID: 23018469
+    locked: 0
+  - name: Player
+    uniqueID: 511976337
+    locked: 0
+  - name: Overlay
+    uniqueID: 2535231465
     locked: 0
