@@ -10,9 +10,9 @@ namespace Main.View
     public class Halos : ShadowCodeCellParent, IPlayerHalo
     {
         /// <summary>プレイヤーのハロー配列</summary>
-        [SerializeField] private PlayerHalo[] playerHalos;
+        [SerializeField] private PlayerDustConnectSignalSmall[] playerHalos;
         /// <summary>プレイヤーのハロー配列</summary>
-        public PlayerHalo[] PlayerHalos => playerHalos;
+        public PlayerDustConnectSignalSmall[] PlayerHalos => playerHalos;
 
         public bool ChangeChargeMode(int idx, bool enabled)
         {
@@ -39,14 +39,7 @@ namespace Main.View
 
         private void Reset()
         {
-            if (_transform == null)
-                _transform = transform;
-            List<PlayerHalo> playerHaloList = new List<PlayerHalo>();
-            foreach (Transform item in _transform)
-            {
-                playerHaloList.Add(item.GetComponent<PlayerHalo>());
-            }
-            playerHalos = playerHaloList.ToArray();
+            playerHalos = GetComponentsInChildren<PlayerDustConnectSignalSmall>();
         }
 
         private void Start()

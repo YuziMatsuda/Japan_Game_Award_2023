@@ -216,6 +216,11 @@ namespace Main.Model
                 return false;
             }
         }
+
+        public bool SetIsPathEmotions(bool enabled)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 
     /// <summary>

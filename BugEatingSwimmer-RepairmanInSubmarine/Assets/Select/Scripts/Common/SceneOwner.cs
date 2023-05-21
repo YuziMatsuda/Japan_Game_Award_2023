@@ -15,6 +15,8 @@ namespace Select.Common
         [SerializeField] private string nextSceneName = "MainScene";
         /// <summary>前のシーン名</summary>
         [SerializeField] private string backSceneName = "AreaScene";
+        /// <summary>現在のシーン名</summary>
+        [SerializeField] private string currentSceneName = "SelectScene";
 
         public void OnStart()
         {
@@ -146,6 +148,11 @@ namespace Select.Common
                 return false;
             }
         }
+
+        public void ReLoadScene()
+        {
+            SceneManager.LoadScene(currentSceneName);
+        }
     }
 
     public interface ISceneOwner
@@ -177,5 +184,9 @@ namespace Select.Common
         /// <param name="configMap">格納オブジェクト配列</param>
         /// <returns>成功／失敗</returns>
         public bool SetAreaOpenedAndITState(Dictionary<EnumAreaOpenedAndITState, string>[] configMaps);
+        /// <summary>
+        /// 同じシーンを再読み込み
+        /// </summary>
+        public void ReLoadScene();
     }
 }

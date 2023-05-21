@@ -45,6 +45,8 @@ namespace Main.Model
         {
             /// <summary>ミッションID</summary>
             public EnumMissionID enumMissionID;
+            /// <summary>サブ番号</summary>
+            public int subNumber;
             /// <summary>シナリオブロック名</summary>
             public string blockName;
         }
@@ -53,6 +55,10 @@ namespace Main.Model
         /// ミッションIDに紐づくシナリオブロック名称を管理
         /// </summary>
         [SerializeField] private BlockNamesFromMissionID[] blockNamesFromMissionIDs;
+        /// <summary>自動移動する際のポイント配列</summary>
+        [SerializeField] private AutoMoveTracker[] autoMoveTrackers;
+        /// <summary>自動移動する際のポイント配列</summary>
+        public AutoMoveTracker[] AutoMoveTrackers => autoMoveTrackers;
 
         /// <summary>
         /// シナリオ読み込まれた
@@ -78,14 +84,14 @@ namespace Main.Model
 
         public void OnOtherAdditions_1()
         {
-            // T.B.D ステータスを管理
-            //_readedScenarioNo.Value = ?;
+            // スイマー、ロボに近づく
+            _readedScenarioNo.Value = 3;
         }
 
         public void OnOtherAdditions_2()
         {
-            // T.B.D ステータスを管理
-            //_readedScenarioNo.Value = ?;
+            // スイマー、ロボに飛び込む
+            _readedScenarioNo.Value = 4;
         }
 
         public void OnOtherAdditions_3()
@@ -114,10 +120,17 @@ namespace Main.Model
 
         public string GetBlockName(int sceneId)
         {
+            return GetBlockName(sceneId, -1);
+        }
+
+        public string GetBlockName(int sceneId, int subNumber)
+        {
             if (blockNamesFromSceneIds.Length < 1)
                 throw new System.Exception("データが空");
 
-            if (0 < sceneId)
+            // シーンごとのチュートリアルはサブ番号を使わない想定
+            if (0 < sceneId &&
+                subNumber < 0)
             {
                 return 0 < blockNamesFromSceneIds.Where(q => q.sceneId == sceneId)
                     .Select(q => q.blockName)
@@ -154,13 +167,30 @@ namespace Main.Model
                 if (blockNamesFromMissionIDs.Length < 1)
                     throw new System.Exception("データが空");
 
-                return 0 < blockNamesFromMissionIDs.Where(q => $"{q.enumMissionID}".Equals(missionID))
+                return 0 < blockNamesFromMissionIDs.Where(q => $"{q.enumMissionID}".Equals(missionID) &&
+                        q.subNumber == subNumber)
                     .Select(q => q.blockName)
                     .Distinct()
-                    .ToArray().Length ? blockNamesFromMissionIDs.Where(q => $"{q.enumMissionID}".Equals(missionID))
+                    .ToArray().Length ? blockNamesFromMissionIDs.Where(q => $"{q.enumMissionID}".Equals(missionID) &&
+                        q.subNumber == subNumber)
                     .Select(q => q.blockName)
                     .Distinct()
                     .ToArray()[0] : "";
+            }
+        }
+
+        public bool SetReadedScenarioNo(int scenarioNo)
+        {
+            try
+            {
+                _readedScenarioNo.Value = scenarioNo;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
             }
         }
     }
@@ -179,5 +209,18 @@ namespace Main.Model
         /// <param name="sceneId">ステージ番号</param>
         /// <returns>ブロック名</returns>
         public string GetBlockName(int sceneId);
+        /// <summary>
+        /// ステージ番号から対象のブロック名を取得
+        /// </summary>
+        /// <param name="sceneId">ステージ番号</param>
+        /// <param name="subNumber">サブ番号</param>
+        /// <returns>ブロック名</returns>
+        public string GetBlockName(int sceneId, int subNumber);
+        /// <summary>
+        /// シナリオ番号をセット
+        /// </summary>
+        /// <param name="scenarioNo">シナリオ番号</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetReadedScenarioNo(int scenarioNo);
     }
 }

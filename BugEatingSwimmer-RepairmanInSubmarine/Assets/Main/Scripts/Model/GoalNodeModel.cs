@@ -155,6 +155,11 @@ namespace Main.Model
         {
             throw new System.NotImplementedException();
         }
+
+        public bool SetIsPathEmotions(bool enabled)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 
     /// <summary>

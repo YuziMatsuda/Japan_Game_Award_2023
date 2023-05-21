@@ -82,6 +82,10 @@ namespace Main.Presenter
         [SerializeField] private MessageReceived[] receivers;
         /// <summary>Fungusのフローチャートモデル</summary>
         [SerializeField] private FlowchartModel flowchartModel;
+        /// <summary>メイン画面の背景のビュー</summary>
+        [SerializeField] private MareBlanketSeaView mareBlanketSeaView;
+        /// <summary>ショートカットキーUIのビュー</summary>
+        [SerializeField] private ShortcutGuideView shortcutGuideView;
 
         private void Reset()
         {
@@ -124,6 +128,8 @@ namespace Main.Presenter
             cinemachineVirtualCameraView = GameObject.Find("CinemachineVirtualCamera").GetComponent<CinemachineVirtualCameraView>();
             receivers = GameObject.FindObjectsOfType<Fungus.MessageReceived>();
             flowchartModel = GameObject.Find("Flowchart").GetComponent<FlowchartModel>();
+            mareBlanketSeaView = GameObject.Find("MareBlanketSea").GetComponent<MareBlanketSeaView>();
+            shortcutGuideView = GameObject.Find("ShortcutGuide").GetComponent<ShortcutGuideView>();
         }
 
         public void OnStart()
@@ -142,8 +148,16 @@ namespace Main.Presenter
             moveGuideView.gameObject.SetActive(false);
             jumpGuideView.SetAlpha(EnumFadeState.Close);
             jumpGuideView.gameObject.SetActive(false);
+            if (common.IsOpeningTutorialMode())
+            {
+                assignedSeastarCountView.gameObject.SetActive(false);
+                shortcutGuideView.gameObject.SetActive(false);
+            }
             if (!assignedSeastarCountView.SetCounterText(MainGameManager.Instance.GimmickOwner.GetAssinedCounter()))
                 Debug.LogError("ヒトデ総配属人数をセット呼び出しの失敗");
+            if (common.IsOpeningTutorialMode())
+                if (!mareBlanketSeaView.SetBackgroundToTutorial())
+                    Debug.LogError("チュートリアルモードの背景をセット呼び出しの失敗");
 
             MainGameManager.Instance.AudioOwner.OnStartAndPlayBGM();
             // T.B.D ステージ開始演出
@@ -246,6 +260,9 @@ namespace Main.Presenter
                 });
             // クリア画面表示のため、ゴール到達のフラグ更新
             var currentStageDic = MainGameManager.Instance.SceneOwner.GetSystemCommonCash();
+            var areaUnits = common.LoadSaveDatasCSVAndGetAreaUnits();
+            // 「この感情（おもい）は、バグか？仕様か？」
+            var isThisEmotionaBug_IsItASpecification = new BoolReactiveProperty();
             var mainSceneStagesState = MainGameManager.Instance.SceneOwner.GetMainSceneStagesState();
             var mainSceneStagesModulesState = MainGameManager.Instance.SceneOwner.GetMainSceneStagesModulesState();
             var isGoalReached = new BoolReactiveProperty();
@@ -272,8 +289,33 @@ namespace Main.Presenter
                             Debug.LogError("アサインを保存呼び出しの失敗");
                         if (!assignedSeastarCountView.SetCounterText(MainGameManager.Instance.GimmickOwner.GetAssinedCounter()))
                             Debug.LogError("ヒトデ総配属人数をセット呼び出しの失敗");
+                        if (common.IsFinalLevel(areaUnits, currentStageDic))
+                        {
+                            var missions = common.LoadSaveDatasCSVAndGetMission();
+                            if (isThisEmotionaBug_IsItASpecification.Value)
+                            {
+                                if (common.IsUnlocked(missions, EnumMissionID.MI0008))
+                                {
+                                    missions = common.SetUnlockState(missions, EnumMissionID.MI0008);
+                                    if (!common.SaveDatasCSVOfMission(ConstResorcesNames.MISSION, missions))
+                                        Debug.LogError("実績一覧管理データをCSVデータへ保存呼び出しの失敗");
+                                }
+                            }
+                            else
+                            {
+                                if (common.IsUnlocked(missions, EnumMissionID.MI0009))
+                                {
+                                    missions = common.SetUnlockState(missions, EnumMissionID.MI0009);
+                                    if (!common.SaveDatasCSVOfMission(ConstResorcesNames.MISSION, missions))
+                                        Debug.LogError("実績一覧管理データをCSVデータへ保存呼び出しの失敗");
+                                }
+                            }
+                        }
                         // 初期処理
                         clearView.gameObject.SetActive(true);
+                        if (common.IsFinalLevel(areaUnits, currentStageDic))
+                            if (!stageClearView.SetMessageCongratulations())
+                                Debug.LogError("最終ステージ用のメッセージをセット呼び出しの失敗");
                         stageClearView.gameObject.SetActive(true);
                         gameProceedButtonView.gameObject.SetActive(false);
                         gameRetryButtonView.gameObject.SetActive(false);
@@ -426,29 +468,32 @@ namespace Main.Presenter
             // ショートカットキー
             var inputUIPushedTime = new FloatReactiveProperty();
             var inputUIActionsState = new IntReactiveProperty((int)EnumShortcuActionMode.None);
-            inputUIActionsState.ObserveEveryValueChanged(x => x.Value)
-                .Subscribe(x =>
-                {
+            if (!common.IsOpeningTutorialMode())
+            {
+                inputUIActionsState.ObserveEveryValueChanged(x => x.Value)
+                    .Subscribe(x =>
+                    {
                     // 押下されるボタンが切り替わったら押下時間リセット
                     inputUIPushedTime.Value = 0f;
-                });
-            inputUIPushedTime.ObserveEveryValueChanged(x => x.Value)
-                .Subscribe(x =>
-                {
-                    if (0f < x)
+                    });
+                inputUIPushedTime.ObserveEveryValueChanged(x => x.Value)
+                    .Subscribe(x =>
                     {
+                        if (0f < x)
+                        {
                         // いずれかのボタンが押されている
                         if (!((EnumShortcuActionMode)inputUIActionsState.Value).Equals(EnumShortcuActionMode.None))
-                            for (var j = 0; j < pushTimeGageViews.Length; j++)
-                                if (!pushTimeGageViews[j].EnabledPushGageAndGetFillAmount(j == inputUIActionsState.Value ? x : 0f))
-                                    Debug.LogError("ゲージ更新呼び出しの失敗");
-                    }
-                    else
+                                for (var j = 0; j < pushTimeGageViews.Length; j++)
+                                    if (!pushTimeGageViews[j].EnabledPushGageAndGetFillAmount(j == inputUIActionsState.Value ? x : 0f))
+                                        Debug.LogError("ゲージ更新呼び出しの失敗");
+                        }
+                        else
                         // 全てのボタンから指を離している
                         for (var j = 0; j < pushTimeGageViews.Length; j++)
-                            if (!pushTimeGageViews[j].EnabledPushGageAndGetFillAmount(0f))
-                                Debug.LogError("ゲージ更新呼び出しの失敗");
-                });
+                                if (!pushTimeGageViews[j].EnabledPushGageAndGetFillAmount(0f))
+                                    Debug.LogError("ゲージ更新呼び出しの失敗");
+                    });
+            }
             // ショートカットキー -> 実行中のアクションを管理
             for (var i = 0; i < pushTimeGageViews.Length; i++)
             {
@@ -653,10 +698,37 @@ namespace Main.Presenter
                                         {
                                             if (x)
                                             {
-                                                if (!cinemachineVirtualCameraView.SetFollow(playerModel.transform))
-                                                    Debug.LogError("フォローをセット呼び出しの失敗");
                                                 if (!cinemachineVirtualCameraView.SetBodyTrackedObjectOffsets(EnumBodyTrackedObjectOffsetIndex.PlayerTracked))
                                                     Debug.LogError("カメラのオフセットをセット呼び出しの失敗");
+                                                if (!common.IsOpeningTutorialMode())
+                                                {
+                                                    if (!cinemachineVirtualCameraView.SetFollow(playerModel.transform))
+                                                        Debug.LogError("フォローをセット呼び出しの失敗");
+                                                    if (!cinemachineVirtualCameraView.SetLookAt(playerModel.transform))
+                                                        Debug.LogError("フォローをセット呼び出しの失敗");
+                                                }
+                                                else
+                                                {
+                                                    var target = playerView.InstanceGhost();
+                                                    if (!cinemachineVirtualCameraView.SetFollow(target))
+                                                        Debug.LogError("フォローをセット呼び出しの失敗");
+                                                    if (!cinemachineVirtualCameraView.SetLookAt(target))
+                                                        Debug.LogError("フォローをセット呼び出しの失敗");
+                                                    Observable.FromCoroutine<bool>(observer => cinemachineVirtualCameraView.SetFollowAnimation(observer, playerModel.transform))
+                                                        .Subscribe(_ =>
+                                                        {
+                                                            if (!cinemachineVirtualCameraView.SetFollow(playerModel.transform))
+                                                                Debug.LogError("フォローをセット呼び出しの失敗");
+                                                        })
+                                                        .AddTo(gameObject);
+                                                    Observable.FromCoroutine<bool>(observer => cinemachineVirtualCameraView.SetLookAtAnimation(observer, playerModel.transform))
+                                                        .Subscribe(_ =>
+                                                        {
+                                                            if (!cinemachineVirtualCameraView.SetLookAt(playerModel.transform))
+                                                                Debug.LogError("標準ををセット呼び出しの失敗");
+                                                        })
+                                                        .AddTo(gameObject);
+                                                }
                                                 targetPointerView = playerModel.TargetPointer.GetComponent<TargetPointerView>();
                                                 playerModel.MoveVelocityReactiveProperty.ObserveEveryValueChanged(x => x.Value)
                                                     .Subscribe(x =>
@@ -686,6 +758,23 @@ namespace Main.Presenter
                                                                     Debug.LogError("暗闇レベルを一つ落とす呼び出しの失敗");
                                                         })
                                                         .AddTo(gameObject);
+                                                }
+                                                if (common.IsOpeningTutorialMode())
+                                                {
+                                                    var missions = common.LoadSaveDatasCSVAndGetMission();
+                                                    foreach (var item in missions.Where(q => q[EnumMission.MissionID].Equals($"{EnumMissionID.MI0000}") &&
+                                                        q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_FALSE))
+                                                        .Select(q => q))
+                                                        item[EnumMission.Unlock] = ConstGeneric.DIGITFORM_TRUE;
+                                                    if (!missions.Equals(common.LoadSaveDatasCSVAndGetMission()))
+                                                        if (!common.SaveDatasCSVOfMission(ConstResorcesNames.MISSION, missions))
+                                                            Debug.LogError("実績一覧管理データをCSVデータへ保存呼び出しの失敗");
+                                                    if (!playerModel.SetInputBan(true))
+                                                        Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
+                                                    if (!playerModel.SetIsBanMoveVelocity(true))
+                                                        Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
+                                                    if (!common.SendReceiver(receivers, flowchartModel, currentStageDic, 0))
+                                                        Debug.LogError("シナリオのレシーバーへ送信呼び出しの失敗");
                                                 }
                                             }
                                         });
@@ -837,6 +926,14 @@ namespace Main.Presenter
                                         // カウンターもリセットさせる
                                         if (!common.PlayCounterBetweenAndFillAmountAnimation(seastarGageView, seastarGageCount, 0))
                                             Debug.LogError("ヒトデゲージのカウンターとフィルターカウンターを更新呼び出しの失敗");
+                                        if (seastarGageView != null)
+                                        {
+                                            if (!seastarGageView.SetImageEnabled())
+                                                Debug.LogError("イメージを非表示呼び出しの失敗");
+                                            if (!seastarGageView.SetSpriteBubble())
+                                                Debug.LogError("泡スプライトをセット呼び出しの失敗");
+
+                                        }
                                     }
                                 });
                         }
@@ -1089,6 +1186,13 @@ namespace Main.Presenter
                                                 if (common.IsOvercounterOfSeastarGage(seastarGageView) &&
                                                     common.IsOvercounterOfShrimpDance(shrimpGageCount.Value, shrimpGageCountMax))
                                                 {
+                                                    if (seastarGageView != null)
+                                                    {
+                                                        if (!seastarGageView.SetImageDisable())
+                                                            Debug.LogError("イメージを非表示呼び出しの失敗");
+                                                        if (!seastarGageView.SetSpriteBreak())
+                                                            Debug.LogError("壊れるスプライトをセット呼び出しの失敗");
+                                                    }
                                                     if (!common.SetDisableAllNodeCode(MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted, false))
                                                         Debug.LogError("ノードコードの衝突判定を無効にする呼び出しの失敗");
                                                     // スタートからゴールまで繋がっている状態ならリセットしない
@@ -1240,6 +1344,8 @@ namespace Main.Presenter
                                                         foreach (var item in shrimpDanceModels)
                                                             if (!item.ResetIsAssigned())
                                                                 Debug.LogError("アサイン情報をリセット呼び出しの失敗");
+                                                        if (common.IsFinalLevel(areaUnits, currentStageDic))
+                                                            isThisEmotionaBug_IsItASpecification.Value = false;
                                                     })
                                                     .AddTo(gameObject);
                                             }
@@ -1284,6 +1390,15 @@ namespace Main.Presenter
                                             isGetProcessStart.Value = false;
                                         }
                                     });
+                                // 最終ステージのみ実行
+                                if (common.IsFinalLevel(areaUnits, currentStageDic) &&
+                                    codeObjs[idx].GetComponent<PivotConfig>().EmotionsCodeMode)
+                                    codeObjs[idx].GetComponent<PivotModel>().IsPathEmotions.ObserveEveryValueChanged(x => x.Value)
+                                        .Do(x => Debug.Log(x))
+                                        .Subscribe(x =>
+                                        {
+                                            isThisEmotionaBug_IsItASpecification.Value = x;
+                                        });
                                 //codeObjs[idx].GetComponent<PivotModel>().IsGetting.ObserveEveryValueChanged(x => x.Value)
                                 //    .Subscribe(x =>
                                 //    {
@@ -1454,9 +1569,20 @@ namespace Main.Presenter
                         var ruleShellfish = GameObject.Find(ConstTagNames.RULESHELLFISH);
                         if (ruleShellfish != null)
                         {
-                            if (!ruleShellfish.GetComponent<RuleShellfishView>().SetColorSpriteIsVisible(!ruleShellfish.GetComponent<RuleShellfishModel>().IsOnlyOnceHint ||
-                                common.IsTutorialMode(currentStageDic, mainSceneStagesState)))
-                                Debug.LogError("スプライトの表示／非表示設定呼び出しの失敗");
+                            if (common.IsOpeningTutorialMode())
+                            {
+                                if (!ruleShellfish.GetComponent<RuleShellfishView>().SetColorSpriteIsVisible(true))
+                                    Debug.LogError("スプライトの表示／非表示設定呼び出しの失敗");
+                            }
+                            else
+                            {
+                                if (!ruleShellfish.GetComponent<RuleShellfishView>().SetColorSpriteIsVisible(!ruleShellfish.GetComponent<RuleShellfishModel>().IsOnlyOnceHint ||
+                                    common.IsTutorialMode(currentStageDic, mainSceneStagesState)))
+                                    Debug.LogError("スプライトの表示／非表示設定呼び出しの失敗");
+                            }
+                            if (common.IsOpeningTutorialMode())
+                                if (!ruleShellfish.GetComponent<RuleShellfishModel>().SetColliderState(false))
+                                    Debug.LogError("コライダーの状態をセット呼び出しの失敗");
                             if (ruleShellfish.GetComponent<RuleShellfishView>().IsVisible)
                                 ruleShellfish.GetComponent<RuleShellfishModel>().IsInRange.ObserveEveryValueChanged(x => x.Value)
                                     .Subscribe(x =>
@@ -1470,15 +1596,8 @@ namespace Main.Presenter
                                             Observable.FromCoroutine<bool>(observer => ruleShellfish.GetComponent<RuleShellfishView>().PlayChangeSpriteCloseBetweenOpen(observer))
                                                 .Subscribe(_ =>
                                                 {
-                                                    // シナリオのレシーバーへ送信
-                                                    foreach (var receiver in receivers)
-                                                    {
-                                                        var n = flowchartModel.GetBlockName(currentStageDic[EnumSystemCommonCash.SceneId]);
-                                                        if (!string.IsNullOrEmpty(n))
-                                                            receiver.OnSendFungusMessage(n);
-                                                        else
-                                                            Debug.LogWarning("取得ブロック名無し");
-                                                    }
+                                                    if (!common.SendReceiver(receivers, flowchartModel, currentStageDic, common.IsOpeningTutorialMode() ? 1 : -1))
+                                                        Debug.LogError("シナリオのレシーバーへ送信呼び出しの失敗");
                                                 })
                                                 .AddTo(gameObject);
                                         }
@@ -1489,6 +1608,40 @@ namespace Main.Presenter
                         else
                         {
                             Debug.LogWarning("ルール貝無しステージ");
+                        }
+                        // ロボットヘッド（修理前）
+                        var robotHeadBefore = GameObject.Find(ConstTagNames.TAG_NAME_ROBOTHEADBEFORE);
+                        if (robotHeadBefore != null)
+                        {
+                            var model = robotHeadBefore.GetComponent<RobotHeadBeforeModel>();
+                            model.IsCollision.ObserveEveryValueChanged(x => x.Value)
+                                .Subscribe(x =>
+                                {
+                                    if (x)
+                                    {
+                                        var target = playerView.InstanceGhost();
+                                        if (!cinemachineVirtualCameraView.SetFollow(target))
+                                            Debug.LogError("フォローをセット呼び出しの失敗");
+                                        if (!cinemachineVirtualCameraView.SetLookAt(target))
+                                            Debug.LogError("フォローをセット呼び出しの失敗");
+                                        Observable.FromCoroutine<bool>(observer => cinemachineVirtualCameraView.SetFollowAnimation(observer, robotHeadBefore.transform.GetChild(0)))
+                                            .Subscribe(_ =>
+                                            {
+                                            })
+                                            .AddTo(gameObject);
+                                        Observable.FromCoroutine<bool>(observer => cinemachineVirtualCameraView.SetLookAtAnimation(observer, robotHeadBefore.transform.GetChild(0)))
+                                            .Subscribe(_ =>
+                                            {
+                                            })
+                                            .AddTo(gameObject);
+                                        if (!playerModel.SetInputBan(true))
+                                            Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
+                                        if (!playerModel.SetIsBanMoveVelocity(true))
+                                            Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
+                                        if (!common.SendReceiver(receivers, flowchartModel, currentStageDic, 2))
+                                            Debug.LogError("シナリオのレシーバーへ送信呼び出しの失敗");
+                                    }
+                                });
                         }
                     }
                 });
@@ -1504,6 +1657,9 @@ namespace Main.Presenter
                                 // 実績履歴を更新
                                 if (common.AddMissionHistory() < 1)
                                     Debug.LogError("実績履歴を更新呼び出しの失敗");
+                                var owner = MainGameManager.Instance.SceneOwner;
+                                if (!owner.SetSystemCommonCash(owner.CountUpSceneId(currentStageDic)))
+                                    Debug.LogError("シーンID更新呼び出しの失敗");
                                 Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
                                     .Subscribe(_ =>
                                     {
@@ -1517,6 +1673,27 @@ namespace Main.Presenter
                                     Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
                                 if (!playerModel.SetIsBanMoveVelocity(false))
                                     Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
+                                if (common.IsOpeningTutorialMode())
+                                {
+                                    var ruleShellfish = GameObject.Find(ConstTagNames.RULESHELLFISH);
+                                    if (!ruleShellfish.GetComponent<RuleShellfishModel>().SetColliderState(true))
+                                        Debug.LogError("コライダーの状態をセット呼び出しの失敗");
+                                    if (!flowchartModel.SetReadedScenarioNo(0))
+                                        Debug.LogError("シナリオ番号をセット呼び出しの失敗");
+                                }
+                                break;
+                            case 3:
+                                Observable.FromCoroutine<bool>(observer => playerView.PlayMoveAnimation(observer, flowchartModel.AutoMoveTrackers[0].transform.position))
+                                    .Subscribe(_ => { })
+                                    .AddTo(gameObject);
+                                break;
+                            case 4:
+                                Observable.FromCoroutine<bool>(observer => playerView.PlayMoveAnimation(observer, flowchartModel.AutoMoveTrackers[1].transform.position))
+                                    .Subscribe(_ =>
+                                    {
+                                        MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_decided);
+                                    })
+                                    .AddTo(gameObject);
                                 break;
                             default:
                                 break;

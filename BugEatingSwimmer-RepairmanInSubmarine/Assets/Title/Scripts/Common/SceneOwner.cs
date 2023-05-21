@@ -13,6 +13,8 @@ namespace Title.Common
     {
         /// <summary>次のシーン名</summary>
         [SerializeField] private string nextSceneName = "AreaScene";
+        /// <summary>次のシーン名（チュートリアルの場合）</summary>
+        [SerializeField] private string nextTutorialSceneName = "MainScene";
 
         public void OnStart()
         {
@@ -83,6 +85,14 @@ namespace Title.Common
         public void LoadNextScene()
         {
             SceneManager.LoadScene(nextSceneName);
+        }
+
+        /// <summary>
+        /// シーン読み込み（チュートリアル）
+        /// </summary>
+        public void LoadNextTutorialScene()
+        {
+            SceneManager.LoadScene(nextTutorialSceneName);
         }
     }
 }

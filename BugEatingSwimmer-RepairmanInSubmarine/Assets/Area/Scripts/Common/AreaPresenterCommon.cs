@@ -31,6 +31,10 @@ namespace Area.Common
         public EnumRobotPanel GetStateOfRobotUnitConnect()
         {
             var areaOpenedAndITState = LoadSaveDatasCSVAndGetAreaOpenedAndITState();
+            var temp = new AreaTemplateResourcesAccessory();
+            var mission = temp.GetMission(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION));
+            var history = GetMissionHistories();
+
             if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 1 &&
                 (int)EnumAreaOpenedAndITStateState.ITFixed <= int.Parse(q[EnumAreaOpenedAndITState.State]))
                 .Select(q => q)
@@ -55,6 +59,15 @@ namespace Area.Common
                 (int)EnumAreaOpenedAndITStateState.Select <= int.Parse(q[EnumAreaOpenedAndITState.State]))
                 .Select(q => q)
                 .ToArray()
+                .Length &&
+                0 < mission.Where(q => q[EnumMission.MissionID].Equals($"{EnumMissionID.MI0006}") &&
+                    q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_TRUE))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < history.Where(q => q.Equals($"{EnumMissionID.MI0006}"))
+                .Select(q => q)
+                .ToArray()
                 .Length)
             {
                 // ヘッドIT済み
@@ -62,6 +75,7 @@ namespace Area.Common
                 // ライトアームIT済み
                 // レフトアームIT済み
                 // コア解放済み
+                // ミッション「MI0006」が達成済みかつ、履歴にも存在する
                 return EnumRobotPanel.Full;
             }
             else if (0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 1 &&
@@ -563,6 +577,14 @@ namespace Area.Common
                         .ToArray()[0][EnumMission.Unlock] = ConstGeneric.DIGITFORM_TRUE;
                     updateCount++;
                 }
+                else if (CheckMissionUnitClearAndMissionUnlock(EnumUnitID.Core, EnumMissionID.MI0007, areaOpenedAndITState, mission)/*currentUnitID == (int)EnumUnitID.Core*/)
+                {
+                    // MI0007
+                    mission.Where(q => q[EnumMission.MissionID].Equals($"{EnumMissionID.MI0007}"))
+                        .Select(q => q)
+                        .ToArray()[0][EnumMission.Unlock] = ConstGeneric.DIGITFORM_TRUE;
+                    updateCount++;
+                }
                 if (0 < updateCount)
                     if (!temp.SaveDatasCSVOfMission(ConstResorcesNames.MISSION, mission))
                         throw new System.Exception("実績一覧管理データをCSVデータへ保存呼び出しの失敗");
@@ -616,6 +638,14 @@ namespace Area.Common
                     q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_FALSE))
                     .Select(q => q)
                     .ToArray().Length;
+        }
+
+        public int GetUnitIDsButIgnoreVoidInCore(Dictionary<EnumAreaUnits, int>[] areaUnits, int stageIndex)
+        {
+            var unitID = areaUnits.Where(q => q[EnumAreaUnits.StageID] == stageIndex)
+                .Select(q => q[EnumAreaUnits.UnitID])
+                .ToArray()[0];
+            return unitID == (int)EnumUnitID.VoidInCore ? (int)EnumUnitID.Core : unitID;
         }
     }
 
@@ -701,5 +731,13 @@ namespace Area.Common
         /// </summary>
         /// <returns>成功／失敗</returns>
         public bool CheckMissionAndSaveDatasCSVOfMission();
+        /// <summary>
+        /// ユニットIDを取得
+        /// 但し、コア（深部）は除く
+        /// </summary>
+        /// <param name="areaUnits">エリアユニット配列</param>
+        /// <param name="stageIndex">ステージ番号</param>
+        /// <returns>ユニットID</returns>
+        public int GetUnitIDsButIgnoreVoidInCore(Dictionary<EnumAreaUnits, int>[] areaUnits, int stageIndex);
     }
 }

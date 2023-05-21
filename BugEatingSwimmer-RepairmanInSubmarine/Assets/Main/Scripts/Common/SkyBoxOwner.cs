@@ -24,7 +24,9 @@ namespace Main.Common
             var mainSceneStagesConfs = tResourcesAccessory.GetMainSceneStagesConfig(mainSceneStagesConfResources);
 
             // Skyboxの設定
-            RenderSettings.skybox = skyboxs[mainSceneStagesConfs[sysComCash[EnumSystemCommonCash.SceneId]][EnumMainSceneStagesConfig.SkyBoxs]];
+            var common = new MainPresenterCommon();
+            // チュートリアルモードの場合はステージ１のBGMを再生する
+            RenderSettings.skybox = skyboxs[mainSceneStagesConfs[!common.IsOpeningTutorialMode() ? sysComCash[EnumSystemCommonCash.SceneId] : 1][EnumMainSceneStagesConfig.SkyBoxs]];
         }
     }
 }

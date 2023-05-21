@@ -60,7 +60,9 @@ namespace Main.Audio
             // ステージ共通設定の取得
             var mainSceneStagesConfResources = tResourcesAccessory.LoadSaveDatasCSV(ConstResorcesNames.MAIN_SCENE_STAGES_CONFIG);
             var mainSceneStagesConfs = tResourcesAccessory.GetMainSceneStagesConfig(mainSceneStagesConfResources);
-            var clipToPlay = mainSceneStagesConfs[sysComCash[EnumSystemCommonCash.SceneId]][EnumMainSceneStagesConfig.PlayBgmNames];
+            var common = new MainPresenterCommon();
+            // チュートリアルモードの場合はステージ１のBGMを再生する
+            var clipToPlay = mainSceneStagesConfs[!common.IsOpeningTutorialMode() ? sysComCash[EnumSystemCommonCash.SceneId] : 1][EnumMainSceneStagesConfig.PlayBgmNames];
 
             if (clipToPlay <= (clip.Length - 1))
             {

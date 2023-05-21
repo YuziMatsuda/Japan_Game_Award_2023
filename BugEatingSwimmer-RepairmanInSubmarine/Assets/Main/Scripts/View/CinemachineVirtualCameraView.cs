@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using DG.Tweening;
+using UniRx;
 
 namespace Main.View
 {
@@ -18,6 +20,8 @@ namespace Main.View
         [SerializeField] private Transform defaultTarget;
         /// <summary>カメラのオフセット</summary>
         [SerializeField] private Vector3[] bodyTrackedObjectOffsets = {new Vector3(0f, 5f, 0f), new Vector3(0f, 0f, 0f) };
+        /// <summary>アニメーション終了時間</summary>
+        [SerializeField] private float[] durations = { .5f };
 
         public bool SetBodyTrackedObjectOffsets(EnumBodyTrackedObjectOffsetIndex index)
         {
@@ -55,6 +59,43 @@ namespace Main.View
             }
         }
 
+        public IEnumerator SetFollowAnimation(System.IObserver<bool> observer, Transform target)
+        {
+            if (_cinemachineVirtualCamera == null)
+                _cinemachineVirtualCamera = GetComponent<CinemachineVirtualCamera>();
+            _cinemachineVirtualCamera.Follow.DOMove(target.position, durations[0])
+                .OnComplete(() => observer.OnNext(true));
+
+            yield return null;
+        }
+
+        public bool SetLookAt(Transform target)
+        {
+            try
+            {
+                if (_cinemachineVirtualCamera == null)
+                    _cinemachineVirtualCamera = GetComponent<CinemachineVirtualCamera>();
+                _cinemachineVirtualCamera.LookAt = target;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public IEnumerator SetLookAtAnimation(System.IObserver<bool> observer, Transform target)
+        {
+            if (_cinemachineVirtualCamera == null)
+                _cinemachineVirtualCamera = GetComponent<CinemachineVirtualCamera>();
+            _cinemachineVirtualCamera.LookAt.DOMove(target.position, durations[0])
+                .OnComplete(() => observer.OnNext(true));
+
+            yield return null;
+        }
+
         private void Reset()
         {
             defaultTarget = GameObject.Find("Level").transform;
@@ -75,6 +116,24 @@ namespace Main.View
         /// <returns>成功／失敗</returns>
         public bool SetFollow(Transform target);
         /// <summary>
+        /// 標準ををセット
+        /// </summary>
+        /// <param name="target">追従するターゲット</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetLookAt(Transform target);
+        /// <summary>
+        /// フォローをセットアニメーション
+        /// </summary>
+        /// <param name="target">追従するターゲット</param>
+        /// <returns>成功／失敗</returns>
+        public IEnumerator SetFollowAnimation(System.IObserver<bool> observer, Transform target);
+        /// <summary>
+        /// 標準ををセットアニメーション
+        /// </summary>
+        /// <param name="target">追従するターゲット</param>
+        /// <returns>成功／失敗</returns>
+        public IEnumerator SetLookAtAnimation(System.IObserver<bool> observer, Transform target);
+        /// <summary>
         /// カメラのオフセットをセット
         /// </summary>
         /// <param name="index">カメラのオフセットのインデックス</param>
@@ -91,5 +150,7 @@ namespace Main.View
         Default,
         /// <summary>プレイヤー追尾</summary>
         PlayerTracked,
+        /// <summary>イベント１</summary>
+        PlayerTrackedEvent_1,
     }
 }

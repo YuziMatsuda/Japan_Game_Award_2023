@@ -171,6 +171,7 @@ namespace Title.Presenter
 
         public void OnStart()
         {
+            var common = new TitlePresenterCommon();
             // 動的に制御するパネルをキャッシュ
             var pushGameStart = pushGameStartLogoView.transform.parent.gameObject;
             var gameStartOrExit = gameStartLogoView.transform.parent.gameObject;
@@ -295,7 +296,18 @@ namespace Title.Presenter
                             TitleGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_decided);
                             // ステージセレクトへの遷移を実装
                             Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
-                                .Subscribe(_ => TitleGameManager.Instance.SceneOwner.LoadNextScene())
+                                .Subscribe(_ =>
+                                {
+                                    var mission = common.LoadSaveDatasCSVAndGetMission();
+                                    if (0 < mission.Where(q => q[EnumMission.MissionID].Equals($"{EnumMissionID.MI0000}") &&
+                                        q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_FALSE))
+                                        .Select(q => q)
+                                        .ToArray()
+                                        .Length)
+                                        TitleGameManager.Instance.SceneOwner.LoadNextTutorialScene();
+                                    else
+                                        TitleGameManager.Instance.SceneOwner.LoadNextScene();
+                                })
                                 .AddTo(gameObject);
                             break;
                         default:
