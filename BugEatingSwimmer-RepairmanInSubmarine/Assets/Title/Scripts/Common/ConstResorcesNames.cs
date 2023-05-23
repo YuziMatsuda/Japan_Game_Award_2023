@@ -19,8 +19,6 @@ namespace Title.Common
         public static readonly string SYSTEM_CONFIG = "SystemConfig";
         /// <summary>ステージクリア済みデータ</summary>
         public static readonly string MAIN_SCENE_STAGES_STATE = "MainSceneStagesState";
-        /// <summary>ステージクリア済みデータ（全ステージ解放）</summary>
-        public static readonly string MAIN_SCENE_STAGES_STATE_ALL = "MainSceneStagesStateAll";
         /// <summary>実績一覧管理</summary>
         public static readonly string MISSION = "Mission";
         /// <summary>実績履歴</summary>
@@ -29,5 +27,11 @@ namespace Title.Common
         public static readonly string QUASI_ASSIGNMENT_FORM = "QuasiAssignmentForm";
         /// <summary>エリアユニット</summary>
         public static readonly string AREA_UNITS = "AreaUnits";
+        /// <summary>エリア解放・結合テスト</summary>
+        public static readonly string AREA_OPENED_AND_IT_STATE = "AreaOpenedAndITState";
+        /// <summary>ステージクリア条件</summary>
+        public static readonly string MAIN_SCENE_STAGES_MODULES_STATE = "MainSceneStagesModulesState";
+        /// <summary>＋で全ステージ解放</summary>
+        public static readonly string ALL = "All";
     }
 }
