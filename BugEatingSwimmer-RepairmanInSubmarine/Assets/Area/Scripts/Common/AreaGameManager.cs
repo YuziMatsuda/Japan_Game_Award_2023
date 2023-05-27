@@ -39,6 +39,10 @@ namespace Area.Common
         [SerializeField] private MissionOwner missionOwner;
         /// <summary>実績一覧管理のオーナー</summary>
         public MissionOwner MissionOwner => missionOwner;
+        /// <summary>パーティクルのオーナー</summary>
+        [SerializeField] private ParticleSystemsOwner particleSystemsOwner;
+        /// <summary>パーティクルのオーナー</summary>
+        public ParticleSystemsOwner ParticleSystemsOwner => particleSystemsOwner;
 
         private void Reset()
         {
@@ -46,6 +50,7 @@ namespace Area.Common
             audioOwner = GameObject.Find("AudioOwner").GetComponent<AudioOwner>();
             sceneOwner = GameObject.Find("SceneOwner").GetComponent<SceneOwner>();
             cursorVisible = GameObject.Find("CursorVisible").GetComponent<CursorVisible>();
+            particleSystemsOwner = GameObject.Find("ParticleSystemsOwner").GetComponent<ParticleSystemsOwner>();
             gimmickOwner = GameObject.Find("GimmickOwner").GetComponent<GimmickOwner>();
             missionOwner = GameObject.Find("MissionOwner").GetComponent<MissionOwner>();
         }
@@ -62,6 +67,7 @@ namespace Area.Common
             presenter.OnStart();
             cursorVisible.OnStart();
             sceneOwner.OnStart();
+            particleSystemsOwner.OnStart();
             gimmickOwner.OnStart();
         }
     }

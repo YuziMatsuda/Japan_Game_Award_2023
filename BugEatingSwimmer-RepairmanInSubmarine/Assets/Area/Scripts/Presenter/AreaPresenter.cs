@@ -58,6 +58,8 @@ namespace Area.Presenter
         [SerializeField] private FlowchartModel flowchartModel;
         /// <summary>テンプレートパネルのビュー</summary>
         [SerializeField] private TempletePanelView templetePanelView;
+        /// <summary>シーンカットのビュー</summary>
+        [SerializeField] private CutSceneView cutSceneView;
 
         private void Reset()
         {
@@ -132,6 +134,7 @@ namespace Area.Presenter
             receivers = GameObject.FindObjectsOfType<Fungus.MessageReceived>();
             flowchartModel = GameObject.Find("Flowchart").GetComponent<FlowchartModel>();
             templetePanelView = GameObject.Find("TempletePanel").GetComponent<TempletePanelView>();
+            cutSceneView = GameObject.Find("CutScene").GetComponent<CutSceneView>();
         }
 
         public void OnStart()
@@ -163,6 +166,7 @@ namespace Area.Presenter
                 Debug.LogError("ヒトデ総配属人数をセット呼び出しの失敗");
             if (!common.CheckMissionAndSaveDatasCSVOfMission())
                 Debug.LogError("ミッションの更新チェック呼び出しの失敗");
+            cutSceneView.gameObject.SetActive(false);
 
             AreaGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_select);
             var enumRobotpanel = common.GetStateOfRobotUnitConnect();
@@ -190,18 +194,144 @@ namespace Area.Presenter
             flowchartModel.ReadedScenarioNo.ObserveEveryValueChanged(x => x.Value)
                 .Subscribe(x =>
                 {
-                    if (0 < x)
+                    switch (x)
                     {
-                        // 実績履歴を更新
-                        if (common.AddMissionHistory() < 1)
-                            Debug.LogError("実績履歴を更新呼び出しの失敗");
-                        Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
-                            .Subscribe(_ =>
-                            {
-                                // イベント完了後の処理
-                                AreaGameManager.Instance.SceneOwner.ReLoadScene();
-                            })
-                            .AddTo(gameObject);
+                        case 0:
+                            // 初期値のため処理無し
+                            break;
+                        case 1:
+                            // 実績履歴を更新
+                            if (common.AddMissionHistory() < 1)
+                                Debug.LogError("実績履歴を更新呼び出しの失敗");
+                            Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                .Subscribe(_ =>
+                                {
+                                    // イベント完了後の処理
+                                    AreaGameManager.Instance.SceneOwner.ReLoadScene();
+                                })
+                                .AddTo(gameObject);
+                            break;
+                        case 2:
+                            // ボディなどの次エリア選択ができるようになればOK。
+                            Observable.FromCoroutine<bool>(observer => robotPanelView.PlayRenderEnable(common.GetPlayRenderEnables()[0], observer))
+                                .Subscribe(_ => { })
+                                .AddTo(gameObject);
+
+                            break;
+                        case 3:
+                            // 回想終了
+                            Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                .Subscribe(_ =>
+                                {
+                                    AreaGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_select);
+                                    cutSceneView.gameObject.SetActive(false);
+                                    Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Open))
+                                        .Subscribe(_ => { })
+                                        .AddTo(gameObject);
+                                })
+                                .AddTo(gameObject);
+
+                            break;
+                        case 4:
+                            // ロボ、信号を飛ばす。右腕、左腕の電源が入る
+                            // 実績一覧管理を参照して引数を切り替える
+                            // ※ヘッドITの場合のみライトアームとレフトアームの解放演出が入るためここのみ配列を渡す
+                            Observable.FromCoroutine<bool>(observer => robotPanelView.PlayRenderEnable(common.GetPlayRenderEnables(), observer))
+                                .Subscribe(_ => { })
+                                .AddTo(gameObject);
+
+                            break;
+                        case 5:
+                            // 画面転換 一枚絵 夜、湖の畔の工事現場が燃えている 鳴り響くサイレンと爆発音
+                            if (!cutSceneView.SetSprite(EnumRecollectionPicture.RecollectionEndingPictureA))
+                                Debug.LogError("スプライトをセット呼び出しの失敗");
+                            cutSceneView.gameObject.SetActive(true);
+                            break;
+                        case 6:
+                            // 画面転換 フェードアウト（真っ暗） 泡の音
+                            AreaGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_swim);
+                            Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                .Subscribe(_ =>
+                                {
+                                    AreaGameManager.Instance.AudioOwner.StopBGM();
+                                    // 静かになり暫く無音
+                                    Observable.FromCoroutine<bool>(observer => flowchartModel.WaitForSeconds(observer))
+                                        .Subscribe(_ =>
+                                        {
+                                            // 唐突に電源が入る 一枚絵（タイトルの拡大で流用した、海の画像）
+                                            if (!cutSceneView.SetSprite(EnumRecollectionPicture.Mainbg))
+                                                Debug.LogError("スプライトをセット呼び出しの失敗");
+                                            if (!fadeImageView.SetAlpha(EnumFadeState.Close))
+                                                Debug.LogError("アルファ値をセット呼び出しの失敗");
+                                        })
+                                        .AddTo(gameObject);
+                                })
+                                .AddTo(gameObject);
+
+                            break;
+                        case 7:
+                            // 画面転換 一枚絵 どこかの家のリビング
+                            break;
+                        case 8:
+                            // タイトルがバーンと出てエンディング
+                            Debug.Log("タイトルがバーンと出てエンディング");
+
+                            break;
+                        case 9:
+                            // 回想シーン１シーン切り替え②
+                            if (!cutSceneView.SetSprite(EnumRecollectionPicture.RecollectionPicture1_2))
+                                Debug.LogError("スプライトをセット呼び出しの失敗");
+
+                            break;
+                        case 10:
+                            // 回想シーン１シーン切り替え③
+                            if (!cutSceneView.SetSprite(EnumRecollectionPicture.RecollectionPicture1_3))
+                                Debug.LogError("スプライトをセット呼び出しの失敗");
+
+                            break;
+                        case 11:
+                            // 回想シーン２シーン切り替え②
+                            if (!cutSceneView.SetSprite(EnumRecollectionPicture.RecollectionPicture2_2))
+                                Debug.LogError("スプライトをセット呼び出しの失敗");
+
+                            break;
+                        case 12:
+                            // 回想シーン３シーン切り替え②
+                            if (!cutSceneView.SetSprite(EnumRecollectionPicture.RecollectionPicture3_2))
+                                Debug.LogError("スプライトをセット呼び出しの失敗");
+
+                            break;
+                        case 13:
+                            // 回想シーン３シーン切り替え③
+                            if (!cutSceneView.SetSprite(EnumRecollectionPicture.RecollectionPicture3_3))
+                                Debug.LogError("スプライトをセット呼び出しの失敗");
+
+                            break;
+                        case 14:
+                            // 回想シーン３シーン切り替え④
+                            if (!cutSceneView.SetSprite(EnumRecollectionPicture.RecollectionPicture3_4))
+                                Debug.LogError("スプライトをセット呼び出しの失敗");
+
+                            break;
+                        case 15:
+                            // 回想シーン４シーン切り替え②
+                            if (!cutSceneView.SetSprite(EnumRecollectionPicture.RecollectionPicture4_2))
+                                Debug.LogError("スプライトをセット呼び出しの失敗");
+
+                            break;
+                        case 16:
+                            // 回想シーン４シーン切り替え③～最後
+                            Observable.FromCoroutine<int>(observer => cutSceneView.PlayBetweenFrameAdvanceAtFadeMode(observer, EnumRecollectionPicture.RecollectionPicture4_3, EnumRecollectionPicture.RecollectionPicture4_13))
+                                .Subscribe(x =>
+                                {
+                                    if (x < ((int)EnumRecollectionPicture.RecollectionPicture4_13 - (int)EnumRecollectionPicture.RecollectionPicture4_3))
+                                        Debug.LogError("コマ送りでカットを切り替える呼び出しの失敗");
+                                })
+                                .AddTo(gameObject);
+
+                            break;
+                        default:
+                            break;
                     }
                 });
             var sysCommonCash = AreaGameManager.Instance.SceneOwner.GetSystemCommonCash();
@@ -230,75 +360,183 @@ namespace Area.Presenter
                             // エリア解放・結合テストのセーブファイル、イベント管理を参照して引数を切り替える
                             if (common.IsConnectedAnimation())
                             {
-                                Observable.FromCoroutine<bool>(observer => robotPanelView.PlayAnimationOfAllUnit(enumRobotpanel, observer))
-                                    .Subscribe(x =>
+                                Observable.FromCoroutine<bool>(observer => robotPanelView.PlayRepairEffect(enumRobotpanel, observer))
+                                    .Subscribe(_ =>
                                     {
-                                        if (x)
-                                        {
-                                            if (enumRobotpanel.Equals(EnumRobotPanel.ConnectedHead))
+                                        Observable.FromCoroutine<bool>(observer => robotPanelView.PlayAnimationOfAllUnit(enumRobotpanel, observer))
+                                            .Subscribe(x =>
                                             {
-                                                // 実績一覧管理を参照して引数を切り替える
-                                                // ※ヘッドITの場合のみライトアームとレフトアームの解放演出が入るためここのみ配列を渡す
-                                                Observable.FromCoroutine<bool>(observer => robotPanelView.PlayRenderEnable(common.GetPlayRenderEnables(), observer))
-                                                    .Subscribe(_ =>
+                                                if (x)
+                                                {
+                                                    if (enumRobotpanel.Equals(EnumRobotPanel.ConnectedHead))
                                                     {
-                                                        // シナリオのレシーバーへ送信
-                                                        foreach (var receiver in receivers)
-                                                        {
-                                                            var n = flowchartModel.GetBlockName();
-                                                            if (!string.IsNullOrEmpty(n))
-                                                                receiver.OnSendFungusMessage(n);
-                                                            else
-                                                                Debug.LogWarning("取得ブロック名無し");
-                                                        }
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
-                                            else
-                                            {
-                                                // 実績一覧管理を参照して引数を切り替える
-                                                Observable.FromCoroutine<bool>(observer => robotPanelView.PlayRenderEnable(common.GetPlayRenderEnables()[0], observer))
-                                                    .Subscribe(_ =>
-                                                    {
-                                                        // シナリオのレシーバーへ送信
-                                                        foreach (var receiver in receivers)
-                                                        {
-                                                            var n = flowchartModel.GetBlockName();
-                                                            if (!string.IsNullOrEmpty(n))
-                                                                receiver.OnSendFungusMessage(n);
-                                                            else
+                                                        Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                                            .Subscribe(_ =>
                                                             {
-                                                                Debug.LogWarning("取得ブロック名無し");
-                                                                // 実績履歴を更新
-                                                                if (common.AddMissionHistory() < 1)
-                                                                    Debug.LogError("実績履歴を更新呼び出しの失敗");
-                                                                Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                                                if (!cutSceneView.SetSprite(EnumRecollectionPicture.RecollectionPicture1_1))
+                                                                    Debug.LogError("スプライトをセット呼び出しの失敗");
+                                                                AreaGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_kaiso);
+                                                                cutSceneView.gameObject.SetActive(true);
+                                                                Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Open))
                                                                     .Subscribe(_ =>
                                                                     {
-                                                                        // イベント完了後の処理
-                                                                        AreaGameManager.Instance.SceneOwner.ReLoadScene();
+                                                                        // シナリオのレシーバーへ送信
+                                                                        foreach (var receiver in receivers)
+                                                                        {
+                                                                            var n = flowchartModel.GetBlockName();
+                                                                            if (!string.IsNullOrEmpty(n))
+                                                                                receiver.OnSendFungusMessage(n);
+                                                                            else
+                                                                                Debug.LogWarning("取得ブロック名無し");
+                                                                        }
                                                                     })
                                                                     .AddTo(gameObject);
-                                                                // ブロック名を取得できない場合はブレイクする
-                                                                break;
-                                                            }
+                                                            })
+                                                            .AddTo(gameObject);
+                                                    }
+                                                    else if (enumRobotpanel.Equals(EnumRobotPanel.ConnectedFailureHead))
+                                                    {
+                                                        // 実績一覧管理を参照して引数を切り替える
+                                                        Observable.FromCoroutine<bool>(observer => robotPanelView.PlayRenderEnable(common.GetPlayRenderEnables()[0], observer))
+                                                            .Subscribe(_ =>
+                                                            {
+                                                                // シナリオのレシーバーへ送信
+                                                                foreach (var receiver in receivers)
+                                                                {
+                                                                    var n = flowchartModel.GetBlockName();
+                                                                    if (!string.IsNullOrEmpty(n))
+                                                                        receiver.OnSendFungusMessage(n);
+                                                                    else
+                                                                    {
+                                                                        Debug.LogWarning("取得ブロック名無し");
+                                                                        // 実績履歴を更新
+                                                                        if (common.AddMissionHistory() < 1)
+                                                                            Debug.LogError("実績履歴を更新呼び出しの失敗");
+                                                                        Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                                                            .Subscribe(_ =>
+                                                                            {
+                                                                                // イベント完了後の処理
+                                                                                AreaGameManager.Instance.SceneOwner.ReLoadScene();
+                                                                            })
+                                                                            .AddTo(gameObject);
+                                                                        // ブロック名を取得できない場合はブレイクする
+                                                                        break;
+                                                                    }
+                                                                }
+                                                            })
+                                                            .AddTo(gameObject);
+                                                    }
+                                                    else if (enumRobotpanel.Equals(EnumRobotPanel.Full) &&
+                                                        ((!common.CheckUnlockMissionAndFindHistroy(EnumMissionID.MI0008) &&
+                                                        common.CheckUnlockMissionAndUndefinedHistroy(EnumMissionID.MI0008)) ||
+                                                        (!common.CheckUnlockMissionAndFindHistroy(EnumMissionID.MI0009) &&
+                                                        common.CheckUnlockMissionAndUndefinedHistroy(EnumMissionID.MI0009))))
+                                                    {
+                                                        // シナリオのレシーバーへ送信
+                                                        foreach (var receiver in receivers)
+                                                        {
+                                                            var n = flowchartModel.GetBlockName();
+                                                            if (!string.IsNullOrEmpty(n))
+                                                                receiver.OnSendFungusMessage(n);
+                                                            else
+                                                                Debug.LogWarning("取得ブロック名無し");
                                                         }
-                                                    })
-                                                    .AddTo(gameObject);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            // シナリオのレシーバーへ送信
-                                            foreach (var receiver in receivers)
-                                            {
-                                                var n = flowchartModel.GetBlockName();
-                                                if (!string.IsNullOrEmpty(n))
-                                                    receiver.OnSendFungusMessage(n);
+                                                    }
+                                                    else
+                                                    {
+                                                        Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                                            .Subscribe(_ =>
+                                                            {
+                                                                // 両腕が繋がった場合はミッションオーナーから次に呼び出すカットを判断できないため
+                                                                // 個別でロジックを用意する
+                                                                if (enumRobotpanel.Equals(EnumRobotPanel.ConnectedDoublearm))
+                                                                {
+                                                                    if (common.CheckUnlockMissionAndFindHistroy(EnumMissionID.MI0004))
+                                                                    {
+                                                                        // 「既に」ライトアームが繋がり、実績アンロック状態かつ、履歴にも存在する
+                                                                        // レフトアーム接続時の回想シーンカット演出
+                                                                        if (!cutSceneView.SetSprite(EnumRecollectionPicture.RecollectionPicture3_1))
+                                                                            Debug.LogError("スプライトをセット呼び出しの失敗");
+                                                                    }
+                                                                    else if (common.CheckUnlockMissionAndFindHistroy(EnumMissionID.MI0005))
+                                                                    {
+                                                                        // 「既に」レフトアームが繋がり、実績アンロック状態かつ、履歴にも存在する
+                                                                        // ライトアーム接続時の回想シーンカット演出
+                                                                        if (!cutSceneView.SetSprite(EnumRecollectionPicture.RecollectionPicture2_1))
+                                                                            Debug.LogError("スプライトをセット呼び出しの失敗");
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        // 処理無し
+                                                                    }
+                                                                }
+                                                                else if (enumRobotpanel.Equals(EnumRobotPanel.Full))
+                                                                {
+                                                                    // ５－３クリアの場合はミッションオーナーから次に呼び出すカットを判断できないため
+                                                                    // 個別でロジックを用意する
+                                                                    if (!common.CheckUnlockMissionAndFindHistroy(EnumMissionID.MI0007) &&
+                                                                        common.CheckUnlockMissionAndUndefinedHistroy(EnumMissionID.MI0007))
+                                                                    {
+                                                                        // ５－３クリア後の回想シーンカット演出
+                                                                        if (!cutSceneView.SetSprite(EnumRecollectionPicture.RecollectionPicture4_1))
+                                                                            Debug.LogError("スプライトをセット呼び出しの失敗");
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (!cutSceneView.SetSprite(AreaGameManager.Instance.MissionOwner.Missions.Where(q => q.enumRobotPanel.Equals(enumRobotpanel))
+                                                                        .Select(q => q.enumRecollectionPicture)
+                                                                        .Distinct()
+                                                                        .ToArray()[0]))
+                                                                        Debug.LogError("スプライトをセット呼び出しの失敗");
+                                                                }
+                                                                AreaGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_kaiso);
+                                                                cutSceneView.gameObject.SetActive(true);
+                                                                Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Open))
+                                                                    .Subscribe(_ =>
+                                                                    {
+                                                                        // シナリオのレシーバーへ送信
+                                                                        foreach (var receiver in receivers)
+                                                                        {
+                                                                            var n = flowchartModel.GetBlockName();
+                                                                            if (!string.IsNullOrEmpty(n))
+                                                                                receiver.OnSendFungusMessage(n);
+                                                                            else
+                                                                            {
+                                                                                Debug.LogWarning("取得ブロック名無し");
+                                                                                // 実績履歴を更新
+                                                                                if (common.AddMissionHistory() < 1)
+                                                                                    Debug.LogError("実績履歴を更新呼び出しの失敗");
+                                                                                Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                                                                    .Subscribe(_ =>
+                                                                                    {
+                                                                                        // イベント完了後の処理
+                                                                                        AreaGameManager.Instance.SceneOwner.ReLoadScene();
+                                                                                    })
+                                                                                    .AddTo(gameObject);
+                                                                                // ブロック名を取得できない場合はブレイクする
+                                                                                break;
+                                                                            }
+                                                                        }
+                                                                    });
+                                                            })
+                                                            .AddTo(gameObject);
+                                                    }
+                                                }
                                                 else
-                                                    Debug.LogWarning("取得ブロック名無し");
-                                            }
-                                        }
+                                                {
+                                                    // シナリオのレシーバーへ送信
+                                                    foreach (var receiver in receivers)
+                                                    {
+                                                        var n = flowchartModel.GetBlockName();
+                                                        if (!string.IsNullOrEmpty(n))
+                                                            receiver.OnSendFungusMessage(n);
+                                                        else
+                                                            Debug.LogWarning("取得ブロック名無し");
+                                                    }
+                                                }
+                                            })
+                                            .AddTo(gameObject);
                                     })
                                     .AddTo(gameObject);
                             }

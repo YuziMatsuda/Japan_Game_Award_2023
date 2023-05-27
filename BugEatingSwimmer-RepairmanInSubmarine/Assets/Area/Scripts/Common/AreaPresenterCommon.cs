@@ -20,6 +20,8 @@ namespace Area.Common
         public EnumRobotPanel enumRobotPanel;
         /// <summary>エリアID</summary>
         public EnumUnitID enumUnitID;
+        /// <summary>回想シーン背景</summary>
+        public EnumRecollectionPicture enumRecollectionPicture;
     }
 
     /// <summary>
@@ -202,7 +204,7 @@ namespace Area.Common
                 .ToArray()
                 .Length &&
                 0 < areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == 2 &&
-                (int)EnumAreaOpenedAndITStateState.ITFixed <= int.Parse(q[EnumAreaOpenedAndITState.State]))
+                (int)EnumAreaOpenedAndITStateState.Cleared <= int.Parse(q[EnumAreaOpenedAndITState.State]))
                 .Select(q => q)
                 .ToArray()
                 .Length &&
@@ -647,6 +649,35 @@ namespace Area.Common
                 .ToArray()[0];
             return unitID == (int)EnumUnitID.VoidInCore ? (int)EnumUnitID.Core : unitID;
         }
+
+        public bool CheckUnlockMissionAndFindHistroy(EnumMissionID enumMissionID)
+        {
+            var temp = new AreaTemplateResourcesAccessory();
+            var mission = temp.GetMission(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION));
+            var history = GetMissionHistories();
+
+            return 0 < mission.Where(q => q[EnumMission.MissionID].Equals($"{enumMissionID}") &&
+                q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_TRUE))
+                .Select(q => q)
+                .ToArray()
+                .Length &&
+                0 < history.Where(q => q.Equals($"{enumMissionID}"))
+                    .Select(q => q)
+                    .ToArray()
+                    .Length;
+        }
+
+        public bool CheckUnlockMissionAndUndefinedHistroy(EnumMissionID enumMissionID)
+        {
+            var temp = new AreaTemplateResourcesAccessory();
+            var mission = temp.GetMission(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION));
+
+            return 0 < mission.Where(q => q[EnumMission.MissionID].Equals($"{enumMissionID}") &&
+                q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_TRUE))
+                .Select(q => q)
+                .ToArray()
+                .Length;
+        }
     }
 
     /// <summary>
@@ -739,5 +770,19 @@ namespace Area.Common
         /// <param name="stageIndex">ステージ番号</param>
         /// <returns>ユニットID</returns>
         public int GetUnitIDsButIgnoreVoidInCore(Dictionary<EnumAreaUnits, int>[] areaUnits, int stageIndex);
+        /// <summary>
+        /// ミッションの更新チェック
+        /// 指定したミッションIDがアンロック状態かつ履歴にも存在するか
+        /// </summary>
+        /// <param name="enumMissionID">ミッションID</param>
+        /// <returns>成功／失敗</returns>
+        public bool CheckUnlockMissionAndFindHistroy(EnumMissionID enumMissionID);
+        /// <summary>
+        /// ミッションの更新チェック
+        /// 指定したミッションIDがアンロック状態だが履歴には存在しない
+        /// </summary>
+        /// <param name="enumMissionID">ミッションID</param>
+        /// <returns>成功／失敗</returns>
+        public bool CheckUnlockMissionAndUndefinedHistroy(EnumMissionID enumMissionID);
     }
 }
