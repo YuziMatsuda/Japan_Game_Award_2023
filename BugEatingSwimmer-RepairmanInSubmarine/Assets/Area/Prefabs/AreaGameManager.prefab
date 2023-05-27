@@ -534,6 +534,7 @@ MonoBehaviour:
   clip:
   - {fileID: 8300000, guid: 2cb2225257e24b34c88b5ce552bb392b, type: 3}
   - {fileID: 8300000, guid: 79cecee949975af4683b5cd12746fcd6, type: 3}
+  - {fileID: 8300000, guid: 9eb4e54a9b2792147adcd2c985c8b2bb, type: 3}
 --- !u!1 &4136715924645342590
 GameObject:
   m_ObjectHideFlags: 0
@@ -596,6 +597,7 @@ MonoBehaviour:
   flowchartModel: {fileID: 0}
   templetePanelView: {fileID: 0}
   cutSceneView: {fileID: 0}
+  endingView: {fileID: 0}
 --- !u!1 &4136715924690140342
 GameObject:
   m_ObjectHideFlags: 0

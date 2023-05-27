@@ -35,5 +35,6 @@ namespace Area.Common
         RecollectionEndingPictureA,
         RecollectionEndingPictureB,
         Mainbg,
+        SquareBlack,
     }
 }

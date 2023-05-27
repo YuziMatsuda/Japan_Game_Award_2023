@@ -168,6 +168,11 @@ namespace Area.Model
             _readedScenarioNo.Value = 16;
         }
 
+        public void OnOtherAdditions_9()
+        {
+            _readedScenarioNo.Value = 17;
+        }
+
         public string GetBlockName()
         {
             var missionID = "";

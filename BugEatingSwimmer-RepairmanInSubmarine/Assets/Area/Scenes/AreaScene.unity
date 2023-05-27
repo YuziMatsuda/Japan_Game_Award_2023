@@ -1462,6 +1462,10 @@ PrefabInstance:
       value: AreaGameManager
       objectReference: {fileID: 0}
     - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
+      propertyPath: endingView
+      value: 
+      objectReference: {fileID: 4431877572368449468}
+    - target: {fileID: 5004308978753134150, guid: fd5acff18d2b7ef49b937e9a9295df7f, type: 3}
       propertyPath: playerView
       value: 
       objectReference: {fileID: 4431877572368449464}
@@ -1665,6 +1669,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5779d9230985fae409b2ad14bdd5aa2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4431877572368449468 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8229135127622988909, guid: 6500b7f113d2fe14fb1b2c853cdbf44c, type: 3}
+  m_PrefabInstance: {fileID: 4431877572368449463}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da789ea013768d24a8cbd458116f9f0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6400638602551276701
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1672,10 +1687,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2928158034903735437, guid: e45d6d8dfe00f914682e5ed4198180c4, type: 3}
-      propertyPath: commandList.Array.data[0]
-      value: 
-      objectReference: {fileID: 1441939383239467901, guid: e45d6d8dfe00f914682e5ed4198180c4, type: 3}
     - target: {fileID: 6400638602360737541, guid: e45d6d8dfe00f914682e5ed4198180c4, type: 3}
       propertyPath: m_RootOrder
       value: 4

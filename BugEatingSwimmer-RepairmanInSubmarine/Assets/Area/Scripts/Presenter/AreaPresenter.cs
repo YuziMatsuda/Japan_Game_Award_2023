@@ -60,6 +60,8 @@ namespace Area.Presenter
         [SerializeField] private TempletePanelView templetePanelView;
         /// <summary>シーンカットのビュー</summary>
         [SerializeField] private CutSceneView cutSceneView;
+        /// <summary>エンディングのビュー</summary>
+        [SerializeField] private EndingView endingView;
 
         private void Reset()
         {
@@ -135,6 +137,7 @@ namespace Area.Presenter
             flowchartModel = GameObject.Find("Flowchart").GetComponent<FlowchartModel>();
             templetePanelView = GameObject.Find("TempletePanel").GetComponent<TempletePanelView>();
             cutSceneView = GameObject.Find("CutScene").GetComponent<CutSceneView>();
+            endingView = GameObject.Find("Ending").GetComponent<EndingView>();
         }
 
         public void OnStart()
@@ -167,6 +170,7 @@ namespace Area.Presenter
             if (!common.CheckMissionAndSaveDatasCSVOfMission())
                 Debug.LogError("ミッションの更新チェック呼び出しの失敗");
             cutSceneView.gameObject.SetActive(false);
+            endingView.gameObject.SetActive(false);
 
             AreaGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_select);
             var enumRobotpanel = common.GetStateOfRobotUnitConnect();
@@ -243,9 +247,18 @@ namespace Area.Presenter
                             break;
                         case 5:
                             // 画面転換 一枚絵 夜、湖の畔の工事現場が燃えている 鳴り響くサイレンと爆発音
-                            if (!cutSceneView.SetSprite(EnumRecollectionPicture.RecollectionEndingPictureA))
-                                Debug.LogError("スプライトをセット呼び出しの失敗");
-                            cutSceneView.gameObject.SetActive(true);
+                            Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                .Subscribe(_ =>
+                                {
+                                    if (!cutSceneView.SetSprite(EnumRecollectionPicture.RecollectionEndingPictureA))
+                                        Debug.LogError("スプライトをセット呼び出しの失敗");
+                                    cutSceneView.gameObject.SetActive(true);
+                                    Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Open))
+                                        .Subscribe(_ => { })
+                                        .AddTo(gameObject);
+                                })
+                                .AddTo(gameObject);
+
                             break;
                         case 6:
                             // 画面転換 フェードアウト（真っ暗） 泡の音
@@ -271,10 +284,37 @@ namespace Area.Presenter
                             break;
                         case 7:
                             // 画面転換 一枚絵 どこかの家のリビング
+                            Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                .Subscribe(_ =>
+                                {
+                                    if (!cutSceneView.SetSprite(EnumRecollectionPicture.RecollectionEndingPictureB))
+                                        Debug.LogError("スプライトをセット呼び出しの失敗");
+                                    cutSceneView.gameObject.SetActive(true);
+                                    Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Open))
+                                        .Subscribe(_ => { })
+                                        .AddTo(gameObject);
+                                })
+                                .AddTo(gameObject);
+
                             break;
                         case 8:
                             // タイトルがバーンと出てエンディング
-                            Debug.Log("タイトルがバーンと出てエンディング");
+                            AreaGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_ending);
+                            endingView.gameObject.SetActive(true);
+                            Observable.FromCoroutine<int>(observer => endingView.PlayEndingCut(observer))
+                                .Subscribe(x =>
+                                {
+                                    if (0 < x)
+                                    {
+                                        Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                            .Subscribe(_ =>
+                                            {
+                                                endingView.gameObject.SetActive(false);
+                                            })
+                                            .AddTo(gameObject);
+                                    }
+                                })
+                                .AddTo(gameObject);
 
                             break;
                         case 9:
@@ -328,6 +368,12 @@ namespace Area.Presenter
                                         Debug.LogError("コマ送りでカットを切り替える呼び出しの失敗");
                                 })
                                 .AddTo(gameObject);
+
+                            break;
+                        case 17:
+                            // オマケ
+                            if (!cutSceneView.SetSprite(EnumRecollectionPicture.SquareBlack))
+                                Debug.LogError("スプライトをセット呼び出しの失敗");
 
                             break;
                         default:

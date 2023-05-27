@@ -11,6 +11,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Seaweed_1
       objectReference: {fileID: 0}
+    - target: {fileID: 770623083200089337, guid: 228a048d9a9f39d4f83b9508edbf58ea, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8580054335608159738, guid: 228a048d9a9f39d4f83b9508edbf58ea, type: 3}
       propertyPath: m_RootOrder
       value: 6
@@ -67,6 +71,10 @@ PrefabInstance:
     - target: {fileID: 5485666873148139956, guid: cec49593834329041ab9e76cbb6a989a, type: 3}
       propertyPath: m_Name
       value: Bigrock
+      objectReference: {fileID: 0}
+    - target: {fileID: 5485666873148139956, guid: cec49593834329041ab9e76cbb6a989a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6283760106224698858, guid: cec49593834329041ab9e76cbb6a989a, type: 3}
       propertyPath: m_RootOrder
@@ -125,6 +133,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bigrock_2
       objectReference: {fileID: 0}
+    - target: {fileID: 5485666873148139956, guid: cec49593834329041ab9e76cbb6a989a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6283760106224698858, guid: cec49593834329041ab9e76cbb6a989a, type: 3}
       propertyPath: m_RootOrder
       value: 11
@@ -182,6 +194,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bigrock_1
       objectReference: {fileID: 0}
+    - target: {fileID: 5485666873148139956, guid: cec49593834329041ab9e76cbb6a989a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6283760106224698858, guid: cec49593834329041ab9e76cbb6a989a, type: 3}
       propertyPath: m_RootOrder
       value: 10
@@ -238,6 +254,10 @@ PrefabInstance:
     - target: {fileID: 770623083200089337, guid: 228a048d9a9f39d4f83b9508edbf58ea, type: 3}
       propertyPath: m_Name
       value: Seaweed_3
+      objectReference: {fileID: 0}
+    - target: {fileID: 770623083200089337, guid: 228a048d9a9f39d4f83b9508edbf58ea, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8580054335608159738, guid: 228a048d9a9f39d4f83b9508edbf58ea, type: 3}
       propertyPath: m_RootOrder
@@ -306,11 +326,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7846440021856425116, guid: 883fbb1b415f46448acfc71ac2924596, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 13.51
+      value: 8.06
       objectReference: {fileID: 0}
     - target: {fileID: 7846440021856425116, guid: 883fbb1b415f46448acfc71ac2924596, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 2.8
       objectReference: {fileID: 0}
     - target: {fileID: 7846440021856425116, guid: 883fbb1b415f46448acfc71ac2924596, type: 3}
       propertyPath: m_LocalPosition.z
@@ -356,6 +376,10 @@ PrefabInstance:
     - target: {fileID: 5485666873148139956, guid: cec49593834329041ab9e76cbb6a989a, type: 3}
       propertyPath: m_Name
       value: Bigrock_3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5485666873148139956, guid: cec49593834329041ab9e76cbb6a989a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6283760106224698858, guid: cec49593834329041ab9e76cbb6a989a, type: 3}
       propertyPath: m_RootOrder
@@ -471,6 +495,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Seaweed_2
       objectReference: {fileID: 0}
+    - target: {fileID: 770623083200089337, guid: 228a048d9a9f39d4f83b9508edbf58ea, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8580054335608159738, guid: 228a048d9a9f39d4f83b9508edbf58ea, type: 3}
       propertyPath: m_RootOrder
       value: 7
@@ -527,6 +555,10 @@ PrefabInstance:
     - target: {fileID: 770623083200089337, guid: 228a048d9a9f39d4f83b9508edbf58ea, type: 3}
       propertyPath: m_Name
       value: Seaweed
+      objectReference: {fileID: 0}
+    - target: {fileID: 770623083200089337, guid: 228a048d9a9f39d4f83b9508edbf58ea, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8580054335608159738, guid: 228a048d9a9f39d4f83b9508edbf58ea, type: 3}
       propertyPath: m_RootOrder

@@ -100,5 +100,7 @@ namespace Area.Audio
         bgm_kaiso,
         /// <summary>セレクト</summary>
         bgm_select,
+        /// <summary>エンディング</summary>
+        bgm_ending,
     }
 }
