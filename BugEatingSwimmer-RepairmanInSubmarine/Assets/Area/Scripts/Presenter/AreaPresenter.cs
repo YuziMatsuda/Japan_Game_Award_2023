@@ -187,6 +187,13 @@ namespace Area.Presenter
                         .Distinct())
                         if (!robotPanelView.RendererEnableMode(unitID))
                             Debug.LogError("対象ユニットを非選択状態にする呼び出しの失敗");
+                    // MI0001アンロック後のイベント中プレイヤー位置は変更する
+                    if (0 < missions.Where(q => q.enumMissionID.Equals(EnumMissionID.MI0001))
+                        .Select(q => q)
+                        .ToArray()
+                        .Length)
+                        if (!playerView.SetAnchorPosition(0))
+                            Debug.LogError("アンカー位置をセット呼び出しの失敗");
                 }
             }
             else

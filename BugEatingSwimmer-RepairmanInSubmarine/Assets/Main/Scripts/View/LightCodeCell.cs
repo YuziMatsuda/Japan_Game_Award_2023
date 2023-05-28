@@ -204,5 +204,10 @@ namespace Main.View
         {
             throw new NotImplementedException();
         }
+
+        public bool SetDefaultDirection()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

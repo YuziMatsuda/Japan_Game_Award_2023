@@ -22,6 +22,10 @@ namespace Main.View
         [SerializeField] private int lockLoopCount = 4;
         /// <summary>支点ライトの見た目</summary>
         [SerializeField] private PivotDynamic pivotDynamic;
+        /// <summary>デフォルト角度（サン（ゴ）ショウコードでのみ使用）</summary>
+        private Vector3 _defaultDirection;
+        /// <summary>ターンロックアニメーション再生中</summary>
+        private bool _isPlayingLockAnimation;
 
         private void Reset()
         {
@@ -70,18 +74,38 @@ namespace Main.View
 
         public IEnumerator PlayLockSpinAnimation(IObserver<bool> observer)
         {
-            if (_transform == null)
-                _transform = transform;
-            var defaultDirection = _transform.localEulerAngles;
-            _transform.DOLocalRotate(defaultDirection + lockDirection, lockDuration)
-                .SetLoops(lockLoopCount, LoopType.Yoyo)
-                .OnComplete(() =>
-                {
-                    _transform.localEulerAngles = defaultDirection;
-                    observer.OnNext(true);
-                });
+            if (!_isPlayingLockAnimation)
+            {
+                _isPlayingLockAnimation = true;
+
+                _transform.DOLocalRotate(_defaultDirection + lockDirection, lockDuration)
+                    .From(_defaultDirection)
+                    .SetLoops(lockLoopCount, LoopType.Yoyo)
+                    .OnComplete(() =>
+                    {
+                        observer.OnNext(true);
+                        _isPlayingLockAnimation = false;
+                    });
+            }
 
             yield return null;
+        }
+
+        public bool SetDefaultDirection()
+        {
+            try
+            {
+                if (_transform == null)
+                    _transform = transform;
+                _defaultDirection = _transform.localEulerAngles;
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
         }
     }
 
@@ -147,5 +171,10 @@ namespace Main.View
         /// <param name="observer">バインド</param>
         /// <returns>コルーチン</returns>
         public IEnumerator PlayLockSpinAnimation(System.IObserver<bool> observer);
+        /// <summary>
+        /// デフォルト角度をセット
+        /// </summary>
+        /// <returns>成功／失敗</returns>
+        public bool SetDefaultDirection();
     }
 }

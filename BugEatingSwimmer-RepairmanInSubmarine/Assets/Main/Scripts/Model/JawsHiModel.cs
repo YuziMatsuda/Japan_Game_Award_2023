@@ -159,6 +159,11 @@ namespace Main.Model
         {
             return ((IDangerCollider)dangerCollider).SetCollider2DEnabled(isEnabled);
         }
+
+        public bool SetIsCollisionBan(bool isEnabled)
+        {
+            return ((IDangerCollider)dangerCollider).SetIsCollisionBan(isEnabled);
+        }
     }
 
 

@@ -33,11 +33,14 @@ namespace Area.View
         private bool _isSkipMode;
         /// <summary>スキップモード（キャプション選択のキャンセル）</summary>
         public bool IsSkipMode => _isSkipMode;
+        /// <summary>設定</summary>
+        [SerializeField] private PlayerConfig playerConfig;
 
         private void Reset()
         {
             navigationCursor = GetComponentInChildren<NavigationCursor>();
             bodyImage = GetComponentInChildren<BodyImage>();
+            playerConfig = GetComponent<PlayerConfig>();
         }
 
         protected override void Start()
@@ -141,6 +144,23 @@ namespace Area.View
                 return false;
             }
         }
+
+        public bool SetAnchorPosition(int index)
+        {
+            try
+            {
+                if (_transform == null)
+                    _transform = transform;
+                (_transform as RectTransform).anchoredPosition = playerConfig.DefaultAnchors[index];
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
     }
 
     /// <summary>
@@ -156,5 +176,11 @@ namespace Area.View
         /// <param name="isSkipMode">スキップモード</param>
         /// <returns>成功／失敗</returns>
         public bool SetSkipMode(bool isSkipMode);
+        /// <summary>
+        /// アンカー位置をセット
+        /// </summary>
+        /// <param name="index">配列番号</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetAnchorPosition(int index);
     }
 }
