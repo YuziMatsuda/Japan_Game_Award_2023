@@ -44,5 +44,10 @@ namespace Area.Audio
                 Debug.LogWarning(e);
             }
         }
+
+        public void StopBGM()
+        {
+            audioSource.Stop();
+        }
     }
 }

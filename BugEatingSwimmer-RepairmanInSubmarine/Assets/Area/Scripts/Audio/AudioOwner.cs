@@ -39,6 +39,11 @@ namespace Area.Audio
         {
             bgmPlayer.PlayBGM(clipToPlay);
         }
+
+        public void StopBGM()
+        {
+            bgmPlayer.StopBGM();
+        }
     }
 
     /// <summary>
@@ -64,6 +69,10 @@ namespace Area.Audio
         se_decided,
         /// <summary>ステージセレクト</summary>
         se_select,
+        /// <summary>プレイヤーが泳ぐ音</summary>
+        se_swim,
+        /// <summary>コード回転</summary>
+        se_code_normal,
     }
 
     /// <summary>
@@ -76,6 +85,10 @@ namespace Area.Audio
         /// </summary>
         /// <param name="clipToPlay">BGM</param>
         public void PlayBGM(ClipToPlayBGM clipToPlay) { }
+        /// <summary>
+        /// 指定されたBGMを停止する
+        /// </summary>
+        public void StopBGM() { }
     }
 
     /// <summary>
@@ -87,5 +100,7 @@ namespace Area.Audio
         bgm_kaiso,
         /// <summary>セレクト</summary>
         bgm_select,
+        /// <summary>エンディング</summary>
+        bgm_ending,
     }
 }

@@ -40,6 +40,31 @@ namespace Title.Common
                 var systemCommonCashConfigMaps = tTResources.GetSystemCommonCash(systemCommonCashDatas);
                 if (!tTResources.SaveDatasCSVOfSystemCommonCash(ConstResorcesNames.SYSTEM_COMMON_CASH, systemCommonCashConfigMaps))
                     Debug.LogError("CSV保存呼び出しの失敗");
+                // 実績一覧管理
+                var missions = tTResources.LoadResourcesCSV(ConstResorcesNames.MISSION);
+                var missionConfigMaps = tTResources.GetMission(missions);
+                if (!tTResources.SaveDatasCSVOfMission(ConstResorcesNames.MISSION, missionConfigMaps))
+                    Debug.LogError("CSV保存呼び出しの失敗");
+                // 実績履歴
+                var histories = tTResources.LoadResourcesCSV(ConstResorcesNames.MISSION_HISTORY);
+                var histroyMaps = tTResources.GetMissionHistory(histories);
+                if (!tTResources.SaveDatasCSVOfMissionHistory(ConstResorcesNames.MISSION_HISTORY, histroyMaps))
+                    Debug.LogError("CSV保存呼び出しの失敗");
+                // 準委任帳票
+                var quasiAssignmentForm = tTResources.LoadResourcesCSV(ConstResorcesNames.QUASI_ASSIGNMENT_FORM);
+                var quasiAssignmentFormMaps = tTResources.GetQuasiAssignmentForm(quasiAssignmentForm);
+                if (!tTResources.SaveDatasCSVOfQuasiAssignmentForm(ConstResorcesNames.QUASI_ASSIGNMENT_FORM, quasiAssignmentFormMaps))
+                    Debug.LogError("CSV保存呼び出しの失敗");
+                // エリア解放・結合テスト
+                var areaOpenedAndITStates = tTResources.LoadResourcesCSV(ConstResorcesNames.AREA_OPENED_AND_IT_STATE);
+                var areaOpenedAndITStateMaps = tTResources.GetAreaOpenedAndITState(areaOpenedAndITStates);
+                if (!tTResources.SaveDatasCSVOfAreaOpenedAndITState(ConstResorcesNames.AREA_OPENED_AND_IT_STATE, areaOpenedAndITStateMaps))
+                    Debug.LogError("CSV保存呼び出しの失敗");
+                // ステージクリア条件
+                var mainSceneStagesModulesStates = tTResources.LoadResourcesCSV(ConstResorcesNames.MAIN_SCENE_STAGES_MODULES_STATE);
+                var mainSceneStagesModulesStateMaps = tTResources.GetMainSceneStagesModulesState(mainSceneStagesModulesStates);
+                if (!tTResources.SaveDatasCSVOfMainSceneStagesModulesState(ConstResorcesNames.MAIN_SCENE_STAGES_MODULES_STATE, mainSceneStagesModulesStateMaps))
+                    Debug.LogError("CSV保存呼び出しの失敗");
 
                 return true;
             }
@@ -60,14 +85,39 @@ namespace Title.Common
             {
                 var tTResources = new TitleTemplateResourcesAccessory();
                 // ステージクリア済みデータのリセット
-                var mainSceneStagesStateDatas = tTResources.LoadResourcesCSV(ConstResorcesNames.MAIN_SCENE_STAGES_STATE_ALL);
+                var mainSceneStagesStateDatas = tTResources.LoadResourcesCSV(ConstResorcesNames.MAIN_SCENE_STAGES_STATE + ConstResorcesNames.ALL);
                 var mainSceneStagesStateConfigMaps = tTResources.GetMainSceneStagesState(mainSceneStagesStateDatas);
                 if (!tTResources.SaveDatasCSVOfMainSceneStagesState(ConstResorcesNames.MAIN_SCENE_STAGES_STATE, mainSceneStagesStateConfigMaps))
                     Debug.LogError("CSV保存呼び出しの失敗");
                 // システム設定キャッシュのリセット
-                var systemCommonCashDatas = tTResources.LoadResourcesCSV(ConstResorcesNames.SYSTEM_COMMON_CASH);
+                var systemCommonCashDatas = tTResources.LoadResourcesCSV(ConstResorcesNames.SYSTEM_COMMON_CASH + ConstResorcesNames.ALL);
                 var systemCommonCashConfigMaps = tTResources.GetSystemCommonCash(systemCommonCashDatas);
                 if (!tTResources.SaveDatasCSVOfSystemCommonCash(ConstResorcesNames.SYSTEM_COMMON_CASH, systemCommonCashConfigMaps))
+                    Debug.LogError("CSV保存呼び出しの失敗");
+                // 実績一覧管理
+                var missions = tTResources.LoadResourcesCSV(ConstResorcesNames.MISSION + ConstResorcesNames.ALL);
+                var missionConfigMaps = tTResources.GetMission(missions);
+                if (!tTResources.SaveDatasCSVOfMission(ConstResorcesNames.MISSION, missionConfigMaps))
+                    Debug.LogError("CSV保存呼び出しの失敗");
+                // 実績履歴
+                var histories = tTResources.LoadResourcesCSV(ConstResorcesNames.MISSION_HISTORY + ConstResorcesNames.ALL);
+                var histroyMaps = tTResources.GetMissionHistory(histories);
+                if (!tTResources.SaveDatasCSVOfMissionHistory(ConstResorcesNames.MISSION_HISTORY, histroyMaps))
+                    Debug.LogError("CSV保存呼び出しの失敗");
+                // 準委任帳票
+                var quasiAssignmentForm = tTResources.LoadResourcesCSV(ConstResorcesNames.QUASI_ASSIGNMENT_FORM + ConstResorcesNames.ALL);
+                var quasiAssignmentFormMaps = tTResources.GetQuasiAssignmentForm(quasiAssignmentForm);
+                if (!tTResources.SaveDatasCSVOfQuasiAssignmentForm(ConstResorcesNames.QUASI_ASSIGNMENT_FORM, quasiAssignmentFormMaps))
+                    Debug.LogError("CSV保存呼び出しの失敗");
+                // エリア解放・結合テスト
+                var areaOpenedAndITStates = tTResources.LoadResourcesCSV(ConstResorcesNames.AREA_OPENED_AND_IT_STATE + ConstResorcesNames.ALL);
+                var areaOpenedAndITStateMaps = tTResources.GetAreaOpenedAndITState(areaOpenedAndITStates);
+                if (!tTResources.SaveDatasCSVOfAreaOpenedAndITState(ConstResorcesNames.AREA_OPENED_AND_IT_STATE, areaOpenedAndITStateMaps))
+                    Debug.LogError("CSV保存呼び出しの失敗");
+                // ステージクリア条件
+                var mainSceneStagesModulesStates = tTResources.LoadResourcesCSV(ConstResorcesNames.MAIN_SCENE_STAGES_MODULES_STATE + ConstResorcesNames.ALL);
+                var mainSceneStagesModulesStateMaps = tTResources.GetMainSceneStagesModulesState(mainSceneStagesModulesStates);
+                if (!tTResources.SaveDatasCSVOfMainSceneStagesModulesState(ConstResorcesNames.MAIN_SCENE_STAGES_MODULES_STATE, mainSceneStagesModulesStateMaps))
                     Debug.LogError("CSV保存呼び出しの失敗");
 
                 return true;

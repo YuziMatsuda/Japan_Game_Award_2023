@@ -270,6 +270,70 @@ namespace Area.View
 
             yield return null;
         }
+
+        public IEnumerator PlayRepairEffect(EnumRobotPanel enumRobotPanel, System.IObserver<bool> observer)
+        {
+            switch (enumRobotPanel)
+            {
+                case EnumRobotPanel.FallingApart:
+                    Observable.FromCoroutine<bool>(observer => robotUnitImageViews[0].PlayRepairEffect(observer))
+                        .Subscribe(_ => observer.OnNext(true))
+                        .AddTo(gameObject);
+
+                    break;
+                case EnumRobotPanel.OnStartBody:
+                    observer.OnNext(true);
+
+                    break;
+                case EnumRobotPanel.ConnectedFailureHead:
+                    observer.OnNext(true);
+
+                    break;
+                case EnumRobotPanel.ConnectedHead:
+                    Observable.FromCoroutine<bool>(observer => robotUnitImageViews[1].PlayRepairEffect(observer))
+                        .Subscribe(_ => observer.OnNext(true))
+                        .AddTo(gameObject);
+
+                    break;
+                case EnumRobotPanel.ConnectedRightarm:
+                    Observable.FromCoroutine<bool>(observer => robotUnitImageViews[2].PlayRepairEffect(observer))
+                        .Subscribe(_ => observer.OnNext(true))
+                        .AddTo(gameObject);
+
+                    break;
+                case EnumRobotPanel.ConnectedLeftarm:
+                    Observable.FromCoroutine<bool>(observer => robotUnitImageViews[3].PlayRepairEffect(observer))
+                        .Subscribe(_ => observer.OnNext(true))
+                        .AddTo(gameObject);
+
+                    break;
+                case EnumRobotPanel.ConnectedDoublearm:
+                    // 存在しない方のアームへエフェクト演出
+                    var common = new AreaPresenterCommon();
+                    if (common.CheckUnlockMissionAndFindHistroy(EnumMissionID.MI0004))
+                        // ライトアームが繋がっているならMI0004の実績がアンロック状態かつ、履歴にも存在する
+                        Observable.FromCoroutine<bool>(observer => robotUnitImageViews[3].PlayRepairEffect(observer))
+                            .Subscribe(_ => observer.OnNext(true))
+                            .AddTo(gameObject);
+                    else if (common.CheckUnlockMissionAndFindHistroy(EnumMissionID.MI0005))
+                        // レフトアームが繋がっているならMI0005の実績がアンロック状態かつ、履歴にも存在する
+                        Observable.FromCoroutine<bool>(observer => robotUnitImageViews[2].PlayRepairEffect(observer))
+                            .Subscribe(_ => observer.OnNext(true))
+                            .AddTo(gameObject);
+
+                    break;
+                case EnumRobotPanel.Full:
+                    Observable.FromCoroutine<bool>(observer => robotUnitImageViews[4].PlayRepairEffect(observer))
+                        .Subscribe(_ => observer.OnNext(true))
+                        .AddTo(gameObject);
+
+                    break;
+                default:
+                    break;
+            }
+
+            yield return null;
+        }
     }
 
     /// <summary>
@@ -318,6 +382,13 @@ namespace Area.View
         /// <param name="observer">バインド</param>
         /// <returns>コルーチン</returns>
         public IEnumerator PlayRenderEnable(EnumUnitID[] enumUnitIDs, System.IObserver<bool> observer);
+        /// <summary>
+        /// 対象ユニットへエフェクト演出
+        /// </summary>
+        /// <param name="enumUnitID">ユニットID</param>
+        /// <param name="observer">バインド</param>
+        /// <returns>コルーチン</returns>
+        public IEnumerator PlayRepairEffect(EnumRobotPanel enumRobotPanel, System.IObserver<bool> observer);
     }
 }
 
