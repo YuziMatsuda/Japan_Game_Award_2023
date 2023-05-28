@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using Area.Common;
 
 namespace Area.View 
 {
@@ -35,7 +36,7 @@ namespace Area.View
         public void SetPositionAndEulerAngle()
         {
             Transform myTransform = this.transform;
-            myTransform.position = robotUnitImageConfig.Pos;
+            (myTransform as RectTransform).anchoredPosition = robotUnitImageConfig.Pos;
             myTransform.eulerAngles = robotUnitImageConfig.Rotate;
         }
 
@@ -57,7 +58,7 @@ namespace Area.View
         public IEnumerator PlayAnimationMove(System.IObserver<bool> observer)
         {
             Transform myTransform = this.transform;
-            myTransform.DOMove(robotUnitImageConfig.Pos, robotUnitImageConfig.Durations[0])
+            (myTransform as RectTransform).DOAnchorPos(robotUnitImageConfig.Pos, robotUnitImageConfig.Durations[0])
                 .SetUpdate(true)
                 .OnComplete(() => observer.OnNext(true));
             myTransform.eulerAngles = robotUnitImageConfig.Rotate;
@@ -87,11 +88,22 @@ namespace Area.View
         {
             transform.eulerAngles = robotUnitImageConfig.Rotate;
             Sequence sequence = DOTween.Sequence()
-                .Append(transform.DOMove(robotUnitImageConfig.Pos, robotUnitImageConfig.Durations[0]))
+                .Append((transform as RectTransform).DOAnchorPos(robotUnitImageConfig.Pos, robotUnitImageConfig.Durations[0]))
                 .Append(image.DOColor(errorColor, robotUnitImageConfig.Durations[1])
                     .From(image.color = enabledColor)
                     .SetLoops(7, LoopType.Yoyo))
                 .SetUpdate(true)
+                .OnComplete(() => observer.OnNext(true));
+
+            yield return null;
+        }
+
+        public IEnumerator PlayRepairEffect(System.IObserver<bool> observer)
+        {
+            if (!AreaGameManager.Instance.ParticleSystemsOwner.PlayParticleSystems(GetInstanceID(), EnumParticleSystemsIndex.ParticlesOfLightGatherAround, transform.position))
+                Debug.LogError("指定されたパーティクルシステムを再生する呼び出しの失敗");
+            var t = AreaGameManager.Instance.ParticleSystemsOwner.GetParticleSystemsTransform(GetInstanceID(), EnumParticleSystemsIndex.ParticlesOfLightGatherAround);
+            DOVirtual.DelayedCall(RobotUnitImageConfig.Durations[0], () => t.gameObject.SetActive(false))
                 .OnComplete(() => observer.OnNext(true));
 
             yield return null;
@@ -145,5 +157,11 @@ namespace Area.View
         /// <param name="observer">バインド</param>
         /// <returns>コルーチン</returns>
         public IEnumerator PlayAnimationMoveAndErrorSignal(System.IObserver<bool> observer);
+        /// <summary>
+        /// 対象ユニットへエフェクト演出
+        /// </summary>
+        /// <param name="observer">バインド</param>
+        /// <returns>コルーチン</returns>
+        public IEnumerator PlayRepairEffect(System.IObserver<bool> observer);
     }
 }

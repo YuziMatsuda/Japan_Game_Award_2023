@@ -123,6 +123,16 @@ namespace Title.Template
         }
 
         /// <summary>
+        /// ステージクリア条件をオブジェクトへ一時セット
+        /// </summary>
+        /// <param name="datas">二次元配列の文字列データ</param>
+        /// <returns>格納オブジェクト配列</returns>
+        public Dictionary<EnumMainSceneStagesModulesState, string>[] GetMainSceneStagesModulesState(List<string[]> datas)
+        {
+            return new TitleResourcesAccessory().GetMainSceneStagesModulesState(datas);
+        }
+
+        /// <summary>
         /// システム設定キャッシュをCSVデータへ保存
         /// </summary>
         /// <param name="resourcesLoadName">リソースCSVファイル名</param>
@@ -197,6 +207,17 @@ namespace Title.Template
         public bool SaveDatasCSVOfMissionHistory(string resourcesLoadName, Dictionary<EnumMissionHistory, string>[] configMaps)
         {
             return new TitleResourcesAccessory().SaveDatasCSVOfMissionHistory(resourcesLoadName, configMaps);
+        }
+
+        /// <summary>
+        /// ステージクリア条件をCSVデータへ保存
+        /// </summary>
+        /// <param name="resourcesLoadName">リソースCSVファイル名</param>
+        /// <param name="configMaps">格納オブジェクト配列</param>
+        /// <returns>成功／失敗</returns>
+        public bool SaveDatasCSVOfMainSceneStagesModulesState(string resourcesLoadName, Dictionary<EnumMainSceneStagesModulesState, string>[] configMaps)
+        {
+            return new TitleResourcesAccessory().SaveDatasCSVOfMainSceneStagesModulesState(resourcesLoadName, configMaps);
         }
     }
 }

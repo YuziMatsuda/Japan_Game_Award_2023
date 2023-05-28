@@ -37,6 +37,8 @@ namespace Area.Model
         /// ミッションIDに紐づくシナリオブロック名称を管理
         /// </summary>
         [SerializeField] private BlockNamesFromMissionID[] blockNamesFromMissionIDs;
+        /// <summary>アニメーション終了時間</summary>
+        [SerializeField] private float[] durations;
 
         /// <summary>
         /// シナリオ読み込まれた
@@ -54,8 +56,7 @@ namespace Area.Model
         /// </summary>
         public void OnSendSignalAndBodyTurnsOn()
         {
-            // T.B.D ステータスを管理
-            //_readedScenarioNo.Value = ?;
+            _readedScenarioNo.Value = 2;
         }
 
         /// <summary>
@@ -63,8 +64,7 @@ namespace Area.Model
         /// </summary>
         public void OnRecollectionEnds()
         {
-            // T.B.D ステータスを管理
-            //_readedScenarioNo.Value = ?;
+            _readedScenarioNo.Value = 3;
         }
 
         /// <summary>
@@ -72,35 +72,33 @@ namespace Area.Model
         /// </summary>
         public void OnSendSignalAndRightArmAndLeftArmTurnsOn()
         {
-            // T.B.D ステータスを管理
-            //_readedScenarioNo.Value = ?;
+            _readedScenarioNo.Value = 4;
         }
 
-        /// <summary>
-        /// （画面が揺れる ロボ、びっくり）
-        /// </summary>
-        public void OnScreenShakesLoboIsStartled()
-        {
-            // T.B.D ステータスを管理
-            //_readedScenarioNo.Value = ?;
-        }
+        ///// <summary>
+        ///// （画面が揺れる ロボ、びっくり）
+        ///// </summary>
+        //public void OnScreenShakesLoboIsStartled()
+        //{
+        //    // T.B.D ステータスを管理
+        //    //_readedScenarioNo.Value = ?;
+        //}
 
-        /// <summary>
-        /// （画面が揺れて土砂やゴミが投入される ロボ、再度びっくり）
-        /// </summary>
-        public void OnScreenShakesLoboIsStartledAgain()
-        {
-            // T.B.D ステータスを管理
-            //_readedScenarioNo.Value = ?;
-        }
+        ///// <summary>
+        ///// （画面が揺れて土砂やゴミが投入される ロボ、再度びっくり）
+        ///// </summary>
+        //public void OnScreenShakesLoboIsStartledAgain()
+        //{
+        //    // T.B.D ステータスを管理
+        //    //_readedScenarioNo.Value = ?;
+        //}
 
         /// <summary>
         /// （画面転換 一枚絵 夜、湖の畔の工事現場が燃えている 鳴り響くサイレンと爆発音）
         /// </summary>
         public void OnScreenShiftSinglePictureAtNightConstructionSiteByTheLakeIsOnFireSirensBlaringAndExplosions()
         {
-            // T.B.D ステータスを管理
-            //_readedScenarioNo.Value = ?;
+            _readedScenarioNo.Value = 5;
         }
 
         /// <summary>
@@ -108,8 +106,7 @@ namespace Area.Model
         /// </summary>
         public void OnScreenChangeFadeOut_PitchBlack_SoundOfBubbles()
         {
-            // T.B.D ステータスを管理
-            //_readedScenarioNo.Value = ?;
+            _readedScenarioNo.Value = 6;
         }
 
         /// <summary>
@@ -117,8 +114,7 @@ namespace Area.Model
         /// </summary>
         public void OnScreenChangeSinglePictureLivingRoomOfAHouseSomewhere()
         {
-            // T.B.D ステータスを管理
-            //_readedScenarioNo.Value = ?;
+            _readedScenarioNo.Value = 7;
         }
 
         /// <summary>
@@ -126,44 +122,55 @@ namespace Area.Model
         /// </summary>
         public void OnTitleBlastsOutEnding()
         {
-            // T.B.D ステータスを管理
-            //_readedScenarioNo.Value = ?;
+            _readedScenarioNo.Value = 8;
         }
 
         public void OnOtherAdditions_1()
         {
-            // T.B.D ステータスを管理
-            //_readedScenarioNo.Value = ?;
+            _readedScenarioNo.Value = 9;
         }
 
         public void OnOtherAdditions_2()
         {
-            // T.B.D ステータスを管理
-            //_readedScenarioNo.Value = ?;
+            _readedScenarioNo.Value = 10;
         }
 
         public void OnOtherAdditions_3()
         {
-            // T.B.D ステータスを管理
-            //_readedScenarioNo.Value = ?;
+            _readedScenarioNo.Value = 11;
         }
 
         public void OnOtherAdditions_4()
         {
-            // T.B.D ステータスを管理
-            //_readedScenarioNo.Value = ?;
+            _readedScenarioNo.Value = 12;
         }
 
         public void OnOtherAdditions_5()
         {
-            // T.B.D ステータスを管理
-            //_readedScenarioNo.Value = ?;
+            _readedScenarioNo.Value = 13;
         }
 
         public void OnOtherAdditions_6()
         {
-            // T.B.D ステータスを管理
-            //_readedScenarioNo.Value = ?;
+            _readedScenarioNo.Value = 14;
+        }
+
+        /// <summary>
+        /// ここから５－３回想
+        /// </summary>
+        public void OnOtherAdditions_7()
+        {
+            _readedScenarioNo.Value = 15;
+        }
+
+        public void OnOtherAdditions_8()
+        {
+            _readedScenarioNo.Value = 16;
+        }
+
+        public void OnOtherAdditions_9()
+        {
+            _readedScenarioNo.Value = 17;
         }
 
         public string GetBlockName()
@@ -200,6 +207,12 @@ namespace Area.Model
                 .Distinct()
                 .ToArray()[0] : "";
         }
+
+        public IEnumerator WaitForSeconds(System.IObserver<bool> observer)
+        {
+            yield return new WaitForSeconds(durations[0]);
+            observer.OnNext(true);
+        }
     }
 
     /// <summary>
@@ -216,5 +229,11 @@ namespace Area.Model
         /// <param name="enumMissionID">ミッションID</param>
         /// <returns>ブロック名</returns>
         public string GetBlockName();
+        /// <summary>
+        /// コルーチンを使用して待つ
+        /// </summary>
+        /// <param name="observer">バインド</param>
+        /// <returns>コルーチン</returns>
+        public IEnumerator WaitForSeconds(System.IObserver<bool> observer);
     }
 }

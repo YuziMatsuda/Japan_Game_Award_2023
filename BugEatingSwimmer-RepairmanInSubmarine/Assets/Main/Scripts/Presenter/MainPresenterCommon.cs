@@ -85,6 +85,9 @@ namespace Main.Common
                                 throw new System.Exception("信号発生アニメーション実行中フラグをセット呼び出しの失敗");
                             if (!item.GetComponent<PivotModel>().SetToListLength(-1))
                                 throw new System.Exception("POST先のノードコードリスト数をセット呼び出しの失敗");
+                            if (item.GetComponent<PivotConfig>().EmotionsCodeMode)
+                                if (!item.GetComponent<PivotModel>().SetIsPathEmotions(false))
+                                    Debug.LogError("感情コード通過状態をセット呼び出しの失敗");
                         }
                         if (item.GetComponent<GoalNodeView>() != null)
                         {

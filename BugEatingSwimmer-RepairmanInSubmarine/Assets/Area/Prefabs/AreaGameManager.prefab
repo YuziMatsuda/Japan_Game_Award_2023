@@ -48,36 +48,47 @@ MonoBehaviour:
   - enumMissionID: 0
     enumRobotPanel: 0
     enumUnitID: 1
+    enumRecollectionPicture: 0
   - enumMissionID: 1
     enumRobotPanel: 1
     enumUnitID: 2
+    enumRecollectionPicture: 0
   - enumMissionID: 2
     enumRobotPanel: 2
     enumUnitID: 2
+    enumRecollectionPicture: 0
   - enumMissionID: 3
     enumRobotPanel: 3
     enumUnitID: 3
+    enumRecollectionPicture: 0
   - enumMissionID: 3
     enumRobotPanel: 3
     enumUnitID: 4
+    enumRecollectionPicture: 0
   - enumMissionID: 4
     enumRobotPanel: 4
     enumUnitID: 4
+    enumRecollectionPicture: 3
   - enumMissionID: 5
     enumRobotPanel: 5
     enumUnitID: 4
+    enumRecollectionPicture: 5
   - enumMissionID: 6
     enumRobotPanel: 7
     enumUnitID: 5
+    enumRecollectionPicture: 0
   - enumMissionID: 7
     enumRobotPanel: 7
     enumUnitID: 5
+    enumRecollectionPicture: 0
   - enumMissionID: 8
     enumRobotPanel: 7
     enumUnitID: 5
+    enumRecollectionPicture: 0
   - enumMissionID: 9
     enumRobotPanel: 7
     enumUnitID: 5
+    enumRecollectionPicture: 0
 --- !u!1 &1514517309
 GameObject:
   m_ObjectHideFlags: 0
@@ -136,6 +147,60 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seastarLeader: {fileID: 1514517311}
+--- !u!1 &29343282743080770
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5040220139859807570}
+  - component: {fileID: 1389594515469560341}
+  m_Layer: 0
+  m_Name: ParticleSystemsOwner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5040220139859807570
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 29343282743080770}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4136715924692076505}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1389594515469560341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 29343282743080770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae6582b9eaf2bda4db5b6ca7f2d562b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particleSystems:
+  - {fileID: 1974009911470306521, guid: dfd990d6091f17f4795b9e3a1d4b106b, type: 3}
+  - {fileID: 1974009911470306521, guid: e9e48106277f70e4cb4de7db5195e909, type: 3}
+  - {fileID: 1111211621718819113, guid: 8162b5c3ba13eba43b8254dae0265225, type: 3}
+  - {fileID: 8950452120447351947, guid: 78ac88398ab5a5748aaf465884e74319, type: 3}
+  - {fileID: 7304668409718744597, guid: e340e32ec0f7f8b4ba98d4180e8e23f6, type: 3}
+  - {fileID: 4000010731693402, guid: 0d1adb20421ed664b800c8cf3d103e70, type: 3}
+  - {fileID: 7302807952142456331, guid: 7fd1b6197008b8946b30ccf1883ea2ab, type: 3}
+  - {fileID: 791045152456902165, guid: b32d6039b173b534fa9c162bcee30914, type: 3}
+  - {fileID: 1951808486142612581, guid: 91cdb19636e23164fac8cdf1d57bc85d, type: 3}
 --- !u!1 &4136715923190452500
 GameObject:
   m_ObjectHideFlags: 0
@@ -469,6 +534,7 @@ MonoBehaviour:
   clip:
   - {fileID: 8300000, guid: 2cb2225257e24b34c88b5ce552bb392b, type: 3}
   - {fileID: 8300000, guid: 79cecee949975af4683b5cd12746fcd6, type: 3}
+  - {fileID: 8300000, guid: 6dfd664c4a7038948acdf73683622deb, type: 3}
 --- !u!1 &4136715924645342590
 GameObject:
   m_ObjectHideFlags: 0
@@ -530,6 +596,8 @@ MonoBehaviour:
   - {fileID: 0}
   flowchartModel: {fileID: 0}
   templetePanelView: {fileID: 0}
+  cutSceneView: {fileID: 0}
+  endingView: {fileID: 0}
 --- !u!1 &4136715924690140342
 GameObject:
   m_ObjectHideFlags: 0
@@ -578,6 +646,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: fb560093de7210e4690f3278354d32a7, type: 3}
   - {fileID: 8300000, guid: b332d3bd0d2905b4e91d1880b8df1177, type: 3}
   - {fileID: 8300000, guid: d552ab9f021f04f4d903f163c6dc8cb9, type: 3}
+  - {fileID: 8300000, guid: ea1b526bd0a130f4c931db6cc30292f0, type: 3}
+  - {fileID: 8300000, guid: 2bddd93f3289ad54b9032bb2328d5b8f, type: 3}
   sFXChannelPrefab: {fileID: 1821450510366777210, guid: ad350c77ea76bb345a150fe23593a278, type: 3}
 --- !u!1 &4136715924692076506
 GameObject:
@@ -614,6 +684,7 @@ Transform:
   - {fileID: 4136715923499389907}
   - {fileID: 1514517312}
   - {fileID: 565269623}
+  - {fileID: 5040220139859807570}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -635,3 +706,4 @@ MonoBehaviour:
   cursorVisible: {fileID: 7065781527456137781}
   gimmickOwner: {fileID: 1514517310}
   missionOwner: {fileID: 565269622}
+  particleSystemsOwner: {fileID: 1389594515469560341}

@@ -31,11 +31,11 @@ namespace Area.View
         public IEnumerator PlayAnimationZoomInUnit(EnumUnitID enumUnitID, System.IObserver<bool> observer)
         {
             var rectTransform = transform as RectTransform;
-            var origin = rectTransform.position;
+            var origin = rectTransform.anchoredPosition;
             Sequence sequence = DOTween.Sequence()
-                .Append(rectTransform.DOAnchorPos(origin - robotUnitImageViews.Where(q => q.RobotUnitImageConfig.EnumUnitID.Equals(enumUnitID))
+                .Append(rectTransform.DOAnchorPos(origin - (robotUnitImageViews.Where(q => q.RobotUnitImageConfig.EnumUnitID.Equals(enumUnitID))
                     .Select(q => q)
-                    .ToArray()[0].transform.position, robotUnitImageConfig.Durations[0]))
+                    .ToArray()[0].transform as RectTransform).anchoredPosition, robotUnitImageConfig.Durations[0]))
                 .Join(rectTransform.DOScale(robotUnitImageConfig.ScaleZoom, robotUnitImageConfig.Durations[0]))
                 .SetUpdate(true)
                 .OnComplete(() => observer.OnNext(true));
