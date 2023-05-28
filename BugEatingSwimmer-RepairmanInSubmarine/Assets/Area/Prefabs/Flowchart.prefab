@@ -374,10 +374,6 @@ GameObject:
   - component: {fileID: 1741869111}
   - component: {fileID: 1741869112}
   - component: {fileID: 1741869113}
-  - component: {fileID: 1741869114}
-  - component: {fileID: 1741869115}
-  - component: {fileID: 1741869116}
-  - component: {fileID: 1741869117}
   - component: {fileID: 1741869118}
   - component: {fileID: 1741869119}
   - component: {fileID: 1741869120}
@@ -507,18 +503,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   version: 1
-  scrollPos: {x: 119.38273, y: -56.23281}
+  scrollPos: {x: 230.0014, y: 206.08928}
   variablesScrollPos: {x: 0, y: 0}
   variablesExpanded: 1
   blockViewHeight: 468
-  zoom: 0.85000014
+  zoom: 0.7600002
   scrollViewRect:
     serializedVersion: 2
     x: -343
     y: -340
     width: 1114
     height: 859
-  selectedBlocks: []
+  selectedBlocks:
+  - {fileID: 6292170819135683442}
   selectedCommands: []
   variables: []
   description: "\u4F1A\u8A71\u30C6\u30AD\u30B9\u30C8"
@@ -547,7 +544,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 45.93814
     y: 24.969076
-    width: 237.05879
+    width: 228.94731
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
@@ -1188,7 +1185,6 @@ MonoBehaviour:
     \u982D\u3068\u30DC\u30C7\u30A3\u63A5\u7D9A\u5B8C\u4E86"
   eventHandler: {fileID: 1741869174}
   commandList:
-  - {fileID: 1741869117}
   - {fileID: 6400638602360737568}
   - {fileID: 1741869060}
   - {fileID: 1853407218}
@@ -1290,7 +1286,6 @@ MonoBehaviour:
     \u30A8\u30EA\u30A2\uFF13\u30AF\u30EA\u30A2 \u2192 \u53F3\u8155\u3068\u30DC\u30C7\u30A3\u63A5\u7D9A\u5B8C\u4E86"
   eventHandler: {fileID: 6400638602360737575}
   commandList:
-  - {fileID: 1741869116}
   - {fileID: 6400638602360737572}
   - {fileID: 1741869055}
   - {fileID: 1853407366}
@@ -1394,7 +1389,6 @@ MonoBehaviour:
     \u30A8\u30EA\u30A2\uFF14\u30AF\u30EA\u30A2 \u2192 \u5DE6\u8155\u3068\u30DC\u30C7\u30A3\u63A5\u7D9A\u5B8C\u4E86"
   eventHandler: {fileID: 6400638602360737579}
   commandList:
-  - {fileID: 1741869115}
   - {fileID: 6400638602360737576}
   - {fileID: 1853407371}
   - {fileID: 1741869089}
@@ -1511,7 +1505,6 @@ MonoBehaviour:
     \uFF17 \u30A8\u30EA\u30A2\uFF15\uFF0D\uFF13\u307E\u3067\u30AF\u30EA\u30A2\uFF08\u6700\u7D42\u30B9\u30C6\u30FC\u30B8\u524D\uFF09"
   eventHandler: {fileID: 6400638602360737583}
   commandList:
-  - {fileID: 1741869114}
   - {fileID: 6400638602360737580}
   - {fileID: 1741869097}
   - {fileID: 1741869096}
@@ -3463,74 +3456,6 @@ MonoBehaviour:
   targetObject: {fileID: 6400638602360737550}
   methodName: OnRecollectionEnds
   delay: 0
---- !u!114 &1741869114
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6400638602360737550}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17a200dbd67304446a3019434503338a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 129
-  indentLevel: 0
-  targetObject: {fileID: 6400638602360737550}
-  methodName: OnScreenChangeFadeOut_PitchBlack_SoundOfBubbles
-  delay: 0
---- !u!114 &1741869115
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6400638602360737550}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17a200dbd67304446a3019434503338a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 128
-  indentLevel: 0
-  targetObject: {fileID: 6400638602360737550}
-  methodName: OnScreenChangeFadeOut_PitchBlack_SoundOfBubbles
-  delay: 0
---- !u!114 &1741869116
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6400638602360737550}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17a200dbd67304446a3019434503338a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 127
-  indentLevel: 0
-  targetObject: {fileID: 6400638602360737550}
-  methodName: OnScreenChangeFadeOut_PitchBlack_SoundOfBubbles
-  delay: 0
---- !u!114 &1741869117
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6400638602360737550}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17a200dbd67304446a3019434503338a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 126
-  indentLevel: 0
-  targetObject: {fileID: 6400638602360737550}
-  methodName: OnScreenChangeFadeOut_PitchBlack_SoundOfBubbles
-  delay: 0
 --- !u!114 &1741869118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4058,7 +3983,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 287.92496
     y: 561.3083
-    width: 147.64703
+    width: 140.78944
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
@@ -4439,7 +4364,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 287.92487
     y: 682.4847
-    width: 147.64703
+    width: 140.78944
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0

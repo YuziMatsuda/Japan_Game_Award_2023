@@ -426,15 +426,8 @@ namespace Area.Presenter
                                                                 Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Open))
                                                                     .Subscribe(_ =>
                                                                     {
-                                                                        // シナリオのレシーバーへ送信
-                                                                        foreach (var receiver in receivers)
-                                                                        {
-                                                                            var n = flowchartModel.GetBlockName();
-                                                                            if (!string.IsNullOrEmpty(n))
-                                                                                receiver.OnSendFungusMessage(n);
-                                                                            else
-                                                                                Debug.LogWarning("取得ブロック名無し");
-                                                                        }
+                                                                        if (!common.SendToScenarioReceiver(receivers, flowchartModel))
+                                                                            Debug.LogError("シナリオのレシーバーへ送信呼び出しの失敗");
                                                                     })
                                                                     .AddTo(gameObject);
                                                             })
@@ -446,29 +439,8 @@ namespace Area.Presenter
                                                         Observable.FromCoroutine<bool>(observer => robotPanelView.PlayRenderEnable(common.GetPlayRenderEnables()[0], observer))
                                                             .Subscribe(_ =>
                                                             {
-                                                                // シナリオのレシーバーへ送信
-                                                                foreach (var receiver in receivers)
-                                                                {
-                                                                    var n = flowchartModel.GetBlockName();
-                                                                    if (!string.IsNullOrEmpty(n))
-                                                                        receiver.OnSendFungusMessage(n);
-                                                                    else
-                                                                    {
-                                                                        Debug.LogWarning("取得ブロック名無し");
-                                                                        // 実績履歴を更新
-                                                                        if (common.AddMissionHistory() < 1)
-                                                                            Debug.LogError("実績履歴を更新呼び出しの失敗");
-                                                                        Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
-                                                                            .Subscribe(_ =>
-                                                                            {
-                                                                                // イベント完了後の処理
-                                                                                AreaGameManager.Instance.SceneOwner.ReLoadScene();
-                                                                            })
-                                                                            .AddTo(gameObject);
-                                                                        // ブロック名を取得できない場合はブレイクする
-                                                                        break;
-                                                                    }
-                                                                }
+                                                                if (!common.SendToScenarioReceiver(receivers, flowchartModel))
+                                                                    Debug.LogError("シナリオのレシーバーへ送信呼び出しの失敗");
                                                             })
                                                             .AddTo(gameObject);
                                                     }
@@ -478,15 +450,13 @@ namespace Area.Presenter
                                                         (!common.CheckUnlockMissionAndFindHistroy(EnumMissionID.MI0009) &&
                                                         common.CheckUnlockMissionAndUndefinedHistroy(EnumMissionID.MI0009))))
                                                     {
-                                                        // シナリオのレシーバーへ送信
-                                                        foreach (var receiver in receivers)
-                                                        {
-                                                            var n = flowchartModel.GetBlockName();
-                                                            if (!string.IsNullOrEmpty(n))
-                                                                receiver.OnSendFungusMessage(n);
-                                                            else
-                                                                Debug.LogWarning("取得ブロック名無し");
-                                                        }
+                                                        if (!common.SendToScenarioReceiver(receivers, flowchartModel))
+                                                            Debug.LogError("シナリオのレシーバーへ送信呼び出しの失敗");
+                                                    }
+                                                    else if (enumRobotpanel.Equals(EnumRobotPanel.FallingApart))
+                                                    {
+                                                        if (!common.SendToScenarioReceiver(receivers, flowchartModel))
+                                                            Debug.LogError("シナリオのレシーバーへ送信呼び出しの失敗");
                                                     }
                                                     else
                                                     {
@@ -541,29 +511,8 @@ namespace Area.Presenter
                                                                 Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Open))
                                                                     .Subscribe(_ =>
                                                                     {
-                                                                        // シナリオのレシーバーへ送信
-                                                                        foreach (var receiver in receivers)
-                                                                        {
-                                                                            var n = flowchartModel.GetBlockName();
-                                                                            if (!string.IsNullOrEmpty(n))
-                                                                                receiver.OnSendFungusMessage(n);
-                                                                            else
-                                                                            {
-                                                                                Debug.LogWarning("取得ブロック名無し");
-                                                                                // 実績履歴を更新
-                                                                                if (common.AddMissionHistory() < 1)
-                                                                                    Debug.LogError("実績履歴を更新呼び出しの失敗");
-                                                                                Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
-                                                                                    .Subscribe(_ =>
-                                                                                    {
-                                                                                        // イベント完了後の処理
-                                                                                        AreaGameManager.Instance.SceneOwner.ReLoadScene();
-                                                                                    })
-                                                                                    .AddTo(gameObject);
-                                                                                // ブロック名を取得できない場合はブレイクする
-                                                                                break;
-                                                                            }
-                                                                        }
+                                                                        if (!common.SendToScenarioReceiver(receivers, flowchartModel))
+                                                                            Debug.LogError("シナリオのレシーバーへ送信呼び出しの失敗");
                                                                     });
                                                             })
                                                             .AddTo(gameObject);
@@ -571,15 +520,8 @@ namespace Area.Presenter
                                                 }
                                                 else
                                                 {
-                                                    // シナリオのレシーバーへ送信
-                                                    foreach (var receiver in receivers)
-                                                    {
-                                                        var n = flowchartModel.GetBlockName();
-                                                        if (!string.IsNullOrEmpty(n))
-                                                            receiver.OnSendFungusMessage(n);
-                                                        else
-                                                            Debug.LogWarning("取得ブロック名無し");
-                                                    }
+                                                    if (!common.SendToScenarioReceiver(receivers, flowchartModel))
+                                                        Debug.LogError("シナリオのレシーバーへ送信呼び出しの失敗");
                                                 }
                                             })
                                             .AddTo(gameObject);

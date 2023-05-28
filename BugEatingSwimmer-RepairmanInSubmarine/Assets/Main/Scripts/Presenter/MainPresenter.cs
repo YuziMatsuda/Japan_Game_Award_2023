@@ -454,8 +454,16 @@ namespace Main.Presenter
                                 Debug.LogError("イベント有効／無効切り替え呼び出しの失敗");
                             // シーン読み込み時のアニメーション
                             Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
-                                .Subscribe(_ => MainGameManager.Instance.SceneOwner.LoadSelectScene())
+                                .Subscribe(_ =>
+                                {
+                                    // エリアシーン or セレクトシーン
+                                    if (!common.IsFinalLevelOrEndOfAreaAndNotReadedScenario())
+                                        MainGameManager.Instance.SceneOwner.LoadSelectScene();
+                                    else
+                                        MainGameManager.Instance.SceneOwner.LoadAreaScene();
+                                })
                                 .AddTo(gameObject);
+
                             break;
                         case EnumEventCommand.Canceled:
                             // 処理無し
@@ -547,7 +555,7 @@ namespace Main.Presenter
                                     if (playerModel != null)
                                         if (!playerModel.SetInputBan(true))
                                             Debug.LogError("操作禁止フラグ更新呼び出しの失敗");
-                                    // T.B.D プレイヤーの挙動によって発生するイベント無効　など
+                                    // プレイヤーの挙動によって発生するイベント無効　など
                                     if (!MainGameManager.Instance.InputSystemsOwner.Exit())
                                         Debug.LogError("InputSystem終了呼び出しの失敗");
                                     // シーン読み込み時のアニメーション
@@ -1254,6 +1262,7 @@ namespace Main.Presenter
                                                     foreach (var item in shrimpDanceModels)
                                                         if (!item.ResetIsAssigned())
                                                             Debug.LogError("アサイン情報をリセット呼び出しの失敗");
+                                                    isThisEmotionaBug_IsItASpecification.Value = false;
                                                 }
                                             });
                                     }
@@ -1394,7 +1403,6 @@ namespace Main.Presenter
                                 if (common.IsFinalLevel(areaUnits, currentStageDic) &&
                                     codeObjs[idx].GetComponent<PivotConfig>().EmotionsCodeMode)
                                     codeObjs[idx].GetComponent<PivotModel>().IsPathEmotions.ObserveEveryValueChanged(x => x.Value)
-                                        .Do(x => Debug.Log(x))
                                         .Subscribe(x =>
                                         {
                                             isThisEmotionaBug_IsItASpecification.Value = x;
@@ -1484,6 +1492,7 @@ namespace Main.Presenter
                                             foreach (var item in shrimpDanceModels)
                                                 if (!item.ResetIsAssigned())
                                                     Debug.LogError("アサイン情報をリセット呼び出しの失敗");
+                                            isThisEmotionaBug_IsItASpecification.Value = false;
                                         });
                                     //}
                                 }
@@ -1510,6 +1519,7 @@ namespace Main.Presenter
                                             foreach (var item in shrimpDanceModels)
                                                 if (!item.ResetIsAssigned())
                                                     Debug.LogError("アサイン情報をリセット呼び出しの失敗");
+                                            isThisEmotionaBug_IsItASpecification.Value = false;
                                         }
                                         else
                                         {

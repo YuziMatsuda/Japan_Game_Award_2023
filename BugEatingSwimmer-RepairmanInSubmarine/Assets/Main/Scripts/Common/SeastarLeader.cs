@@ -13,12 +13,16 @@ namespace Main.Common
     {
         /// <summary>準委任帳票</summary>
         private Dictionary<EnumQuasiAssignmentForm, string>[] _quasiAssignForm;
+        /// <summary>ステージIDキャッシュ</summary>
+        private int _stageID = -1;
 
         public bool SetAssignState(EnumSeastarID enumSeastarID, bool assignState)
         {
             try
             {
-                foreach (var item in _quasiAssignForm.Where(q => q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex].Equals($"{GetStageId()}") &&
+                if (_stageID < 0)
+                    _stageID = GetStageId();
+                foreach (var item in _quasiAssignForm.Where(q => q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex].Equals($"{_stageID}") &&
                     q[EnumQuasiAssignmentForm.SeastarID].Equals($"{enumSeastarID}") &&
                     q[EnumQuasiAssignmentForm.AssignedDefault].Equals(ConstGeneric.DIGITFORM_FALSE)))
                 {
@@ -37,7 +41,9 @@ namespace Main.Common
 
         public bool IsAssigned(EnumSeastarID enumSeastarID)
         {
-            if (0 < _quasiAssignForm.Where(q => q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex].Equals($"{GetStageId()}") &&
+            if (_stageID < 0)
+                _stageID = GetStageId();
+            if (0 < _quasiAssignForm.Where(q => q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex].Equals($"{_stageID}") &&
                 q[EnumQuasiAssignmentForm.SeastarID].Equals($"{enumSeastarID}") &&
                 q[EnumQuasiAssignmentForm.AssignedDefault].Equals(ConstGeneric.DIGITFORM_TRUE))
                 .ToArray()

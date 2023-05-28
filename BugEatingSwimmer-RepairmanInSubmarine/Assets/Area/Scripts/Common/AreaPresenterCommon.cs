@@ -5,6 +5,8 @@ using UnityEngine;
 using Select.Model;
 using System.Linq;
 using Area.View;
+using Fungus;
+using Area.Model;
 
 namespace Area.Common
 {
@@ -678,6 +680,29 @@ namespace Area.Common
                 .ToArray()
                 .Length;
         }
+
+        public bool SendToScenarioReceiver(MessageReceived[] receivers, Area.Model.FlowchartModel flowchartModel)
+        {
+            try
+            {
+                // シナリオのレシーバーへ送信
+                foreach (var receiver in receivers)
+                {
+                    var n = flowchartModel.GetBlockName();
+                    if (!string.IsNullOrEmpty(n))
+                        receiver.OnSendFungusMessage(n);
+                    else
+                        Debug.LogWarning("取得ブロック名無し");
+                }
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
     }
 
     /// <summary>
@@ -784,5 +809,12 @@ namespace Area.Common
         /// <param name="enumMissionID">ミッションID</param>
         /// <returns>成功／失敗</returns>
         public bool CheckUnlockMissionAndUndefinedHistroy(EnumMissionID enumMissionID);
+        /// <summary>
+        /// シナリオのレシーバーへ送信
+        /// </summary>
+        /// <param name="receivers">Fungusのレシーバー</param>
+        /// <param name="flowchartModel">Fungusのフローチャートモデル</param>
+        /// <returns></returns>
+        public bool SendToScenarioReceiver(MessageReceived[] receivers, Area.Model.FlowchartModel flowchartModel);
     }
 }

@@ -15,6 +15,8 @@ namespace Main.Common
         [SerializeField] private string nextSceneName = "MainScene";
         /// <summary>前のシーン名</summary>
         [SerializeField] private string backSceneName = "SelectScene";
+        /// <summary>前のシーン名（ラストのみ）</summary>
+        [SerializeField] private string backSceneNameIsFinal = "AreaScene";
 
         public void OnStart()
         {
@@ -146,6 +148,14 @@ namespace Main.Common
         public void LoadSelectScene()
         {
             SceneManager.LoadScene(backSceneName);
+        }
+
+        /// <summary>
+        /// エリアシーンをロード
+        /// </summary>
+        public void LoadAreaScene()
+        {
+            SceneManager.LoadScene(backSceneNameIsFinal);
         }
 
         public Dictionary<EnumMainSceneStagesModulesState, string>[] GetMainSceneStagesModulesState()
