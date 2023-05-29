@@ -5344,7 +5344,7 @@ MonoBehaviour:
   indentLevel: 0
   _duration:
     floatRef: {fileID: 0}
-    floatVal: 10
+    floatVal: 150
   durationOLD: 0
 --- !u!114 &6400638602551276889
 MonoBehaviour:
@@ -5415,7 +5415,7 @@ MonoBehaviour:
   indentLevel: 0
   _duration:
     floatRef: {fileID: 0}
-    floatVal: 10
+    floatVal: 150
   durationOLD: 0
 --- !u!1 &6400638603242431294
 GameObject:

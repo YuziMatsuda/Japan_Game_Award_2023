@@ -47,6 +47,11 @@ namespace Main.View
             throw new NotImplementedException();
         }
 
+        public bool SetDefaultDirection()
+        {
+            throw new NotImplementedException();
+        }
+
         public bool SetSpinDirection(Vector3 vectorDirectionMode)
         {
             throw new NotImplementedException();

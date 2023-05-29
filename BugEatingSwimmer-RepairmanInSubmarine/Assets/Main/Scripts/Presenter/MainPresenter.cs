@@ -408,7 +408,7 @@ namespace Main.Presenter
                                 Debug.LogError("デフォルトサイズへ変更呼び出しの失敗");
                             break;
                         case EnumEventCommand.Submited:
-                            MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_retry);
+                            MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_decided);
                             if (!gameRetryButtonModel.SetButtonEnabled(false))
                                 Debug.LogError("ボタン有効／無効切り替え呼び出しの失敗");
                             if (!gameRetryButtonModel.SetEventTriggerEnabled(false))
@@ -516,7 +516,7 @@ namespace Main.Presenter
                             switch (inProcess)
                             {
                                 case EnumShortcuActionMode.UndoAction:
-                                    MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_retry);
+                                    MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_decided);
                                     // チュートリアルUIを開いていたら閉じる
                                     if (moveGuideView.isActiveAndEnabled)
                                         // 移動操作クローズのアニメーション
@@ -565,7 +565,7 @@ namespace Main.Presenter
                                     break;
                                 case EnumShortcuActionMode.CheckAction:
                                     // 遊び方の確認を開く
-                                    MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_play_open);
+                                    MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_decided);
                                     gameManualScrollView.gameObject.SetActive(true);
                                     if (!gameManualScrollView.SetPage(EnumGameManualPagesIndex.Page_1))
                                         Debug.LogError("ページ変更呼び出しの失敗");
@@ -1237,6 +1237,10 @@ namespace Main.Presenter
                                                                     Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
                                                                 if (!playerModel.SetIsBanMoveVelocity(true))
                                                                     Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
+                                                                foreach (var item in jawsHis.Where(q => q != null)
+                                                                    .Select(q => q))
+                                                                    if (!item.GetComponent<JawsHiModel>().SetIsCollisionBan(true))
+                                                                        Debug.LogError("コライダー禁止中フラグをセット呼び出しの失敗");
                                                                 if (!bug.GetComponent<BugView>().PlayCorrectOrWrong())
                                                                     Debug.LogError("バグ消失パーティクルを再生呼び出しの失敗");
                                                                 if (!bug.GetComponent<BugView>().StopBugAura())
@@ -1603,6 +1607,10 @@ namespace Main.Presenter
                                                 Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
                                             if (!playerModel.SetIsBanMoveVelocity(true))
                                                 Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
+                                            foreach (var item in jawsHis.Where(q => q != null)
+                                                .Select(q => q))
+                                                if (!item.GetComponent<JawsHiModel>().SetIsCollisionBan(true))
+                                                    Debug.LogError("コライダー禁止中フラグをセット呼び出しの失敗");
                                             Observable.FromCoroutine<bool>(observer => ruleShellfish.GetComponent<RuleShellfishView>().PlayChangeSpriteCloseBetweenOpen(observer))
                                                 .Subscribe(_ =>
                                                 {
@@ -1683,6 +1691,12 @@ namespace Main.Presenter
                                     Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
                                 if (!playerModel.SetIsBanMoveVelocity(false))
                                     Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
+                                // ジョーシー
+                                var jawsHis = GameObject.FindGameObjectsWithTag(ConstTagNames.TAG_NAME_JAWSHI);
+                                foreach (var item in jawsHis.Where(q => q != null)
+                                    .Select(q => q))
+                                    if (!item.GetComponent<JawsHiModel>().SetIsCollisionBan(false))
+                                        Debug.LogError("コライダー禁止中フラグをセット呼び出しの失敗");
                                 if (common.IsOpeningTutorialMode())
                                 {
                                     var ruleShellfish = GameObject.Find(ConstTagNames.RULESHELLFISH);
