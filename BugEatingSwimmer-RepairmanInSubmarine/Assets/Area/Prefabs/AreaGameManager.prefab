@@ -598,6 +598,7 @@ MonoBehaviour:
   templetePanelView: {fileID: 0}
   cutSceneView: {fileID: 0}
   endingView: {fileID: 0}
+  cutSceneTimelineView: {fileID: 0}
 --- !u!1 &4136715924690140342
 GameObject:
   m_ObjectHideFlags: 0

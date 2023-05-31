@@ -79,6 +79,8 @@ namespace Main.Model
             // サン（ゴ）ショウコードであるかの状態をセット
             // ピボット側では動的な値として扱う
             _readonlyCodeMode = GetComponent<PivotConfig>().ReadonlyCodeMode;
+            if (_readonlyCodeMode)
+                shadowCodeCell.SetDefaultDirection();
         }
 
         protected override void OnTriggerEnter2D(Collider2D collision)

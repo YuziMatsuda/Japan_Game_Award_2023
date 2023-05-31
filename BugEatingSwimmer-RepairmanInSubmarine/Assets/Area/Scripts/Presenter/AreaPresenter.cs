@@ -62,6 +62,8 @@ namespace Area.Presenter
         [SerializeField] private CutSceneView cutSceneView;
         /// <summary>エンディングのビュー</summary>
         [SerializeField] private EndingView endingView;
+        /// <summary>タイムラインのビュー</summary>
+        [SerializeField] private CutSceneTimelineView cutSceneTimelineView;
 
         private void Reset()
         {
@@ -138,6 +140,7 @@ namespace Area.Presenter
             templetePanelView = GameObject.Find("TempletePanel").GetComponent<TempletePanelView>();
             cutSceneView = GameObject.Find("CutScene").GetComponent<CutSceneView>();
             endingView = GameObject.Find("Ending").GetComponent<EndingView>();
+            cutSceneTimelineView = GameObject.Find("CutSceneTimeline").GetComponent<CutSceneTimelineView>();
         }
 
         public void OnStart()
@@ -187,6 +190,13 @@ namespace Area.Presenter
                         .Distinct())
                         if (!robotPanelView.RendererEnableMode(unitID))
                             Debug.LogError("対象ユニットを非選択状態にする呼び出しの失敗");
+                    // MI0001アンロック後のイベント中プレイヤー位置は変更する
+                    if (0 < missions.Where(q => q.enumMissionID.Equals(EnumMissionID.MI0001))
+                        .Select(q => q)
+                        .ToArray()
+                        .Length)
+                        if (!playerView.SetAnchorPosition(0))
+                            Debug.LogError("アンカー位置をセット呼び出しの失敗");
                 }
             }
             else
@@ -299,22 +309,10 @@ namespace Area.Presenter
                             break;
                         case 8:
                             // タイトルがバーンと出てエンディング
-                            AreaGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_ending);
+                            AreaGameManager.Instance.AudioOwner.StopBGM();
                             endingView.gameObject.SetActive(true);
-                            Observable.FromCoroutine<int>(observer => endingView.PlayEndingCut(observer))
-                                .Subscribe(x =>
-                                {
-                                    if (0 < x)
-                                    {
-                                        Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
-                                            .Subscribe(_ =>
-                                            {
-                                                endingView.gameObject.SetActive(false);
-                                            })
-                                            .AddTo(gameObject);
-                                    }
-                                })
-                                .AddTo(gameObject);
+                            if (!cutSceneTimelineView.SetPlayableDirectorEnabled(true))
+                                Debug.LogError("プレイエイブルを有効／無効にする呼び出しの失敗");
 
                             break;
                         case 9:

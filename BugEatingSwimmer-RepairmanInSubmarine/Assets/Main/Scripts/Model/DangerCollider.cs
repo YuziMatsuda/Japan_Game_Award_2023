@@ -17,6 +17,8 @@ namespace Main.Model
         public IReactiveProperty<bool> IsHit => _isHit;
         /// <summary>コライダー</summary>
         [SerializeField] private CapsuleCollider2D capsuleCollider2d;
+        /// <summary>コライダー禁止中（バグ or ルール貝）</summary>
+        private bool _isCollisionBan;
 
         private void Reset()
         {
@@ -26,7 +28,8 @@ namespace Main.Model
 
         protected override void OnTriggerEnter2D(Collider2D collision)
         {
-            if (!_isHit.Value &&
+            if (!_isCollisionBan &&
+                !_isHit.Value &&
                 IsCollisionToTags(collision, tags))
             {
                 _isHit.Value = true;
@@ -38,6 +41,21 @@ namespace Main.Model
             try
             {
                 capsuleCollider2d.enabled = isEnabled;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool SetIsCollisionBan(bool isEnabled)
+        {
+            try
+            {
+                _isCollisionBan = isEnabled;
 
                 return true;
             }
@@ -61,5 +79,11 @@ namespace Main.Model
         /// <param name="isEnabled">有効／無効</param>
         /// <returns>成功／失敗</returns>
         public bool SetCollider2DEnabled(bool isEnabled);
+        /// <summary>
+        /// コライダー禁止中フラグをセット
+        /// </summary>
+        /// <param name="isEnabled">有効／無効</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetIsCollisionBan(bool isEnabled);
     }
 }
