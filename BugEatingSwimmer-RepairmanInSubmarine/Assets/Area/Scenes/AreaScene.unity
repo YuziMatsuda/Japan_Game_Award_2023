@@ -1654,6 +1654,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: AreaCanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 4638130481859981950, guid: 6500b7f113d2fe14fb1b2c853cdbf44c, type: 3}
+      propertyPath: duration
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6500b7f113d2fe14fb1b2c853cdbf44c, type: 3}
 --- !u!114 &4431877572368449464 stripped
@@ -1722,6 +1726,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1853407373, guid: e45d6d8dfe00f914682e5ed4198180c4, type: 3}
+      propertyPath: _duration.floatVal
+      value: 23
+      objectReference: {fileID: 0}
     - target: {fileID: 6400638602360737541, guid: e45d6d8dfe00f914682e5ed4198180c4, type: 3}
       propertyPath: m_RootOrder
       value: 4

@@ -166,7 +166,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 23534
+  controlID: 13755
 --- !u!114 &5
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -473,9 +473,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: -0.17618936, y: -1.1153538, z: 66.39292}
+    m_Target: {x: -0.927112, y: -1.1193482, z: 73.57645}
     speed: 2
-    m_Value: {x: -0.17618936, y: -1.1153538, z: 66.39292}
+    m_Value: {x: -0.927112, y: -1.1193482, z: 73.57645}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -526,9 +526,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 6.844859
+    m_Target: 7.779518
     speed: 2
-    m_Value: 6.844859
+    m_Value: 7.779518
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -610,9 +610,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 20a8ffff
-      m_LastClickedID: -22496
-      m_ExpandedIDs: caeafffffaf8ffff00f9ffff06f9ffff1ef9ffffc2faffff08fbffff0afbffff
+      m_SelectedIDs: 90f3fcff
+      m_LastClickedID: 0
+      m_ExpandedIDs: a2f1ffffd4f1ffffeaf1ffff78f3ffffbcf3ffffbef3ffff0afbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -724,7 +724,7 @@ MonoBehaviour:
     m_IsLocked: 0
   m_SequenceHierarchy: {fileID: 0}
   m_SequencePath:
-    m_SelectionRoot: -22496
+    m_SelectionRoot: 0
     m_SubElements: []
 --- !u!114 &12
 MonoBehaviour:
@@ -837,8 +837,7 @@ MonoBehaviour:
   m_SearchFilter:
     m_NameFilter: 
     m_ClassNames: []
-    m_AssetLabels:
-    - SaveData
+    m_AssetLabels: []
     m_AssetBundleNames: []
     m_VersionControlStates: []
     m_SoftLockControlStates: []
@@ -848,22 +847,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Area/Textures/SceneCutEnding
+    - Assets/SaveDatas
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Area/Textures/SceneCutEnding
+  - Assets/SaveDatas
   m_LastFoldersGridSize: 16
   m_LastProjectPath: C:\Users\kzpaqu\Documents\Japan_Game_Award_2023\BugEatingSwimmer-RepairmanInSubmarine
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 121}
-    m_SelectedIDs: 2e8b0000
-    m_LastClickedID: 35630
-    m_ExpandedIDs: 000000006a7b00006c7b00006e7b0000707b0000727b0000747b0000767b0000787b00007a7b00007c7b00007e7b0000807b0000827b0000847b0000867b0000887b00008a7b00008c7b00008e7b0000907b0000927b0000947b0000967b0000987b0000b67b000000ca9a3b
+    scrollPos: {x: 0, y: 0}
+    m_SelectedIDs: 80590100
+    m_LastClickedID: 88448
+    m_ExpandedIDs: 000000001e59010020590100225901002459010026590100285901002a5901002c5901002e59010030590100325901003459010036590100385901003a5901003c5901003e59010040590100425901004459010046590100485901004a5901004c59010000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -891,7 +890,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000006a7b00006c7b00006e7b0000707b0000727b0000747b0000767b0000787b00007a7b00007c7b00007e7b0000807b0000827b0000847b0000867b0000887b00008a7b00008c7b00008e7b0000907b0000927b0000947b0000967b0000987b000000ca9a3b
+    m_ExpandedIDs: 000000001e59010020590100225901002459010026590100285901002a5901002c5901002e59010030590100325901003459010036590100385901003a5901003c5901003e59010040590100425901004459010046590100485901004a5901004c59010000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -916,24 +915,24 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 20a8ffff
-    m_LastClickedInstanceID: -22496
-    m_HadKeyboardFocusLastEvent: 1
-    m_ExpandedInstanceIDs: c6230000d41f010064a30000ce7600001a550100b84e0100e250010088500100905001008c5001008e500100fa500100e0500100c65a0100e650010020560100e4500100f850010022e70100185101002a540100985401009c5401009e51010012c3000014c3000020c3000052f000004af000008cd3000082d300008ad3000088d3000006d30000b6c70000305a010048e801004ce8010050e801006c7800006a780000747800005c78000062780000203301006af30100727a00003a780000a4ac0000a2910000d8880000247d000030c5010000000000785f0100e6780000988b0000a08b0000
+    m_SelectedInstanceIDs: 90f3fcff
+    m_LastClickedInstanceID: -199792
+    m_HadKeyboardFocusLastEvent: 0
+    m_ExpandedInstanceIDs: c6230000d41f010064a30000ce7600001a550100b84e0100e250010088500100905001008c5001008e500100fa500100e0500100c65a0100e650010020560100e4500100f850010022e70100185101002a540100985401009c5401009e51010012c3000014c3000020c3000052f000004af000008cd3000082d300008ad3000088d3000006d30000b6c70000305a010048e801004ce8010050e801006c7800006a780000747800005c78000062780000203301006af30100727a00003a780000a4ac0000a2910000d8880000247d000030c5010000000000785f0100e6780000988b0000a08b00007c5e0100
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: Ending_1_2
-      m_OriginalName: Ending_1_2
+      m_Name: 
+      m_OriginalName: 
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 35752
+      m_UserData: 0
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 0
+      m_OriginalEventType: 11
       m_IsRenamingFilename: 1
       m_ClientGUIView: {fileID: 14}
     m_CreateAssetUtility:
@@ -966,8 +965,8 @@ MonoBehaviour:
     y: 0
     width: 450
     height: 947
-  m_MinSize: {x: 276, y: 71}
-  m_MaxSize: {x: 4001, y: 4021}
+  m_MinSize: {x: 275, y: 50}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 17}
   m_Panes:
   - {fileID: 17}
