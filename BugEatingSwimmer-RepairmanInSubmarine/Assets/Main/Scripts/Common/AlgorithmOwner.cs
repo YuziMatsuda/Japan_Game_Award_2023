@@ -412,16 +412,24 @@ namespace Main.Common
                 MainGameManager.Instance.AudioOwner.PlaySFX(Audio.ClipToPlay.se_signal);
                 var signal = MainGameManager.Instance.ParticleSystemsOwner.GetParticleSystemsTransform(GetInstanceID(), EnumParticleSystemsIndex.DustConnectSignal);
                 var doPathRoot = root.Select((p, i) => new { Content = p, Index = i })
-                    .Where(q => 0 < q.Index)
-                    .Select(q => q.Content).ToArray();
-                signal.DOPath(doPathRoot, pathDuration * doPathRoot.Length)
-                    .OnComplete(() =>
-                    {
-                        if (!MainGameManager.Instance.ParticleSystemsOwner.StopParticleSystems(GetInstanceID(), EnumParticleSystemsIndex.DustConnectSignal))
-                            Debug.LogError("指定されたパーティクルシステムを停止する呼び出しの失敗");
-                        _isPlaingRunLightningSignal = false;
-                        observer.OnNext(true);
-                    });
+                    .Where(q => -1 < q.Index)
+                    .Select(q => new Vector2(q.Content.x, q.Content.y)).ToArray();
+                if (signal.GetComponent<Rigidbody2D>() != null)
+                {
+                    var rigidbody2d = signal.GetComponent<Rigidbody2D>();
+                    DOTween.Sequence()
+                        .Append(rigidbody2d.DOMove(doPathRoot[0], 0f))
+                        .Append(rigidbody2d.DOPath(doPathRoot, pathDuration * doPathRoot.Length))
+                        .OnComplete(() =>
+                        {
+                            if (!MainGameManager.Instance.ParticleSystemsOwner.StopParticleSystems(GetInstanceID(), EnumParticleSystemsIndex.DustConnectSignal, true))
+                                Debug.LogError("指定されたパーティクルシステムを停止する呼び出しの失敗");
+                            // 最初の位置に戻る
+                            signal.position = doPathRoot[0];
+                            _isPlaingRunLightningSignal = false;
+                            observer.OnNext(true);
+                        });
+                }
             }
             else
             {
