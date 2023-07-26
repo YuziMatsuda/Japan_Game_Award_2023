@@ -299,11 +299,16 @@ namespace Title.Presenter
                                 .Subscribe(_ =>
                                 {
                                     var mission = common.LoadSaveDatasCSVAndGetMission();
+                                    var missionHistories = common.GetMissionHistories();
                                     if (0 < mission.Where(q => q[EnumMission.MissionID].Equals($"{EnumMissionID.MI0000}") &&
-                                        q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_FALSE))
-                                        .Select(q => q)
-                                        .ToArray()
-                                        .Length)
+                                            q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_FALSE))
+                                            .Select(q => q)
+                                            .ToArray()
+                                            .Length ||
+                                        missionHistories.Where(q => q.Equals($"{EnumMissionID.MI0000}"))
+                                            .Select(q => q)
+                                            .ToArray()
+                                            .Length < 1)
                                         TitleGameManager.Instance.SceneOwner.LoadNextTutorialScene();
                                     else
                                         TitleGameManager.Instance.SceneOwner.LoadNextScene();

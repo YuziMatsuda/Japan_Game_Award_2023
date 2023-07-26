@@ -48,6 +48,7 @@ MonoBehaviour:
   maxcnt: 0
   speed: 500
   teban: {fileID: 4183352894675677552}
+  parentParticle: {fileID: 1974009911470306522}
 --- !u!212 &4183352894675677552
 SpriteRenderer:
   m_ObjectHideFlags: 0
