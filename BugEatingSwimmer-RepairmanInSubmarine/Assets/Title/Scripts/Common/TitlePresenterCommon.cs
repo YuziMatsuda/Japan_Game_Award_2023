@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Title.Template;
+using System.Linq;
 
 namespace Title.Common
 {
@@ -12,6 +13,14 @@ namespace Title.Common
     /// </summary>
     public class TitlePresenterCommon : ITitlePresenterCommon
     {
+        public string[] GetMissionHistories()
+        {
+            var temp = new TitleTemplateResourcesAccessory();
+            // 実績履歴を取得
+            var history = temp.GetMissionHistory(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION_HISTORY));
+            return 0 < history.Length ? history.Select(q => q[EnumMissionHistory.History]).ToArray() : new string[0];
+        }
+
         public Dictionary<EnumMission, string>[] LoadSaveDatasCSVAndGetMission()
         {
             var tResourcesAccessory = new TitleTemplateResourcesAccessory();
@@ -33,5 +42,10 @@ namespace Title.Common
         /// </summary>
         /// <returns>格納オブジェクト配列</returns>
         public Dictionary<EnumMission, string>[] LoadSaveDatasCSVAndGetMission();
+        /// <summary>
+        /// 実績履歴を取得
+        /// </summary>
+        /// <returns>実績履歴配列</returns>
+        public string[] GetMissionHistories();
     }
 }
