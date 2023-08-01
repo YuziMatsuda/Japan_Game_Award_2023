@@ -291,3 +291,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fadeDuration: 0.5
   bodySpriteMask: {fileID: 1193344365148337083}
+  bodySpriteMaskOfJowsHIPrefab: {fileID: 6356797877055016700, guid: 24842c498c3130743835fcd028b7014c, type: 3}

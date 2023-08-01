@@ -1011,10 +1011,12 @@ namespace Main.Presenter
                                                 .AddTo(gameObject);
                                         }
                                     });
+                                var darkLightView = (darkLight == null) ? null : darkLight.GetComponent<DarkLightView>();
                                 item.Content.HitPosition.ObserveEveryValueChanged(x => x.Value)
                                     .Subscribe(x =>
                                     {
-                                        if (0f < Mathf.Abs(x.magnitude))
+                                        if (0f < Mathf.Abs(x.magnitude) &&
+                                            jawsHiModels[item.Index].LoinclothConfig.JawsHiDetail.enumReputationType.Equals(EnumReputationType.Evil))
                                         {
                                             if (!jawsHiModels[item.Index].StopTrackingMoveAnimation())
                                                 Debug.LogError("追跡移動を止める呼び出しの失敗");
@@ -1076,12 +1078,50 @@ namespace Main.Presenter
                                                 Debug.LogError("追跡移動するアニメーションを再生呼び出しの失敗");
                                         }
                                     });
-                                item.Content.IsBack.ObserveEveryValueChanged(x => x.Value)
-                                    .Subscribe(x =>
-                                    {
-                                        if (!jawsHiViews[item.Index].SetScale(x ? Vector3.one : new Vector3(-1f, 1f, 1f)))
-                                            Debug.LogError("大きさをセット呼び出しの失敗");
-                                    });
+                                // 評判タイプによって振る舞いが異なる
+                                switch (item.Content.LoinclothConfig.JawsHiDetail.enumReputationType)
+                                {
+                                    case EnumReputationType.Evil:
+                                        item.Content.IsBack.ObserveEveryValueChanged(x => x.Value)
+                                            .Subscribe(x =>
+                                            {
+                                                if (!jawsHiViews[item.Index].SetScale(x ? Vector3.one : new Vector3(-1f, 1f, 1f)))
+                                                    Debug.LogError("大きさをセット呼び出しの失敗");
+                                            });
+
+                                        break;
+                                    case EnumReputationType.Elite:
+                                        if (darkLightView == null)
+                                            Debug.LogError("コンポーネント取得の失敗");
+                                        else
+                                        {
+                                            var mask = darkLightView.InstancesAndHoverTarget(item.Content.transform);
+                                            if (mask == null)
+                                                Debug.LogError("マスクをインスタンスしてターゲットを追尾呼び出しの失敗");
+                                            else
+                                            {
+                                                var bodySpriteMask = mask.GetComponent<BodySpriteMask>();
+                                                item.Content.IsBack.ObserveEveryValueChanged(x => x.Value)
+                                                    .Subscribe(x =>
+                                                    {
+                                                        if (!jawsHiViews[item.Index].SetScale(x ? Vector3.one : new Vector3(-1f, 1f, 1f)))
+                                                            Debug.LogError("大きさをセット呼び出しの失敗");
+                                                        if (bodySpriteMask == null)
+                                                            Debug.LogError("コンポーネント取得の失敗");
+                                                        else
+                                                        {
+                                                            if (!bodySpriteMask.SetPositionToForward(x))
+                                                                Debug.LogError("正面となるよう位置をセット呼び出しの失敗");
+                                                        }
+                                                    });
+                                            }
+                                        }
+
+                                        break;
+                                    default:
+                                        Debug.LogError("例外エラー");
+                                        break;
+                                }
                             }
                         }
                         // コシギンチャク
