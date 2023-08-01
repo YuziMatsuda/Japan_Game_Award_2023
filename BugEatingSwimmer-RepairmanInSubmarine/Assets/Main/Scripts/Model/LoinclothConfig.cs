@@ -45,5 +45,7 @@ namespace Main.Model
         public Transform targetPrefab;
         /// <summary>差分スプライト配列</summary>
         public Sprite[] sprites;
+        /// <summary>評判タイプ</summary>
+        public EnumReputationType enumReputationType;
     }
 }

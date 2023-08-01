@@ -13,8 +13,6 @@ namespace Main.View
     [RequireComponent(typeof(SpriteMask))]
     public class BodySpriteMask : MonoBehaviour, IBodySpriteMask
     {
-        ///// <summary>スプライトマスク</summary>
-        //[SerializeField] private SpriteMask spriteMask;
         /// <summary>設定</summary>
         [SerializeField] private DarkLightConfig darkLightConfig;
         /// <summary>アニメーション終了時間</summary>
@@ -25,6 +23,10 @@ namespace Main.View
         private bool _hovering;
         /// <summary>トランスフォーム</summary>
         private Transform _transform;
+        /// <summary>位置の補正値</summary>
+        [SerializeField] private float maskPositionToForward = 2f;
+        /// <summary>位置の補正値</summary>
+        private Vector3 _offSet;
 
         public bool HoverTarget(Transform target)
         {
@@ -36,7 +38,7 @@ namespace Main.View
                 {
                     _hovering = true;
                     this.UpdateAsObservable()
-                        .Subscribe(_ => _transform.position = target.position);
+                        .Subscribe(_ => _transform.position = target.position + _offSet);
                 }
 
                 return true;
@@ -75,6 +77,26 @@ namespace Main.View
             }
         }
 
+        public bool SetPositionToForward(bool isBackOfFrom)
+        {
+            try
+            {
+                _offSet = Vector3.zero;
+                // 鼻先へライトが向くように補正
+                if (isBackOfFrom)
+                    _offSet += Vector3.left * maskPositionToForward;
+                else
+                    _offSet += Vector3.right * maskPositionToForward;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
         private void Reset()
         {
             darkLightConfig = GetComponent<DarkLightConfig>();
@@ -98,5 +120,11 @@ namespace Main.View
         /// <param name="target">追尾対象</param>
         /// <returns>成功／失敗</returns>
         public bool HoverTarget(Transform target);
+        /// <summary>
+        /// 正面となるよう位置をセット
+        /// </summary>
+        /// <param name="isBackOfFrom">対象が後ろを向いているか</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetPositionToForward(bool isBackOfFrom);
     }
 }

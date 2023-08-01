@@ -18,6 +18,11 @@ namespace Main.View
             return bodySpriteDarkLight.HoverTarget(target);
         }
 
+        public Transform InstancesAndHoverTarget(Transform target)
+        {
+            return bodySpriteDarkLight.InstancesAndHoverTarget(target);
+        }
+
         public int PlayLightDown()
         {
             return bodySpriteDarkLight.PlayLightDown();
@@ -47,5 +52,11 @@ namespace Main.View
         /// <param name="target">追尾対象</param>
         /// <returns>成功／失敗</returns>
         public bool HoverTarget(Transform target);
+        /// <summary>
+        /// マスクをインスタンスしてターゲットを追尾
+        /// </summary>
+        /// <param name="target">追尾対象</param>
+        /// <returns>マスク</returns>
+        public Transform InstancesAndHoverTarget(Transform target);
     }
 }

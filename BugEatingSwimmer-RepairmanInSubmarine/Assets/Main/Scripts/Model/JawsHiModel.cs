@@ -18,6 +18,8 @@ namespace Main.Model
     {
         /// <summary>設定</summary>
         [SerializeField] private LoinclothConfig loinclothConfig;
+        /// <summary>設定</summary>
+        public LoinclothConfig LoinclothConfig => loinclothConfig;
         /// <summary>ターゲット</summary>
         private Transform[] _targets;
         /// <summary>アニメーション</summary>
