@@ -24,7 +24,8 @@ namespace Main.Model
                 foreach (var item in darkLightConfig.Scales.Where(q => q != null))
                 {
                     yield return new WaitForSeconds(darkLightConfig.PlayLightDownRate);
-                    observer.OnNext(count++);
+                    count++;
+                    observer.OnNext(count);
                 }
             }
             observer.OnNext(-1);
