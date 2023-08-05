@@ -36,7 +36,7 @@ namespace Main.Model
 
         private void Start()
         {
-            _isAssigned.Value = MainGameManager.Instance.GimmickOwner.IsAssigned(seastarConfig.EnumSeastarID);
+            _isAssigned.Value = false/*MainGameManager.Instance.GimmickOwner.IsAssigned(seastarConfig.EnumSeastarID)*/;
         }
 
         private void OnTriggerEnter2D(Collider2D collision)
@@ -67,7 +67,7 @@ namespace Main.Model
         {
             try
             {
-                _isAssigned.Value = MainGameManager.Instance.GimmickOwner.IsAssigned(seastarConfig.EnumSeastarID);
+                _isAssigned.Value = false/*MainGameManager.Instance.GimmickOwner.IsAssigned(seastarConfig.EnumSeastarID)*/;
                 _isAssignedLocal.Value = false;
 
                 return true;

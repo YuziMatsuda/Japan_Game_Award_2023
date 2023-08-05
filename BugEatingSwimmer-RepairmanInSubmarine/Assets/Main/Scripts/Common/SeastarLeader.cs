@@ -23,8 +23,8 @@ namespace Main.Common
                 if (_stageID < 0)
                     _stageID = GetStageId();
                 foreach (var item in _quasiAssignForm.Where(q => q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex].Equals($"{_stageID}") &&
-                    q[EnumQuasiAssignmentForm.SeastarID].Equals($"{enumSeastarID}") &&
-                    q[EnumQuasiAssignmentForm.AssignedDefault].Equals(ConstGeneric.DIGITFORM_FALSE)))
+                    q[EnumQuasiAssignmentForm.SeastarID].Equals($"{enumSeastarID}") /*&&*/
+                    /*q[EnumQuasiAssignmentForm.AssignedDefault].Equals(ConstGeneric.DIGITFORM_FALSE)*/))
                 {
                     item[EnumQuasiAssignmentForm.Assigned] = assignState ? ConstGeneric.DIGITFORM_TRUE : ConstGeneric.DIGITFORM_FALSE;
                 }
