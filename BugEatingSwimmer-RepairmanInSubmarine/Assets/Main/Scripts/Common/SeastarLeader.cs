@@ -73,8 +73,34 @@ namespace Main.Common
             try
             {
                 var tResourcesAccessory = new MainTemplateResourcesAccessory();
-                if (!tResourcesAccessory.SaveDatasCSVOfQuasiAssignmentForm(ConstResorcesNames.QUASI_ASSIGNMENT_FORM, _quasiAssignForm))
-                    throw new System.Exception("準委任帳票をCSVデータへ保存呼び出しの失敗");
+                var prevQuasiAssignForm = tResourcesAccessory.GetQuasiAssignmentForm(tResourcesAccessory.LoadSaveDatasCSV(ConstResorcesNames.QUASI_ASSIGNMENT_FORM));
+                // セーブデータのヒトデ取得数と更新後の取得数を比較
+                Debug.Log(prevQuasiAssignForm.Where(q => q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex].Equals($"{_stageID}") &&
+                    q[EnumQuasiAssignmentForm.AssignedDefault].Equals(ConstGeneric.DIGITFORM_TRUE))
+                    .Select(q => q)
+                    .ToArray()
+                    .Length);
+                var prevCnt = prevQuasiAssignForm.Where(q => q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex].Equals($"{_stageID}") &&
+                    q[EnumQuasiAssignmentForm.AssignedDefault].Equals(ConstGeneric.DIGITFORM_TRUE))
+                    .Select(q => q)
+                    .ToArray()
+                    .Length;
+                Debug.Log($"prevCnt:[{prevCnt}]");
+                var currentCnt = _quasiAssignForm.Where(q => q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex].Equals($"{_stageID}") &&
+                    q[EnumQuasiAssignmentForm.Assigned].Equals(ConstGeneric.DIGITFORM_TRUE))
+                    .Select(q => q)
+                    .ToArray()
+                    .Length;
+                Debug.LogError($"currentCnt:[{currentCnt}]");
+                if (prevCnt < currentCnt)
+                {
+                    if (!tResourcesAccessory.SaveDatasCSVOfQuasiAssignmentForm(ConstResorcesNames.QUASI_ASSIGNMENT_FORM, _quasiAssignForm))
+                        throw new System.Exception("準委任帳票をCSVデータへ保存呼び出しの失敗");
+                }
+                else
+                {
+                    Debug.Log("ヒトデ更新無し");
+                }
 
                 return true;
             }
