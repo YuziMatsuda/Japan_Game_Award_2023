@@ -19,7 +19,13 @@ namespace Select.Model
         [SerializeField] private SeastarModel[] seastarModels;
         public SeastarModel[] SeastarModels => seastarModels;
         /// <summary>アサインされたか</summary>
-        public IReactiveProperty<bool>[] IsAssigned => seastarModels.Select(q => q.IsAssigned).ToArray();
+        public IReactiveProperty<bool>[] IsAssigned => seastarModels.Select(q => q.IsAssigned)
+            .ToArray();
+        /// <summary>アサインされた数</summary>
+        public int IsAssignedCount => seastarModels.Where(q => q.IsAssigned.Value)
+            .Select(q => q.IsAssigned)
+            .ToArray()
+            .Length;
         /// <summary>アサインされたか（ローカルカウント）</summary>
         public IReactiveProperty<bool>[] IsAssignedLocal => seastarModels.Select(q => q.IsAssignedLocal).ToArray();
         /// <summary>ステージ番号</summary>

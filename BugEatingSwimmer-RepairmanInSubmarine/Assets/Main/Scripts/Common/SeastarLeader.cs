@@ -23,8 +23,7 @@ namespace Main.Common
                 if (_stageID < 0)
                     _stageID = GetStageId();
                 foreach (var item in _quasiAssignForm.Where(q => q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex].Equals($"{_stageID}") &&
-                    q[EnumQuasiAssignmentForm.SeastarID].Equals($"{enumSeastarID}") /*&&*/
-                    /*q[EnumQuasiAssignmentForm.AssignedDefault].Equals(ConstGeneric.DIGITFORM_FALSE)*/))
+                    q[EnumQuasiAssignmentForm.SeastarID].Equals($"{enumSeastarID}")))
                 {
                     item[EnumQuasiAssignmentForm.Assigned] = assignState ? ConstGeneric.DIGITFORM_TRUE : ConstGeneric.DIGITFORM_FALSE;
                 }
@@ -75,23 +74,16 @@ namespace Main.Common
                 var tResourcesAccessory = new MainTemplateResourcesAccessory();
                 var prevQuasiAssignForm = tResourcesAccessory.GetQuasiAssignmentForm(tResourcesAccessory.LoadSaveDatasCSV(ConstResorcesNames.QUASI_ASSIGNMENT_FORM));
                 // セーブデータのヒトデ取得数と更新後の取得数を比較
-                Debug.Log(prevQuasiAssignForm.Where(q => q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex].Equals($"{_stageID}") &&
-                    q[EnumQuasiAssignmentForm.AssignedDefault].Equals(ConstGeneric.DIGITFORM_TRUE))
-                    .Select(q => q)
-                    .ToArray()
-                    .Length);
                 var prevCnt = prevQuasiAssignForm.Where(q => q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex].Equals($"{_stageID}") &&
                     q[EnumQuasiAssignmentForm.AssignedDefault].Equals(ConstGeneric.DIGITFORM_TRUE))
                     .Select(q => q)
                     .ToArray()
                     .Length;
-                Debug.Log($"prevCnt:[{prevCnt}]");
                 var currentCnt = _quasiAssignForm.Where(q => q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex].Equals($"{_stageID}") &&
                     q[EnumQuasiAssignmentForm.Assigned].Equals(ConstGeneric.DIGITFORM_TRUE))
                     .Select(q => q)
                     .ToArray()
                     .Length;
-                Debug.LogError($"currentCnt:[{currentCnt}]");
                 if (prevCnt < currentCnt)
                 {
                     if (!tResourcesAccessory.SaveDatasCSVOfQuasiAssignmentForm(ConstResorcesNames.QUASI_ASSIGNMENT_FORM, _quasiAssignForm))

@@ -90,26 +90,9 @@ namespace Select.Common
                 var quasiAssignFormResources = tResourcesAccessory.LoadSaveDatasCSV(ConstResorcesNames.QUASI_ASSIGNMENT_FORM);
                 var quasiAssignForm = tResourcesAccessory.GetQuasiAssignmentForm(quasiAssignFormResources);
 
-                if (0 < unitID)
-                {
-                    var areaUnits = tResourcesAccessory.GetAreaUnits(tResourcesAccessory.LoadSaveDatasCSV(ConstResorcesNames.AREA_UNITS));
-                    var counterInUnit = 0;
-                    foreach (var stageID in areaUnits.Where(q => q[EnumAreaUnits.UnitID] == unitID)
-                        .Select(q => q[EnumAreaUnits.StageID]))
-                    {
-                        counterInUnit += quasiAssignForm.Where(q => int.Parse(q[EnumQuasiAssignmentForm.MainSceneStagesModulesStateIndex]) == stageID &&
-                            q[EnumQuasiAssignmentForm.Assigned].Equals(ConstGeneric.DIGITFORM_TRUE))
-                            .Select(q => q)
-                            .ToArray()
-                            .Length;
-                    }
-
-                    return counterInUnit;
-                }
-                else
-                    return quasiAssignForm.Where(q => q[EnumQuasiAssignmentForm.Assigned].Equals(ConstGeneric.DIGITFORM_TRUE))
-                        .Select(q => q).ToArray()
-                        .Length;
+                return quasiAssignForm.Where(q => q[EnumQuasiAssignmentForm.Assigned].Equals(ConstGeneric.DIGITFORM_TRUE))
+                    .Select(q => q).ToArray()
+                    .Length;
             }
             catch (System.Exception e)
             {
