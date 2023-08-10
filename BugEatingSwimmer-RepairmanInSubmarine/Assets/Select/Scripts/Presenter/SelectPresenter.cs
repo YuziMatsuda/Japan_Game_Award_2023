@@ -430,16 +430,8 @@ namespace Select.Presenter
                     itemChild.Content.ObserveEveryValueChanged(x => x.Value)
                         .Subscribe(x =>
                         {
-                            if (x)
-                            {
-                                if (!captionStageViews[item.Index].SetColorAssigned(itemChild.Index))
-                                    Debug.LogError("アサイン済みのカラー設定呼び出しの失敗");
-                            }
-                            else
-                            {
-                                if (!captionStageViews[item.Index].SetColorUnAssign(itemChild.Index))
-                                    Debug.LogError("アサイン済みのカラー設定呼び出しの失敗");
-                            }
+                            if (!captionStageViews[item.Index].SetColorOfAssignedCount(item.Content.IsAssignedCount))
+                                Debug.LogError("アサイン済みの数に合わせてカラー設定呼び出しの失敗");
                         });
                 }
                 item.Content.EventState.ObserveEveryValueChanged(x => x.Value)

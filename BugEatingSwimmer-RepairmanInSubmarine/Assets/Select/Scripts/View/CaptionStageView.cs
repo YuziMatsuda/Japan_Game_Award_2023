@@ -73,6 +73,28 @@ namespace Select.View
         {
             return seastarViews[index].SetColorUnAssign();
         }
+
+        public bool SetColorOfAssignedCount(int count)
+        {
+            try
+            {
+                if (seastarViews.Length < count)
+                    throw new Exception($"アサイン済み人数がヒトデ数を超えることはありません。アサイン済み人数:[{seastarViews.Length}]_ヒトデ数:[{count}]");
+
+                for (var i = 0; i < seastarViews.Length; i++)
+                    if (i < count)
+                        seastarViews[i].SetColorAssigned();
+                    else
+                        seastarViews[i].SetColorUnAssign();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
     }
 
     /// <summary>
@@ -100,5 +122,11 @@ namespace Select.View
         /// <param name="index">インデックス</param>
         /// <returns>成功／失敗</returns>
         public bool SetColorUnAssign(int index);
+        /// <summary>
+        /// アサイン済みの数に合わせてカラー設定
+        /// </summary>
+        /// <param name="count">アサイン数</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetColorOfAssignedCount(int count);
     }
 }
