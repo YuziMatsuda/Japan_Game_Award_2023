@@ -21,7 +21,7 @@ namespace Main.Model
         /// <summary>アサインされたか（ローカルカウント）</summary>
         public IReactiveProperty<bool> IsAssignedLocal => _isAssignedLocal;
 
-        private void OnTriggerEnter2D(Collider2D collision)
+        private void OnTriggerStay2D(Collider2D collision)
         {
             if (0 < tags.Where(q => collision.CompareTag(q)).Select(q => q).ToArray().Length)
             {

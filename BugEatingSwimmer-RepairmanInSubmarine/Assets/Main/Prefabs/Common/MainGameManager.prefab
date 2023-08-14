@@ -143,6 +143,8 @@ MonoBehaviour:
   - GoalNode
   - Molecules
   pathDuration: 0.15
+  pathLateDuration: 0.05
+  addLatesStepCount: 11
 --- !u!1 &1095801330
 GameObject:
   m_ObjectHideFlags: 0
@@ -855,6 +857,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nextSceneName: MainScene
   backSceneName: SelectScene
+  backSceneNameIsFinal: AreaScene
 --- !u!1 &1369696456132551610
 GameObject:
   m_ObjectHideFlags: 0

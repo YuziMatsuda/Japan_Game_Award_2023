@@ -18,6 +18,8 @@ namespace Select.View
         [SerializeField] private SeastarGageCounter seastarGageCounter;
         /// <summary>カウンター最大値</summary>
         [SerializeField, Range(1, 59)] private int denominator = 10;
+        /// <summary>カウンター最大値</summary>
+        public int Denominator => denominator;
         /// <summary>カウンター変動値</summary>
         private int _numerator;
         /// <summary>カウント中</summary>

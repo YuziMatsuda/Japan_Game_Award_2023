@@ -211,13 +211,7 @@ namespace Main.Common
                         }
                         else
                         {
-                            var nextUnitID = unitID;
-                            // ボディの場合はライトアーム／レフトアームのエリアを解放
-                            for (var i = 0; i < 2; i++)
-                            {
-                                nextUnitID++;
-                                areaOpenedAndITState = UpdateEnumAreaOpenedAndITStateStateToSelect(areaOpenedAndITState, nextUnitID);
-                            }
+                            // ボディの場合はここでは解放しない
                         }
                     }
                 }

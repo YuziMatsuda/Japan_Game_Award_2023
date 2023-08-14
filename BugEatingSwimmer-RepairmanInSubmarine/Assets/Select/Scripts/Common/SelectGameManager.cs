@@ -69,6 +69,7 @@ namespace Select.Common
             cursorVisible.OnStart();
             sceneOwner.OnStart();
             gimmickOwner.OnStart();
+            algorithmOwner.OnStart();
         }
     }
 

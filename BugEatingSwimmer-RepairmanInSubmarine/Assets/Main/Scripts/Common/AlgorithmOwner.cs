@@ -52,6 +52,10 @@ namespace Main.Common
         private bool _isPlaingRunLightningSignal;
         /// <summary>電流を走らせる処理の終了時間</summary>
         [SerializeField] private float pathDuration = .15f;
+        /// <summary>電流を走らせる処理の終了時間（追加時間）</summary>
+        [SerializeField] private float pathLateDuration = .05f;
+        /// <summary>追加時間を付与するステップ数</summary>
+        [SerializeField] private int addLatesStepCount = 11;
 
         public void OnStart()
         {
@@ -419,7 +423,8 @@ namespace Main.Common
                     var rigidbody2d = signal.GetComponent<Rigidbody2D>();
                     DOTween.Sequence()
                         .Append(rigidbody2d.DOMove(doPathRoot[0], 0f))
-                        .Append(rigidbody2d.DOPath(doPathRoot, pathDuration * doPathRoot.Length))
+                        .Append(rigidbody2d.DOPath(doPathRoot, ((doPathRoot.Length < addLatesStepCount) ?
+                            pathDuration : pathDuration + pathLateDuration) * doPathRoot.Length))
                         .OnComplete(() =>
                         {
                             if (!MainGameManager.Instance.ParticleSystemsOwner.StopParticleSystems(GetInstanceID(), EnumParticleSystemsIndex.DustConnectSignal, true))
