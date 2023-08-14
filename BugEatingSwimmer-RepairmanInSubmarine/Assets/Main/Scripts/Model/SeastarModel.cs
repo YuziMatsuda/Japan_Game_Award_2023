@@ -39,7 +39,7 @@ namespace Main.Model
             _isAssigned.Value = false;
         }
 
-        private void OnTriggerEnter2D(Collider2D collision)
+        private void OnTriggerStay2D(Collider2D collision)
         {
             if (0 < tags.Where(q => collision.CompareTag(q)).Select(q => q).ToArray().Length)
             {

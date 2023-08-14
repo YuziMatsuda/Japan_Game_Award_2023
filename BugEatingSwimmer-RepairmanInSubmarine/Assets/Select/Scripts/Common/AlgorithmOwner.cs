@@ -10,7 +10,7 @@ namespace Select.Common
     /// <summary>
     /// アルゴリズムのオーナー
     /// </summary>
-    public class AlgorithmOwner : MonoBehaviour, IAlgorithmOwner
+    public class AlgorithmOwner : MonoBehaviour, IAlgorithmOwner, ISelectGameManager
     {
         /// <summary>支点とコード配列</summary>
         private Transform[] _pivotAndCodeIShortUI;
@@ -36,6 +36,8 @@ namespace Select.Common
         /// [-] ユニット６：ヴォイドは対象外
         /// </summary>
         [SerializeField] private ModuleTracer[] moduleTracers;
+        /// <summary>ヒトデゲージのビュー</summary>
+        private SeastarGageView _seastarGageView;
 
         public int SetPivotAndCodeIShortUIs(Transform[] pivotAndCodeIShortUIs)
         {
@@ -80,7 +82,7 @@ namespace Select.Common
                                     .ToArray().Length)
                             {
                                 result.areaIDToUpdated = (int)EnumUnitID.Head;
-                                result.isAssigned = 2 <= SelectGameManager.Instance.GimmickOwner.GetAssinedCounter((int)EnumUnitID.Head);
+                                result.isAssigned = _seastarGageView.Denominator <= SelectGameManager.Instance.GimmickOwner.GetAssinedCounter((int)EnumUnitID.Head);
                                 return result;
                             }
                             break;
@@ -146,6 +148,14 @@ namespace Select.Common
             return isFindAndEquals.Where(q => q)
                 .Select(q => q)
                 .ToArray().Length == isFindAndEquals.Length;
+        }
+
+        public void OnStart()
+        {
+            var seastarGageViews = GameObject.Find("Unit_1").GetComponentsInChildren<SeastarGageView>();
+            _seastarGageView = seastarGageViews.Where(q => q.GetComponent<SeastarGageConfig>().EnumUnitID.Equals(EnumUnitID.Head))
+                .Select(q => q)
+                .ToArray()[0];
         }
     }
 

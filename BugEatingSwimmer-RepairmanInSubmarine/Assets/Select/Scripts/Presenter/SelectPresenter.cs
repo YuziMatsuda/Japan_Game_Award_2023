@@ -589,6 +589,11 @@ namespace Select.Presenter
                                                     areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == result.areaIDToUpdated)
                                                         .Select(q => q)
                                                         .ToArray()[0][EnumAreaOpenedAndITState.State] = $"{(int)EnumAreaOpenedAndITStateState.ITFixed}";
+                                                    // ライトアーム／レフトアームを選択可能状態にする
+                                                    foreach (var item in areaOpenedAndITState.Where(q => int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == (int)EnumUnitID.RightArm ||
+                                                        int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == (int)EnumUnitID.LeftArm)
+                                                        .Select(q => q))
+                                                        item[EnumAreaOpenedAndITState.State] = $"{(int)EnumAreaOpenedAndITStateState.Select}";
                                                     if (!SelectGameManager.Instance.SceneOwner.SetAreaOpenedAndITState(areaOpenedAndITState))
                                                         Debug.LogError("エリア解放・結合テスト済みデータを更新呼び出しの失敗");
                                                     // T.B.D IT演出（フェードアウトしてエリアセレクトシーンへ遷移する？）
