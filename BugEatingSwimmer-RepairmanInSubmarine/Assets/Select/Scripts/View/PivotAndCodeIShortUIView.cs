@@ -30,6 +30,8 @@ namespace Select.View
         [SerializeField] private LightCodeCell lightCodeCell;
         /// <summary>アルゴリズムの共通処理</summary>
         private AlgorithmCommon _algorithmCommon = new AlgorithmCommon();
+        /// <summary>背景フレームイメージ</summary>
+        [SerializeField] private FadeImageView backgroundFrame;
 
         public void OnStart()
         {
@@ -93,6 +95,55 @@ namespace Select.View
             var enumDirectionModeDefault = GetComponent<PivotConfig>().EnumDirectionModeDefault;
             shadowCodeCell.transform.localEulerAngles = vectorDirectionModes[(int)enumDirectionModeDefault];
             lightCodeCell.transform.localEulerAngles = vectorDirectionModes[(int)enumDirectionModeDefault];
+            backgroundFrame = GetComponentInChildren<FadeImageView>();
+        }
+
+        public IEnumerator PlayRenderEnableBackgroundFrame(IObserver<bool> observer)
+        {
+            Observable.FromCoroutine<bool>(observer => backgroundFrame.PlayFadeAnimation(observer, EnumFadeState.Close))
+                .Subscribe(_ => observer.OnNext(true))
+                .AddTo(gameObject);
+            yield return null;
+        }
+
+        public IEnumerator PlayRenderDisableBackgroundFrame(IObserver<bool> observer)
+        {
+            Observable.FromCoroutine<bool>(observer => backgroundFrame.PlayFadeAnimation(observer, EnumFadeState.Open))
+                .Subscribe(_ => observer.OnNext(true))
+                .AddTo(gameObject);
+            yield return null;
+        }
+
+        public bool SetRenderEnableBackgroundFrame()
+        {
+            try
+            {
+                if (!backgroundFrame.SetColorSpriteRenderer(EnumFadeState.Close))
+                    throw new System.Exception("カラーを設定呼び出しの失敗");
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool SetRenderDisableBackgroundFrame()
+        {
+            try
+            {
+                if (!backgroundFrame.SetColorSpriteRenderer(EnumFadeState.Open))
+                    throw new System.Exception("カラーを設定呼び出しの失敗");
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
         }
     }
 
@@ -101,7 +152,7 @@ namespace Select.View
     /// 支点とコード
     /// インターフェース
     /// </summary>
-    public interface IPivotAndCodeIShortUIView
+    public interface IPivotAndCodeIShortUIView : ISelectContentsViewParent
     {
         /// <summary>
         /// 回転角度の更新と

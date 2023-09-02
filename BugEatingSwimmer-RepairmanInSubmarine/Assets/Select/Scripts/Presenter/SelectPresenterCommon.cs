@@ -5,6 +5,7 @@ using UnityEngine;
 using Select.Model;
 using System.Linq;
 using Select.View;
+using UniRx;
 
 namespace Select.Common
 {
@@ -352,13 +353,13 @@ namespace Select.Common
                 // 実績履歴を取得
                 var history = temp.GetMissionHistory(temp.LoadSaveDatasCSV(ConstResorcesNames.MISSION_HISTORY));
 
-                // 実績一覧管理のアンロック解除している実績IDが履歴に見つからない場合は演出を実行する
+                // 実績一覧管理のアンロック解除している実績IDが履歴に存在する場合は演出を実行する
                 foreach (var item in mission.Where(q => q[EnumMission.CategoryID].Equals($"{EnumCategoryID.CA0000}") &&
                     q[EnumMission.Unlock].Equals(ConstGeneric.DIGITFORM_TRUE) &&
-                    q[EnumMission.MissionID].Equals($"{enumMissionID/*EnumMissionID.MI0006*/}"))
+                    q[EnumMission.MissionID].Equals($"{enumMissionID}"))
                     .Select(q => q))
                     if (0 < history.Where(q => q[EnumMissionHistory.History].Equals($"{item[EnumMission.MissionID]}") &&
-                        q[EnumMissionHistory.History].Equals($"{enumMissionID/*EnumMissionID.MI0006*/}"))
+                        q[EnumMissionHistory.History].Equals($"{enumMissionID}"))
                         .Select(q => q)
                         .ToArray().Length)
                         return true;
@@ -419,6 +420,34 @@ namespace Select.Common
                 SystemCommonCash[EnumSystemCommonCash.SceneId] = defaultStageIndex;
                 if (!temp.SaveDatasCSVOfSystemCommonCash(ConstResorcesNames.SYSTEM_COMMON_CASH, SystemCommonCash))
                     throw new System.Exception("システム設定キャッシュをCSVデータへ保存呼び出しの失敗");
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool OpenCoreReleaseDirections(LogoStageModel[] logoStageModels, SeastarGageView[] seastarGageViews, RobotHeartModel[] robotHeartModels, GameObject gameObject)
+        {
+            try
+            {
+                foreach (var child in logoStageModels)
+                    if (child != null)
+                        if (!child.LoadStateAndUpdateNavigation())
+                            Debug.LogError("ステージ状態のロード及びナビゲーション更新呼び出しの失敗");
+                Observable.FromCoroutine<bool>(observer => seastarGageViews[2].PlayOpenDirectionAnimations(observer))
+                    .Subscribe(_ =>
+                    {
+                        // コア解放により選択可になるのは一つ目のコアのみ
+                        if (!robotHeartModels[0].SetButtonEnabled(true))
+                            Debug.LogError("ボタンのステータスを変更呼び出しの失敗");
+                        if (!robotHeartModels[0].SetEventTriggerEnabled(true))
+                            Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
+                    })
+                    .AddTo(gameObject);
 
                 return true;
             }
@@ -518,5 +547,14 @@ namespace Select.Common
         /// <param name="enumUnitID">エリアID</param>
         /// <returns>成功／失敗</returns>
         public bool SetSystemCommonCashAndDefaultStageIndex(EnumUnitID enumUnitID);
+        /// <summary>
+        /// コア解放演出後に各オブジェクトステータスを変更
+        /// </summary>
+        /// <param name="logoStageModels">ロゴステージモデル配列</param>
+        /// <param name="seastarGageViews">ヒトデゲージ配列</param>
+        /// <param name="robotHeartModels">コアモデル配列</param>
+        /// <param name="gameObject">ゲームオブジェクト</param>
+        /// <returns>成功／失敗</returns>
+        public bool OpenCoreReleaseDirections(LogoStageModel[] logoStageModels, SeastarGageView[] seastarGageViews, RobotHeartModel[] robotHeartModels, GameObject gameObject);
     }
 }

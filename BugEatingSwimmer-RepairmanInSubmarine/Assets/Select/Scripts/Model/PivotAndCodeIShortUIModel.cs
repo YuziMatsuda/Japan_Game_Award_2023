@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Select.Common;
 
 namespace Select.Model
 {
@@ -14,6 +15,11 @@ namespace Select.Model
     [RequireComponent(typeof(EventTrigger))]
     public class PivotAndCodeIShortUIModel : UIEventController, IPivotAndCodeIShortUIModel
     {
+        public bool LoadStateAndUpdateNavigation()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public bool SetButtonEnabled(bool enabled)
         {
             try
@@ -53,19 +59,7 @@ namespace Select.Model
     /// 支点とコード
     /// インターフェース
     /// </summary>
-    public interface IPivotAndCodeIShortUIModel
+    public interface IPivotAndCodeIShortUIModel : ISelectContentsModelParent
     {
-        /// <summary>
-        /// ボタンのステータスを変更
-        /// </summary>
-        /// <param name="enabled">有効／無効</param>
-        /// <returns>成功／失敗</returns>
-        public bool SetButtonEnabled(bool enabled);
-        /// <summary>
-        /// イベントトリガーのステータスを変更
-        /// </summary>
-        /// <param name="enabled">有効／無効</param>
-        /// <returns>成功／失敗</returns>
-        public bool SetEventTriggerEnabled(bool enabled);
     }
 }

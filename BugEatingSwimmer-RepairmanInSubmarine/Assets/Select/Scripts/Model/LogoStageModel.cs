@@ -55,62 +55,12 @@ namespace Select.Model
             base.OnEnable();
         }
 
-        /// <summary>
-        /// ステージ状態のロード及びナビゲーション更新
-        /// </summary>
-        /// <returns>成功／失敗</returns>
         public bool LoadStateAndUpdateNavigation()
         {
             try
             {
                 var mainSceneStagesState = SelectGameManager.Instance.SceneOwner.GetMainSceneStagesState();
                 stageState.Value = mainSceneStagesState[Index][EnumMainSceneStagesState.State];
-                var areaUnits = SelectGameManager.Instance.SceneOwner.GetAreaUnits();
-                var areaOpenedAndITState = SelectGameManager.Instance.SceneOwner.GetAreaOpenedAndITState();
-                var currentUnitID = areaUnits.Where(q => q[EnumAreaUnits.StageID] == Index)
-                    .Select(q => q[EnumAreaUnits.UnitID])
-                    .Distinct()
-                    .ToArray();
-                var currentState = areaOpenedAndITState.Where(q => q.ContainsKey(EnumAreaOpenedAndITState.UnitID) &&
-                    int.Parse(q[EnumAreaOpenedAndITState.UnitID]) == currentUnitID[0])
-                    .Select(q => q[EnumAreaOpenedAndITState.State])
-                    .ToArray()[0];
-                var common = new SelectPresenterCommon();
-                // 未クリアの場合次のステージへナビゲーションしない
-                if (stageState.Value != 2)
-                {
-                    if (_button == null)
-                        _button = GetComponent<Button>();
-                    _button.navigation = navigationOfError;
-                }
-                else if (isFinalInArea &&
-                    ((EnumAreaOpenedAndITStateState)int.Parse(currentState)).Equals(EnumAreaOpenedAndITStateState.ITFixed))
-                {
-                    // 対象ステージに紐づくエリア状態が結合済みかつ、最終ステージの場合IT済み後のボタンナビゲーションへ更新
-                    if (_button == null)
-                        _button = GetComponent<Button>();
-                    _button.navigation = navigationOfIT;
-                }
-                else if (isFinalInArea &&
-                    _index == 7 &&
-                    common.IsCoreOpened())
-                {
-                    // ※※※ボディのラストステージ２－４のみ※※※
-                    // コア解放済みの場合IT済み後のボタンナビゲーションへ更新
-                    if (_button == null)
-                        _button = GetComponent<Button>();
-                    _button.navigation = navigationOfIT;
-                }
-                else if (isFinalInArea &&
-                    _index == 16 &&
-                    common.IsMissionUnlockAndFoundHistory(EnumMissionID.MI0007))
-                {
-                    // ※※※コアのラストステージ５－３のみ※※※
-                    // 対象のミッション更新済みならIT済み後のボタンナビゲーションへ更新
-                    if (_button == null)
-                        _button = GetComponent<Button>();
-                    _button.navigation = navigationOfIT;
-                }
 
                 return true;
             }
@@ -160,20 +110,12 @@ namespace Select.Model
     /// ロゴステージ
     /// インターフェース
     /// </summary>
-    public interface ILogoStageModel
+    public interface ILogoStageModel : ISelectContentsModelParent
     {
         /// <summary>
-        /// ボタンのステータスを変更
+        /// ステージ状態のロード及びナビゲーション更新
         /// </summary>
-        /// <param name="enabled">有効／無効</param>
         /// <returns>成功／失敗</returns>
-        public bool SetButtonEnabled(bool enabled);
-
-        /// <summary>
-        /// イベントトリガーのステータスを変更
-        /// </summary>
-        /// <param name="enabled">有効／無効</param>
-        /// <returns>成功／失敗</returns>
-        public bool SetEventTriggerEnabled(bool enabled);
+        public bool LoadStateAndUpdateNavigation();
     }
 }

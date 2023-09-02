@@ -13,7 +13,7 @@ namespace Select.Model
     /// </summary>
     [RequireComponent(typeof(Button))]
     [RequireComponent(typeof(EventTrigger))]
-    public class UIEventController : MonoBehaviour
+    public class UIEventController : MonoBehaviour, IUIEventController
     {
         /// <summary>
         /// 実行イベントの監視
@@ -91,5 +91,26 @@ namespace Select.Model
         {
             _eventState.Value = (int)EnumEventCommand.Canceled;
         }
+
+        public void SetDeSelectedGameObject()
+        {
+            _eventSystem.SetSelectedGameObject(null);
+        }
+    }
+
+    /// <summary>
+    /// イベントコントローラー
+    /// インターフェース
+    /// </summary>
+    public interface IUIEventController
+    {
+        /// <summary>
+        /// デフォルト選択切り替え
+        /// </summary>
+        public void SetSelectedGameObject();
+        /// <summary>
+        /// デフォルト非選択切り替え
+        /// </summary>
+        public void SetDeSelectedGameObject();
     }
 }

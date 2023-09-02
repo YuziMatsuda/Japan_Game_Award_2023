@@ -680,6 +680,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb5c5410f7a166a47a8c3a635017fed9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &907758225 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 907758225, guid: 755175986b9771741b1abfa35c21fb68, type: 3}
+  m_PrefabInstance: {fileID: 5223149312306228690}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaee06bf2fef3ab4a88484a77956e190, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &956099645 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3061753762387563276, guid: 755175986b9771741b1abfa35c21fb68, type: 3}
@@ -1032,6 +1043,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fda12bb2876f634f95b87fae99cc651, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1474676695 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5576110550124167325, guid: 755175986b9771741b1abfa35c21fb68, type: 3}
+  m_PrefabInstance: {fileID: 5223149312306228690}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!224 &1474676698 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3208153694497661055, guid: 755175986b9771741b1abfa35c21fb68, type: 3}
+  m_PrefabInstance: {fileID: 5223149312306228690}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1483243326 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7533227619437266500, guid: 755175986b9771741b1abfa35c21fb68, type: 3}
@@ -1063,6 +1090,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 16c4df4153dd9fd4f8bd5e36344eeee1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1577636596 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1577636596, guid: 755175986b9771741b1abfa35c21fb68, type: 3}
+  m_PrefabInstance: {fileID: 5223149312306228690}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b2d587340dfd1c43b0dd3c5dcf6ba12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1669329592 stripped
@@ -1334,11 +1372,11 @@ MonoBehaviour:
   m_MoveRepeatRate: 0.1
   m_XRTrackingOrigin: {fileID: 0}
   m_ActionsAsset: {fileID: -944628639613478452, guid: 136bd7b3d8697954dac67f12286a36cb, type: 3}
-  m_PointAction: {fileID: 0}
+  m_PointAction: {fileID: 6841467275693783058, guid: 136bd7b3d8697954dac67f12286a36cb, type: 3}
   m_MoveAction: {fileID: 2168628349271454487, guid: 136bd7b3d8697954dac67f12286a36cb, type: 3}
   m_SubmitAction: {fileID: 8871682033529318115, guid: 136bd7b3d8697954dac67f12286a36cb, type: 3}
   m_CancelAction: {fileID: 8352517856038166657, guid: 136bd7b3d8697954dac67f12286a36cb, type: 3}
-  m_LeftClickAction: {fileID: 0}
+  m_LeftClickAction: {fileID: 4913121106735029915, guid: 136bd7b3d8697954dac67f12286a36cb, type: 3}
   m_MiddleClickAction: {fileID: 0}
   m_RightClickAction: {fileID: 0}
   m_ScrollWheelAction: {fileID: 0}
@@ -1421,10 +1459,30 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 242990115, guid: 233cb2b8fc460fa43a1047b403d2af36, type: 3}
+      propertyPath: inputSystemUIInputModule
+      value: 
+      objectReference: {fileID: 2005566582}
+    - target: {fileID: 242990116, guid: 233cb2b8fc460fa43a1047b403d2af36, type: 3}
+      propertyPath: m_CursorGraphic
+      value: 
+      objectReference: {fileID: 1474676695}
+    - target: {fileID: 242990116, guid: 233cb2b8fc460fa43a1047b403d2af36, type: 3}
+      propertyPath: m_CursorTransform
+      value: 
+      objectReference: {fileID: 1474676698}
     - target: {fileID: 3906211334230722720, guid: 233cb2b8fc460fa43a1047b403d2af36, type: 3}
       propertyPath: playerView
       value: 
       objectReference: {fileID: 5223149312306228695}
+    - target: {fileID: 3906211334230722720, guid: 233cb2b8fc460fa43a1047b403d2af36, type: 3}
+      propertyPath: canvasModel
+      value: 
+      objectReference: {fileID: 907758225}
+    - target: {fileID: 3906211334230722720, guid: 233cb2b8fc460fa43a1047b403d2af36, type: 3}
+      propertyPath: playerModel
+      value: 
+      objectReference: {fileID: 1577636596}
     - target: {fileID: 3906211334230722720, guid: 233cb2b8fc460fa43a1047b403d2af36, type: 3}
       propertyPath: fadeImageView
       value: 

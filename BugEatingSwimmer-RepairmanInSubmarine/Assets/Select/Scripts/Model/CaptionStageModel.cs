@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UniRx;
 using System.Linq;
+using Select.Common;
 
 namespace Select.Model
 {
@@ -13,7 +14,7 @@ namespace Select.Model
     /// モデル
     /// ステージキャプション
     /// </summary>
-    public class CaptionStageModel : UIEventController, ILogoStageModel, ICaptionStageModel
+    public class CaptionStageModel : UIEventController, ICaptionStageModel
     {
         /// <summary>ヒトデのモデル配列</summary>
         [SerializeField] private SeastarModel[] seastarModels;
@@ -88,6 +89,11 @@ namespace Select.Model
         {
             return seastarModels[index].SetIsAssigned(assign);
         }
+
+        public bool LoadStateAndUpdateNavigation()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 
     /// <summary>
@@ -95,7 +101,7 @@ namespace Select.Model
     /// ステージキャプション
     /// インターフェース
     /// </summary>
-    public interface ICaptionStageModel
+    public interface ICaptionStageModel : ISelectContentsModelParent
     {
         /// <summary>
         /// アサイン情報をセット
