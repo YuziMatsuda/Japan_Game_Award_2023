@@ -9,7 +9,7 @@ namespace Select.View
     /// ページ
     /// </summary>
     [RequireComponent(typeof(CanvasGroup))]
-    public class PageView : MonoBehaviour
+    public class PageView : MonoBehaviour, IPageView
     {
         /// <summary>キャンバスグループ</summary>
         [SerializeField] private CanvasGroup canvasGroup;
@@ -19,11 +19,6 @@ namespace Select.View
             canvasGroup = GetComponent<CanvasGroup>();
         }
 
-        /// <summary>
-        /// アルファ値を設定
-        /// </summary>
-        /// <param name="alpha">アルファ値</param>
-        /// <returns>成功／失敗</returns>
         public bool SetVisible(bool isEnabled)
         {
             try
@@ -37,5 +32,41 @@ namespace Select.View
                 return false;
             }
         }
+
+        public bool SetBlocksRaycasts(bool isEnabled)
+        {
+            try
+            {
+                canvasGroup.blocksRaycasts = isEnabled;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// ビュー
+    /// ページ
+    /// インターフェース
+    /// </summary>
+    public interface IPageView
+    {
+        /// <summary>
+        /// アルファ値を設定
+        /// </summary>
+        /// <param name="isEnabled">有効か</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetVisible(bool isEnabled);
+        /// <summary>
+        /// レイキャスト判定対象を設定
+        /// </summary>
+        /// <param name="alpha">有効か</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetBlocksRaycasts(bool isEnabled);
     }
 }

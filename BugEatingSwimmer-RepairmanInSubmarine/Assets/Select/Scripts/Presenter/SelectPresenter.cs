@@ -9,6 +9,7 @@ using UniRx.Triggers;
 using Select.Audio;
 using System.Linq;
 using Fungus;
+using GameManagers.Common;
 
 namespace Select.Presenter
 {
@@ -54,6 +55,10 @@ namespace Select.Presenter
         [SerializeField] private RobotHeartView[] robotHeartViews;
         /// <summary>コアのモデル</summary>
         [SerializeField] private RobotHeartModel[] robotHeartModels;
+        /// <summary>キャンバスのモデル</summary>
+        [SerializeField] private CanvasModel canvasModel;
+        /// <summary>プレイヤーのモデル</summary>
+        [SerializeField] private PlayerModel playerModel;
 
         private void Reset()
         {
@@ -134,6 +139,8 @@ namespace Select.Presenter
             assignedSeastarCountView = GameObject.Find("AssignedSeastarCount").GetComponent<AssignedSeastarCountView>();
             receivers = GameObject.FindObjectsOfType<Fungus.MessageReceived>();
             flowchartModel = GameObject.Find("Flowchart").GetComponent<FlowchartModel>();
+            canvasModel = GameObject.Find("Canvas").GetComponent<CanvasModel>();
+            playerModel = GameObject.Find("Player").GetComponent<PlayerModel>();
         }
 
         public void OnStart()
@@ -143,14 +150,34 @@ namespace Select.Presenter
             foreach (var child in logoStageModels)
                 if (child != null)
                 {
-                    child.SetButtonEnabled(false);
-                    child.SetEventTriggerEnabled(false);
+                    if (!child.SetButtonEnabled(false))
+                        Debug.LogError("ボタンのステータスを変更呼び出しの失敗");
+                    if (!child.SetEventTriggerEnabled(false))
+                        Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
                     if (!child.LoadStateAndUpdateNavigation())
                         Debug.LogError("ステージ状態のロード及びナビゲーション更新呼び出しの失敗");
                 }
+            GameManager.Instance.SoftwareCursorPositionAdjusterView.OnStart();
+            if (!GameManager.Instance.SoftwareCursorPositionAdjusterView.SetCursorEnabled(false))
+                Debug.LogError("カーソルのステータスを変更呼び出しの失敗");
             foreach (var child in pageViews)
                 if (child != null)
-                    child.SetVisible(false);
+                {
+                    if (!child.SetVisible(false))
+                        Debug.LogError("アルファ値切り替え処理の失敗");
+                    if (!child.SetBlocksRaycasts(false))
+                        Debug.LogError("レイキャスト判定対象を設定の失敗");
+                }
+            foreach (var child in robotHeartModels)
+                if (child != null)
+                {
+                    if (!child.SetButtonEnabled(false))
+                        Debug.LogError("ボタンのステータスを変更呼び出しの失敗");
+                    if (!child.SetEventTriggerEnabled(false))
+                        Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
+                    //if (!child.LoadStateAndUpdateNavigation())
+                    //    Debug.LogError("ステージ状態のロード及びナビゲーション更新呼び出しの失敗");
+                }
             // シーンIDに紐づくキャプションかつ、そのキャプション内にもつSeastarIDをもつオブジェクトを抽出
             if (!common.SetIsAssignedAllCaption(captionStageModels))
                 Debug.LogError("全ステージキャプションのアサイン情報をセット呼び出しの失敗");
@@ -178,6 +205,8 @@ namespace Select.Presenter
                             child.SetButtonEnabled(true);
                             child.SetEventTriggerEnabled(true);
                         }
+                    if (!GameManager.Instance.SoftwareCursorPositionAdjusterView.SetCursorEnabled(true))
+                        Debug.LogError("カーソルのステータスを変更呼び出しの失敗");
                     if (!common.SetCounterBetweenAndFillAmountAllGage(seastarGageViews))
                         Debug.LogError("全ヒトデゲージのカウンターとフィルターをセット呼び出しの失敗");
                     // コア解放演出
@@ -186,26 +215,28 @@ namespace Select.Presenter
                         // 実績履歴を更新
                         if (common.AddMissionHistory() < 1)
                             Debug.LogError("実績履歴を更新呼び出しの失敗");
-                        foreach (var child in logoStageModels)
-                            if (child != null)
-                                if (!child.LoadStateAndUpdateNavigation())
-                                    Debug.LogError("ステージ状態のロード及びナビゲーション更新呼び出しの失敗");
-                        Observable.FromCoroutine<bool>(observer => seastarGageViews[2].PlayOpenDirectionAnimations(observer))
-                            .Subscribe(_ =>
-                            {
-                            })
-                            .AddTo(gameObject);
+                        if (!common.OpenCoreReleaseDirections(logoStageModels, seastarGageViews, robotHeartModels, gameObject))
+                            Debug.LogError("コア解放演出後に各オブジェクトステータスを変更呼び出しの失敗");
                     }
-                    else if (common.IsMissionUnlockAndFoundHistory(EnumMissionID.MI0006))
+                    else
                     {
-                        foreach (var child in logoStageModels)
-                            if (child != null)
-                                if (!child.LoadStateAndUpdateNavigation())
-                                    Debug.LogError("ステージ状態のロード及びナビゲーション更新呼び出しの失敗");
-                        // コア解放済み
-                        Observable.FromCoroutine<bool>(observer => seastarGageViews[2].PlayOpenDirectionAnimations(observer))
-                            .Subscribe(_ => { })
-                            .AddTo(gameObject);
+                        if (common.IsMissionUnlockAndFoundHistory(EnumMissionID.MI0006))
+                        {
+                            foreach (var child in logoStageModels)
+                                if (child != null)
+                                    if (!child.LoadStateAndUpdateNavigation())
+                                        Debug.LogError("ステージ状態のロード及びナビゲーション更新呼び出しの失敗");
+                            if (!common.OpenCoreReleaseDirections(logoStageModels, seastarGageViews, robotHeartModels, gameObject))
+                                Debug.LogError("コア解放演出後に各オブジェクトステータスを変更呼び出しの失敗");
+                        }
+                        if (common.IsMissionUnlockAndFoundHistory(EnumMissionID.MI0007))
+                        {
+                            // 二つ目のコア解放
+                            if (!robotHeartModels[1].SetButtonEnabled(true))
+                                Debug.LogError("ボタンのステータスを変更呼び出しの失敗");
+                            if (!robotHeartModels[1].SetEventTriggerEnabled(true))
+                                Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
+                        }
                     }
                 })
                 .AddTo(gameObject);
@@ -215,11 +246,10 @@ namespace Select.Presenter
             // ステージ番号を取得する処理を追加する
             var sysCommonCash = SelectGameManager.Instance.SceneOwner.GetSystemCommonCash();
             var stageIndex = new IntReactiveProperty(sysCommonCash[EnumSystemCommonCash.SceneId]);
-            logoStageModels[stageIndex.Value].SetSelectedGameObject();
             if (!playerView.SelectPlayer(logoStageViews[stageIndex.Value].transform.position, logoStageViews[stageIndex.Value].transform))
                 Debug.LogError("ステージ選択のプレイヤーを移動して選択させる呼び出しの失敗");
-            if (!playerView.RedererCursorDirectionAndDistance(logoStageModels[stageIndex.Value].Button.navigation, EnumCursorDistance.Long))
-                Debug.LogError("ナビゲーションの状態によってカーソル表示を変更呼び出しの失敗");
+            if (!GameManager.Instance.SoftwareCursorPositionAdjusterView.SetCursorTransform(logoStageViews[stageIndex.Value].transform.position))
+                Debug.LogError("カーソルのアンカーをセットする呼び出しの失敗");
 
             // クリア済みマークの表示
             for (var i = 0; i < logoStageModels.Length; i++)
@@ -271,37 +301,25 @@ namespace Select.Presenter
                         // 該当ページのみ表示させる
                         if (!pageViews[i].SetVisible(i == pageIdx))
                             Debug.LogError("アルファ値切り替え処理の失敗");
-                    }
-                });
-
-            playerView.IsPlaying.ObserveEveryValueChanged(x => x.Value)
-                .Subscribe(x =>
-                {
-                    if (x)
-                    {
-                        foreach (var item in logoStageModels.Where(q => q != null))
-                        {
-                            if (!item.SetButtonEnabled(false))
-                                Debug.LogError("ボタンのステータスを変更呼び出しの失敗");
-                            if (!item.SetEventTriggerEnabled(false))
-                                Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
-                        }
-                    }
-                    else
-                    {
-                        foreach (var item in logoStageModels.Where(q => q != null))
-                        {
-                            if (!item.SetButtonEnabled(true))
-                                Debug.LogError("ボタンのステータスを変更呼び出しの失敗");
-                            if (!item.SetEventTriggerEnabled(true))
-                                Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
-                        }
+                        if (!pageViews[i].SetBlocksRaycasts(i == pageIdx))
+                            Debug.LogError("レイキャスト判定対象を設定の失敗");
                     }
                 });
 
             // ステージ選択の操作
             foreach (var child in logoStageModels.Where(q => q != null).Select(q => q))
             {
+                if (child.Index == stageIndex.Value)
+                {
+                    if (!logoStageViews[child.Index].SetRenderEnableBackgroundFrame())
+                        Debug.LogError("選択中フレームを表示呼び出しの失敗");
+                }
+                else
+                {
+                    if (!logoStageViews[child.Index].SetRenderDisableBackgroundFrame())
+                        Debug.LogError("選択中フレームを非表示呼び出しの失敗");
+                }
+
                 child.EventState.ObserveEveryValueChanged(x => x.Value)
                     .Subscribe(x =>
                     {
@@ -313,45 +331,31 @@ namespace Select.Presenter
                             case EnumEventCommand.Selected:
                                 // 選択SEを再生
                                 if (!playerView.IsSkipMode)
+                                {
                                     SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_select);
-                                // ステージ選択のプレイヤーを移動して選択させる
-                                if (!playerView.SetImageEnabled(false))
-                                    Debug.LogError("イメージのステータスを変更呼び出しの失敗");
-                                Observable.FromCoroutine<bool>(observer => playerView.MoveSelectPlayer(logoStageViews[child.Index].transform.position, logoStageViews[child.Index].transform, observer))
-                                    .Subscribe(_ =>
-                                    {
-                                        if (!playerView.SetImageEnabled(true))
-                                            Debug.LogError("イメージのステータスを変更呼び出しの失敗");
-                                        if (!playerView.RedererCursorDirectionAndDistance(child.Button.navigation, EnumCursorDistance.Long))
-                                            Debug.LogError("ナビゲーションの状態によってカーソル表示を変更呼び出しの失敗");
-                                        if (playerView.IsSkipMode)
-                                            if (!playerView.SetSkipMode(false))
-                                                Debug.LogError("スキップモードのセット呼び出しの失敗");
-                                    })
-                                    .AddTo(gameObject);
+                                    Observable.FromCoroutine<bool>(observer => logoStageViews[child.Index].PlayRenderEnableBackgroundFrame(observer))
+                                        .Subscribe(_ => { })
+                                        .AddTo(gameObject);
+                                }
+                                else
+                                {
+                                    if (!playerView.SetSkipMode(false))
+                                        Debug.LogError("スキップモードのセット呼び出しの失敗");
+                                    if (!logoStageViews[child.Index].SetRenderEnableBackgroundFrame())
+                                        Debug.LogError("選択中フレームを表示呼び出しの失敗");
+                                }
+                                logoStageModels[child.Index].SetSelectedGameObject();
                                 stageIndex.Value = child.Index;
+
                                 break;
                             case EnumEventCommand.DeSelected:
-                                // 処理無し
+                                logoStageModels[child.Index].SetDeSelectedGameObject();
+                                Observable.FromCoroutine<bool>(observer => logoStageViews[child.Index].PlayRenderDisableBackgroundFrame(observer))
+                                    .Subscribe(_ => { })
+                                    .AddTo(gameObject);
+
                                 break;
                             case EnumEventCommand.Canceled:
-                                // キャンセルSEを再生
-                                SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_cancel);
-                                // タイトルシーンへの遷移
-                                // UI操作を許可しない
-                                foreach (var child in logoStageModels)
-                                    if (child != null)
-                                    {
-                                        child.SetButtonEnabled(false);
-                                        child.SetEventTriggerEnabled(false);
-                                    }
-                                // シーン読み込み時のアニメーション
-                                Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
-                                    .Subscribe(_ =>
-                                    {
-                                        SelectGameManager.Instance.SceneOwner.LoadTitleScene();
-                                    })
-                                    .AddTo(gameObject);
 
                                 break;
                             case EnumEventCommand.Submited:
@@ -361,8 +365,12 @@ namespace Select.Presenter
                                     Debug.LogError("ボタンのステータスを変更呼び出しの失敗");
                                 if (!logoStageModels[child.Index].SetEventTriggerEnabled(false))
                                     Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
+                                if (!GameManager.Instance.SoftwareCursorPositionAdjusterView.SetCursorEnabled(false))
+                                    Debug.LogError("カーソルの速度を変更呼び出しの失敗");
                                 if (!logoStagesView.ZoomInOutPanel(child.Index))
                                     Debug.LogError("該当ステージを拡大させる呼び出しの失敗");
+                                if (!logoStageViews[child.Index].SetRenderDisableBackgroundFrame())
+                                    Debug.LogError("選択中フレームを非表示呼び出しの失敗");
 
                                 break;
                             default:
@@ -372,6 +380,8 @@ namespace Select.Presenter
                     });
             }
 
+            // キャンセル入力を許可／禁止
+            var isEnabledCancel = new BoolReactiveProperty(true);
             // ステージが選択された状態なら、キャプションを表示にする
             logoStagesView.IsZoomed.ObserveEveryValueChanged(x => x.Value)
                 .Subscribe(x =>
@@ -386,14 +396,15 @@ namespace Select.Presenter
                             Debug.LogError("ボタンのステータスを変更呼び出しの失敗");
                         if (!captionStageModels[stageIndex.Value].SetEventTriggerEnabled(true))
                             Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
+                        if (!GameManager.Instance.SoftwareCursorPositionAdjusterView.SetCursorEnabled(false))
+                            Debug.LogError("カーソルの速度を変更呼び出しの失敗");
                         // デフォルト選択
                         captionStageModels[stageIndex.Value].SetSelectedGameObject();
                         if (!playerView.SetColorAlpha(0f))
                             Debug.LogError("透明度をセット呼び出しの失敗");
-                        if (!playerView.SetImageEnabled(false))
-                            Debug.LogError("透明度をセット呼び出しの失敗");
                         if (!playerView.SetSkipMode(true))
                             Debug.LogError("透明度をセット呼び出しの失敗");
+                        isEnabledCancel.Value = false;
                     }
                     else
                     {
@@ -408,12 +419,13 @@ namespace Select.Presenter
                                         Debug.LogError("ボタンのステータスを変更呼び出しの失敗");
                                     if (!logoStageModels[stageIndex.Value].SetEventTriggerEnabled(true))
                                         Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
+                                    if (!GameManager.Instance.SoftwareCursorPositionAdjusterView.SetCursorEnabled(true))
+                                        Debug.LogError("カーソルの速度を変更呼び出しの失敗");
                                     // デフォルト選択
                                     logoStageModels[stageIndex.Value].SetSelectedGameObject();
                                     if (!playerView.SetColorAlpha(255f))
                                         Debug.LogError("透明度をセット呼び出しの失敗");
-                                    if (!playerView.SetImageEnabled(true))
-                                        Debug.LogError("透明度をセット呼び出しの失敗");
+                                    isEnabledCancel.Value = true;
                                 })
                                 .AddTo(gameObject);
                         }
@@ -458,6 +470,8 @@ namespace Select.Presenter
                                         child.SetButtonEnabled(false);
                                         child.SetEventTriggerEnabled(false);
                                     }
+                                if (!GameManager.Instance.SoftwareCursorPositionAdjusterView.SetCursorEnabled(false))
+                                    Debug.LogError("カーソルの速度を変更呼び出しの失敗");
                                 if (!logoStagesView.ZoomInOutPanel(stageIndex.Value, true))
                                     Debug.LogError("該当ステージを拡大させる呼び出しの失敗");
 
@@ -476,6 +490,10 @@ namespace Select.Presenter
                                         child.SetButtonEnabled(false);
                                         child.SetEventTriggerEnabled(false);
                                     }
+                                if (!GameManager.Instance.SoftwareCursorPositionAdjusterView.SetCursorEnabled(false))
+                                    Debug.LogError("カーソルのステータスを変更呼び出しの失敗");
+                                if (!SelectGameManager.Instance.InputSystemsOwner.Exit())
+                                    Debug.LogError("InputSystem終了呼び出しの失敗");
                                 // シーン読み込み時のアニメーション
                                 Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
                                     .Subscribe(_ =>
@@ -497,6 +515,8 @@ namespace Select.Presenter
             for (var i = 0; i < pivotAndCodeIShortUIModels.Length; i++)
             {
                 var idx = i;
+                if (!pivotAndCodeIShortUIViews[idx].SetRenderDisableBackgroundFrame())
+                    Debug.LogError("選択中フレームを非表示呼び出しの失敗");
                 pivotAndCodeIShortUIModels[idx].EventState.ObserveEveryValueChanged(x => x.Value)
                     .Subscribe(x =>
                     {
@@ -508,43 +528,28 @@ namespace Select.Presenter
                             case EnumEventCommand.Selected:
                                 // 選択SEを再生
                                 if (!playerView.IsSkipMode)
+                                {
                                     SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_select);
-                                if (!playerView.SetImageEnabled(false))
-                                    Debug.LogError("イメージのステータスを変更呼び出しの失敗");
-                                Observable.FromCoroutine<bool>(observer => playerView.MoveSelectPlayer(pivotAndCodeIShortUIViews[idx].transform.position, pivotAndCodeIShortUIViews[idx].transform, observer))
-                                    .Subscribe(_ =>
-                                    {
-                                        if (!playerView.SetImageEnabled(true))
-                                            Debug.LogError("イメージのステータスを変更呼び出しの失敗");
-                                        if (!playerView.RedererCursorDirectionAndDistance(pivotAndCodeIShortUIModels[idx].Button.navigation, EnumCursorDistance.Short))
-                                            Debug.LogError("ナビゲーションの状態によってカーソル表示を変更呼び出しの失敗");
-                                        if (playerView.IsSkipMode)
-                                            if (!playerView.SetSkipMode(false))
-                                                Debug.LogError("スキップモードのセット呼び出しの失敗");
-                                    })
-                                    .AddTo(gameObject);
+                                    Observable.FromCoroutine<bool>(observer => pivotAndCodeIShortUIViews[idx].PlayRenderEnableBackgroundFrame(observer))
+                                        .Subscribe(_ => { })
+                                        .AddTo(gameObject);
+                                }
+                                else
+                                {
+                                    if (!playerView.SetSkipMode(false))
+                                        Debug.LogError("スキップモードのセット呼び出しの失敗");
+                                    if (!pivotAndCodeIShortUIViews[idx].SetRenderEnableBackgroundFrame())
+                                        Debug.LogError("選択中フレームを表示呼び出しの失敗");
+                                }
+
                                 break;
                             case EnumEventCommand.DeSelected:
-                                // 処理無し
+                                Observable.FromCoroutine<bool>(observer => pivotAndCodeIShortUIViews[idx].PlayRenderDisableBackgroundFrame(observer))
+                                    .Subscribe(_ => { })
+                                    .AddTo(gameObject);
+
                                 break;
                             case EnumEventCommand.Canceled:
-                                // キャンセルSEを再生
-                                SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_cancel);
-                                // タイトルシーンへの遷移
-                                // UI操作を許可しない
-                                foreach (var child in pivotAndCodeIShortUIModels)
-                                    if (child != null)
-                                    {
-                                        child.SetButtonEnabled(false);
-                                        child.SetEventTriggerEnabled(false);
-                                    }
-                                // シーン読み込み時のアニメーション
-                                Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
-                                    .Subscribe(_ =>
-                                    {
-                                        SelectGameManager.Instance.SceneOwner.LoadTitleScene();
-                                    })
-                                    .AddTo(gameObject);
 
                                 break;
                             case EnumEventCommand.Submited:
@@ -552,6 +557,10 @@ namespace Select.Presenter
                                 SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_code_normal);
                                 if (!pivotAndCodeIShortUIViews[idx].SetAsSemiLastSibling())
                                     Debug.LogError("SetSiblingIndexでparent配下の子オブジェクト数-1へ配置呼び出しの失敗");
+                                if (!GameManager.Instance.SoftwareCursorPositionAdjusterView.SetCursorEnabled(false))
+                                    Debug.LogError("カーソルのステータスを変更呼び出しの失敗");
+                                if (!pivotAndCodeIShortUIViews[idx].SetRenderDisableBackgroundFrame())
+                                    Debug.LogError("選択中フレームを非表示呼び出しの失敗");
                                 Observable.FromCoroutine<bool>(observer => pivotAndCodeIShortUIViews[idx].PlaySpinAnimationAndUpdateTurnValue(observer))
                                     .Subscribe(_ =>
                                     {
@@ -597,6 +606,8 @@ namespace Select.Presenter
                                                     if (!SelectGameManager.Instance.SceneOwner.SetAreaOpenedAndITState(areaOpenedAndITState))
                                                         Debug.LogError("エリア解放・結合テスト済みデータを更新呼び出しの失敗");
                                                     // T.B.D IT演出（フェードアウトしてエリアセレクトシーンへ遷移する？）
+                                                    if (!GameManager.Instance.SoftwareCursorPositionAdjusterView.SetCursorEnabled(true))
+                                                        Debug.LogError("カーソルのステータスを変更呼び出しの失敗");
                                                 }
                                             }
                                             else
@@ -608,11 +619,15 @@ namespace Select.Presenter
                                                 if (!SelectGameManager.Instance.SceneOwner.SetAreaOpenedAndITState(areaOpenedAndITState))
                                                     Debug.LogError("エリア解放・結合テスト済みデータを更新呼び出しの失敗");
                                                 // T.B.D IT演出（フェードアウトしてエリアセレクトシーンへ遷移する？）
+                                                if (!GameManager.Instance.SoftwareCursorPositionAdjusterView.SetCursorEnabled(true))
+                                                    Debug.LogError("カーソルのステータスを変更呼び出しの失敗");
                                             }
                                         }
                                         else if (-1 < result.areaIDToUpdated)
                                         {
                                             // 更新済み
+                                            if (!GameManager.Instance.SoftwareCursorPositionAdjusterView.SetCursorEnabled(true))
+                                                Debug.LogError("カーソルのステータスを変更呼び出しの失敗");
                                         }
                                         else
                                             Debug.LogError("IT実施呼び出しの失敗");
@@ -641,30 +656,20 @@ namespace Select.Presenter
                                 // 選択SEを再生
                                 if (!playerView.IsSkipMode)
                                     SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_select);
-                                if (!playerView.SetImageEnabled(false))
-                                    Debug.LogError("イメージのステータスを変更呼び出しの失敗");
-                                Observable.FromCoroutine<bool>(observer => playerView.MoveSelectPlayer(robotHeartViews[item.Index].transform.position, robotHeartViews[item.Index].transform, observer))
-                                    .Subscribe(_ =>
-                                    {
-                                        if (!playerView.SetImageEnabled(true))
-                                            Debug.LogError("イメージのステータスを変更呼び出しの失敗");
-                                        if (!playerView.RedererCursorDirectionAndDistance(robotHeartModels[item.Index].Button.navigation, EnumCursorDistance.Short))
-                                            Debug.LogError("ナビゲーションの状態によってカーソル表示を変更呼び出しの失敗");
-                                        if (playerView.IsSkipMode)
-                                            if (!playerView.SetSkipMode(false))
-                                                Debug.LogError("スキップモードのセット呼び出しの失敗");
-                                    })
-                                    .AddTo(gameObject);
                                 // セレクトシーンへの再読み込み
                                 if (!common.SetSystemCommonCashAndDefaultStageIndex(item.Content.EnumUnitID))
                                     Debug.LogError("キャッシュをセット呼び出しの失敗");
                                 // UI操作を許可しない
-                                foreach (var child in captionStageModels)
+                                foreach (var child in robotHeartModels)
                                     if (child != null)
                                     {
                                         child.SetButtonEnabled(false);
                                         child.SetEventTriggerEnabled(false);
                                     }
+                                if (!GameManager.Instance.SoftwareCursorPositionAdjusterView.SetCursorEnabled(false))
+                                    Debug.LogError("カーソルのステータスを変更呼び出しの失敗");
+                                if (!SelectGameManager.Instance.InputSystemsOwner.Exit())
+                                    Debug.LogError("InputSystem終了呼び出しの失敗");
                                 // シーン読み込み時のアニメーション
                                 Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
                                     .Subscribe(_ =>
@@ -707,10 +712,88 @@ namespace Select.Presenter
                                         child.SetButtonEnabled(true);
                                         child.SetEventTriggerEnabled(true);
                                     }
+                                if (!GameManager.Instance.SoftwareCursorPositionAdjusterView.SetCursorEnabled(true))
+                                    Debug.LogError("カーソルのステータスを変更呼び出しの失敗");
                                 break;
                             default:
                                 break;
                         }
+                    }
+                });
+            // キャンバスサイズ補正
+            canvasModel.ScaleFactor.ObserveEveryValueChanged(x => x.Value)
+                .Subscribe(x =>
+                {
+                    if (!GameManager.Instance.SoftwareCursorPositionAdjusterView.ChangeCursorScaleProcessor(x))
+                        Debug.LogError("VirtualMouseInputのカーソルのスケールを変更するProcessorを適用呼び出しの失敗");
+                });
+            // プレイヤー向き制御
+            playerModel.BodyImage.Direction.ObserveEveryValueChanged(x => x.Value)
+                .Subscribe(x =>
+                {
+                    switch ((EnumDirectionMode2D)x)
+                    {
+                        case EnumDirectionMode2D.Back:
+                            if (!playerView.SetLocalScaleX((float)EnumDirectionMode2D.Back))
+                                Debug.LogError("ローカルスケールをセット呼び出しの失敗");
+                            break;
+                        case EnumDirectionMode2D.Default:
+                            if (!playerView.SetLocalScaleX((float)EnumDirectionMode2D.Forward))
+                                Debug.LogError("ローカルスケールをセット呼び出しの失敗");
+                            break;
+                        case EnumDirectionMode2D.Forward:
+                            if (!playerView.SetLocalScaleX((float)EnumDirectionMode2D.Forward))
+                                Debug.LogError("ローカルスケールをセット呼び出しの失敗");
+                            break;
+                        default:
+                            Debug.LogError("例外エラー");
+                            break;
+                    }
+                });
+            var isOnCanceled = new BoolReactiveProperty();
+            this.UpdateAsObservable()
+                .Subscribe(_ =>
+                {
+                    if (isEnabledCancel.Value &&
+                        !isOnCanceled.Value &&
+                        SelectGameManager.Instance.InputSystemsOwner.InputUI.Canceled)
+                    {
+                        isOnCanceled.Value = true;
+                        // キャンセルSEを再生
+                        SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_cancel);
+                        // タイトルシーンへの遷移
+                        // UI操作を許可しない
+                        foreach (var child in logoStageModels)
+                            if (child != null)
+                            {
+                                child.SetButtonEnabled(false);
+                                child.SetEventTriggerEnabled(false);
+                            }
+                        // UI操作を許可しない
+                        foreach (var child in pivotAndCodeIShortUIModels)
+                            if (child != null)
+                            {
+                                child.SetButtonEnabled(false);
+                                child.SetEventTriggerEnabled(false);
+                            }
+                        // UI操作を許可しない
+                        foreach (var child in robotHeartModels)
+                            if (child != null)
+                            {
+                                child.SetButtonEnabled(false);
+                                child.SetEventTriggerEnabled(false);
+                            }
+                        if (!GameManager.Instance.SoftwareCursorPositionAdjusterView.SetCursorEnabled(false))
+                            Debug.LogError("カーソルのステータスを変更呼び出しの失敗");
+                        if (!SelectGameManager.Instance.InputSystemsOwner.Exit())
+                            Debug.LogError("InputSystem終了呼び出しの失敗");
+                        // シーン読み込み時のアニメーション
+                        Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                            .Subscribe(_ =>
+                            {
+                                SelectGameManager.Instance.SceneOwner.LoadTitleScene();
+                            })
+                            .AddTo(gameObject);
                     }
                 });
         }

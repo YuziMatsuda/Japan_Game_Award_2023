@@ -13,7 +13,7 @@ namespace Select.Model
     /// </summary>
     [RequireComponent(typeof(Button))]
     [RequireComponent(typeof(EventTrigger))]
-    public class RobotHeartModel : UIEventController, IPivotAndCodeIShortUIModel
+    public class RobotHeartModel : UIEventController, IRobotHeartModel
     {
         /// <summary>選択された場合に遷移するユニット</summary>
         [SerializeField] private EnumUnitID enumUnitID = EnumUnitID.Core;
@@ -52,5 +52,14 @@ namespace Select.Model
                 return false;
             }
         }
+    }
+
+    /// <summary>
+    /// コア
+    /// モデル
+    /// インターフェース
+    /// </summary>
+    public interface IRobotHeartModel : ISelectContentsModelParent
+    {
     }
 }

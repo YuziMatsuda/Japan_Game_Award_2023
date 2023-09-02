@@ -40,7 +40,19 @@ namespace Select.View
 
         public bool SelectPlayer(Vector3 targetPosition, Transform currentTarget)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (_transform == null)
+                    _transform = transform;
+                _transform.position = targetPosition;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
         }
 
         public bool SetColorAlpha(float alpha)

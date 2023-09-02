@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Select.Presenter;
 using Select.Audio;
+using Select.InputSystem;
 
 namespace Select.Common
 {
@@ -44,6 +45,10 @@ namespace Select.Common
         [SerializeField] private MissionOwner missionOwner;
         /// <summary>実績一覧管理のオーナー</summary>
         public MissionOwner MissionOwner => missionOwner;
+        /// <summary>InputSystemのオーナー</summary>
+        [SerializeField] private InputSystemsOwner inputSystemsOwner;
+        /// <summary>InputSystemのオーナー</summary>
+        public InputSystemsOwner InputSystemsOwner => inputSystemsOwner;
 
         private void Reset()
         {
@@ -54,6 +59,7 @@ namespace Select.Common
             gimmickOwner = GameObject.Find("GimmickOwner").GetComponent<GimmickOwner>();
             algorithmOwner = GameObject.Find("AlgorithmOwner").GetComponent<AlgorithmOwner>();
             missionOwner = GameObject.Find("MissionOwner").GetComponent<MissionOwner>();
+            inputSystemsOwner = GetComponentInChildren<InputSystemsOwner>();
         }
 
         private void Awake()
@@ -70,6 +76,7 @@ namespace Select.Common
             sceneOwner.OnStart();
             gimmickOwner.OnStart();
             algorithmOwner.OnStart();
+            inputSystemsOwner.OnStart();
         }
     }
 
