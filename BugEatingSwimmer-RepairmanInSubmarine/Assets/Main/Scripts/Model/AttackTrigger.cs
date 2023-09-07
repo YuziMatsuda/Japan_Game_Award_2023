@@ -16,6 +16,8 @@ namespace Main.Model
         [SerializeField] CircleCollider2D circleCollider;
         /// <summary>パワー状態</summary>
         public IReactiveProperty<bool> IsPower => transform.parent.GetComponent<PlayerModel>().IsPower;
+        /// <summary>押し続けて離す</summary>
+        public IReactiveProperty<bool> IsPressAndHoldAndReleased => transform.parent.GetComponent<PlayerModel>().IsPressAndHoldAndReleased;
 
         public bool SetAutoAttack(bool isEnabled)
         {

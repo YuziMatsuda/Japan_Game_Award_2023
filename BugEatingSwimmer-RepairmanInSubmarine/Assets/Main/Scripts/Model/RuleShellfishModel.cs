@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using UniRx.Triggers;
 using Main.Common;
 using System.Linq;
 
@@ -24,6 +25,33 @@ namespace Main.Model
         [SerializeField] private bool isOnlyOnceHint = false;
         /// <summary>一度のみヒントを表示させる（デフォルト：無効）</summary>
         public bool IsOnlyOnceHint => isOnlyOnceHint;
+        /// <summary>設定</summary>
+        [SerializeField] private RuleShellfishConfig ruleShellfishConfig;
+        /// <summary>設定</summary>
+        public RuleShellfishConfig RuleShellfishConfig => ruleShellfishConfig;
+        /// <summary>接触回数</summary>
+        private int _onInRangedCount;
+        /// <summary>接触回数</summary>
+        public int OnInRangedCount => _onInRangedCount;
+
+        private void Reset()
+        {
+            ruleShellfishConfig = GetComponent<RuleShellfishConfig>();
+        }
+
+        private void Start()
+        {
+            if (ruleShellfishConfig.IsRetake)
+                this.OnTriggerExit2DAsObservable()
+                    .Subscribe(collision =>
+                    {
+                        if (0 < tags.Where(q => collision.CompareTag(q)).Select(q => q).ToArray().Length)
+                        {
+                            _isInRange.Value = false;
+                            _onInRangedCount++;
+                        }
+                    });
+        }
 
         private void OnTriggerEnter2D(Collider2D collision)
         {

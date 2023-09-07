@@ -21,6 +21,10 @@ namespace Main.Model
         private readonly BoolReactiveProperty _isTurning = new BoolReactiveProperty();
         /// <summary>ターンアニメーション実行中</summary>
         public IReactiveProperty<bool> IsTurning => _isTurning;
+        /// <summary>ターン失敗アニメーション実行中</summary>
+        private readonly BoolReactiveProperty _isTurningFaild = new BoolReactiveProperty();
+        /// <summary>ターン失敗アニメーション実行中</summary>
+        public IReactiveProperty<bool> IsTurningFaild => _isTurningFaild;
         /// <summary>方角モード</summary>
         private readonly IntReactiveProperty _enumDirectionMode = new IntReactiveProperty();
         /// <summary>方角モード</summary>
@@ -39,8 +43,6 @@ namespace Main.Model
         private bool _onTriggerEnter2DDisabled;
         /// <summary>通さない接触対象オブジェクトタグ</summary>
         [SerializeField] private string[] notLetPassTags = { ConstTagNames.TAG_NAME_DUSTCONNECTSIGNAL };
-        /// <summary>読み取り専用フラグ</summary>
-        private bool _readonlyCodeMode;
         /// <summary>感情コードを通過</summary>
         private readonly BoolReactiveProperty _isPathEmotions = new BoolReactiveProperty();
         /// <summary>感情コードを通過</summary>
@@ -78,9 +80,9 @@ namespace Main.Model
             }
             // サン（ゴ）ショウコードであるかの状態をセット
             // ピボット側では動的な値として扱う
-            _readonlyCodeMode = GetComponent<PivotConfig>().ReadonlyCodeMode;
-            if (_readonlyCodeMode)
-                shadowCodeCell.SetDefaultDirection();
+            if (GetComponent<PivotConfig>().ReadonlyCodeMode)
+                if (!shadowCodeCell.SetDefaultDirection())
+                    Debug.LogError("デフォルト角度をセット呼び出しの失敗");
         }
 
         protected override void OnTriggerEnter2D(Collider2D collision)
@@ -94,11 +96,13 @@ namespace Main.Model
             {
                 // プレイヤーがパワー状態か
                 var trigger = collision.GetComponent<AttackTrigger>();
-                if (_readonlyCodeMode &&
+                if (GetComponent<PivotConfig>().ReadonlyCodeMode &&
                     trigger != null &&
-                    trigger.IsPower.Value)
+                    trigger.IsPower.Value &&
+                    trigger.IsPressAndHoldAndReleased.Value)
                 {
-                    _readonlyCodeMode = false;
+                    if (!GetComponent<PivotConfig>().SetReadonlyCodeMode(false))
+                        Debug.LogError("サン（ゴ）ショウコードであるかをセット呼び出しの失敗");
                     // パワー解除時にサン（ゴ）ショウコードの破片がとぶ
                     foreach (var item in GetComponent<PivotConfig>().CoralParts)
                         Instantiate(item, _transform.position, Quaternion.identity, _transform);
@@ -111,7 +115,7 @@ namespace Main.Model
                         Debug.LogError("パワー状態をセット呼び出しの失敗");
                 }
 
-                if (!_readonlyCodeMode)
+                if (!GetComponent<PivotConfig>().ReadonlyCodeMode)
                 {
                     // 通常コードの振る舞い
                     _isTurning.Value = true;
@@ -131,6 +135,17 @@ namespace Main.Model
                                 .Subscribe(_ =>
                                 {
                                     _isTurning.Value = false;
+                                    var config = GetComponent<PivotConfig>();
+                                    if (config.EnumInteractID.Equals(EnumInteractID.IN0000))
+                                    {
+                                        if (!config.SetEnumInteractID(EnumInteractID.IN0001))
+                                            Debug.LogError("インタラクトIDをセット呼び出しの失敗");
+                                        if (!config.SetReadonlyCodeMode(true))
+                                            Debug.LogError("サン（ゴ）ショウコードであるかをセット呼び出しの失敗");
+                                        if (GetComponent<PivotConfig>().ReadonlyCodeMode)
+                                            if (!shadowCodeCell.SetDefaultDirection())
+                                                Debug.LogError("デフォルト角度をセット呼び出しの失敗");
+                                    }
                                 })
                                 .AddTo(gameObject);
                         })
@@ -138,17 +153,22 @@ namespace Main.Model
                 }
                 else
                 {
-                    // サン（ゴ）ショウコードとしての振る舞い
-                    // 回転アニメーション
-                    if (!lightCodeCell.SetAlphaOff())
-                        Debug.LogError("アルファ値をセット呼び出しの失敗");
-                    Observable.FromCoroutine<bool>(observer => shadowCodeCell.PlayLockSpinAnimation(observer))
-                        .Subscribe(_ =>
-                        {
-                            if (!lightCodeCell.InitializeLight((EnumDirectionMode)_enumDirectionMode.Value))
-                                Debug.LogError("アルファ値をセット呼び出しの失敗");
-                        })
-                        .AddTo(gameObject);
+                    if (!_isTurningFaild.Value)
+                    {
+                        // サン（ゴ）ショウコードとしての振る舞い
+                        // 回転アニメーション
+                        if (!lightCodeCell.SetAlphaOff())
+                            Debug.LogError("アルファ値をセット呼び出しの失敗");
+                        _isTurningFaild.Value = true;
+                        Observable.FromCoroutine<bool>(observer => shadowCodeCell.PlayLockSpinAnimation(observer))
+                            .Subscribe(_ =>
+                            {
+                                if (!lightCodeCell.InitializeLight((EnumDirectionMode)_enumDirectionMode.Value))
+                                    Debug.LogError("アルファ値をセット呼び出しの失敗");
+                                _isTurningFaild.Value = false;
+                            })
+                            .AddTo(gameObject);
+                    }
                 }
             }
             else if (0 < notLetPassTags.Where(q => collision.CompareTag(q)).Select(q => q).ToArray().Length &&

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 9071769350043157424}
   - component: {fileID: 3884608122686398067}
   - component: {fileID: 6814013901513898682}
+  - component: {fileID: 4842815785273414474}
   m_Layer: 0
   m_Name: RuleShellfish
   m_TagString: RuleShellfish
@@ -64,6 +65,7 @@ MonoBehaviour:
   tags:
   - TouchTrigger
   isOnlyOnceHint: 0
+  ruleShellfishConfig: {fileID: 4842815785273414474}
 --- !u!58 &3884608122686398067
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -101,6 +103,18 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &4842815785273414474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 217019735266134770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c756ab4380adc94fbc6806263b0f269, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6544642817942381022
 GameObject:
   m_ObjectHideFlags: 0

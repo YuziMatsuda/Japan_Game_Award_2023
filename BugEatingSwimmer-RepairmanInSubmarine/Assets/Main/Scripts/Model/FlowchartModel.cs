@@ -36,6 +36,14 @@ namespace Main.Model
         /// ステージ番号に紐づくシナリオブロック名称を管理
         /// </summary>
         [SerializeField] private BlockNamesFromSceneId[] blockNamesFromSceneIds;
+        /// <summary>
+        /// ステージ番号に紐づくシナリオブロック名称を管理（再び話しかける）
+        /// </summary>
+        [SerializeField] private BlockNamesFromSceneId[] blockNamesFromSceneIdsOfRetake;
+        /// <summary>
+        /// ステージ番号に紐づくシナリオブロック名称を管理（再び話しかける）
+        /// </summary>
+        public BlockNamesFromSceneId[] BlockNamesFromSceneIdsOfRetake => blockNamesFromSceneIdsOfRetake;
 
         /// <summary>
         /// ミッションIDに紐づくシナリオブロック名称を管理
@@ -59,6 +67,21 @@ namespace Main.Model
         [SerializeField] private AutoMoveTracker[] autoMoveTrackers;
         /// <summary>自動移動する際のポイント配列</summary>
         public AutoMoveTracker[] AutoMoveTrackers => autoMoveTrackers;
+
+        /// <summary>
+        /// インタラクトIDに紐づくシナリオブロック名称を管理
+        /// </summary>
+        [System.Serializable]
+        public struct BlockNamesFromInteractID
+        {
+            /// <summary>インタラクトID</summary>
+            public EnumInteractID enumInteractID;
+            /// <summary>シナリオブロック名</summary>
+            public string blockName;
+        }
+
+        /// <summary>インタラクトIDに紐づくシナリオブロック名称を管理</summary>
+        [SerializeField] private BlockNamesFromInteractID[] blockNamesFromInteractIDs;
 
         /// <summary>
         /// シナリオ読み込まれた
@@ -193,6 +216,56 @@ namespace Main.Model
                 return false;
             }
         }
+
+        public string GetBlockNameOfRetake(int sceneId)
+        {
+            try
+            {
+                if (blockNamesFromSceneIdsOfRetake.Length < 1)
+                    throw new System.Exception("データが空");
+
+                if (0 < sceneId)
+                {
+                    var blockNames = blockNamesFromSceneIdsOfRetake.Where(q => q.sceneId == sceneId)
+                        .Select(q => q.blockName)
+                        .Distinct()
+                        .ToArray();
+                    return 0 < blockNames.Length ? blockNames[0] : "";
+                }
+                else
+                    throw new System.Exception("シーン対象外");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return null;
+            }
+        }
+
+        public string GetBlockNameOfInteract(EnumInteractID interactID)
+        {
+            try
+            {
+                if (blockNamesFromInteractIDs.Length < 1)
+                    throw new System.Exception("データが空");
+
+                if (!EnumInteractID.None.Equals(interactID))
+                {
+                    var blockNames = blockNamesFromInteractIDs.Where(q => q.enumInteractID.Equals(interactID))
+                        .Select(q => q.blockName)
+                        .Distinct()
+                        .ToArray();
+                    return 0 < blockNames.Length ? blockNames[0] : "";
+                }
+                else
+                    throw new System.Exception("シーン対象外");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return null;
+            }
+        }
     }
 
     /// <summary>
@@ -222,5 +295,17 @@ namespace Main.Model
         /// <param name="scenarioNo">シナリオ番号</param>
         /// <returns>成功／失敗</returns>
         public bool SetReadedScenarioNo(int scenarioNo);
+        /// <summary>
+        /// ステージ番号から対象のブロック名を取得（再度話しかけた場合）
+        /// </summary>
+        /// <param name="sceneId">シナリオ番号</param>
+        /// <returns>成功／失敗</returns>
+        public string GetBlockNameOfRetake(int sceneId);
+        /// <summary>
+        /// ステージ番号から対象のブロック名を取得（再度話しかけた場合）
+        /// </summary>
+        /// <param name="interactID">インタラクトID</param>
+        /// <returns>成功／失敗</returns>
+        public string GetBlockNameOfInteract(EnumInteractID interactID);
     }
 }

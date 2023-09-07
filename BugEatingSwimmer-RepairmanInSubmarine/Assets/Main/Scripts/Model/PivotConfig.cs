@@ -31,6 +31,25 @@ namespace Main.Model
         [SerializeField] private bool readonlyCodeMode;
         /// <summary>サン（ゴ）ショウコードであるか</summary>
         public bool ReadonlyCodeMode => readonlyCodeMode;
+        /// <summary>
+        /// サン（ゴ）ショウコードであるかをセット
+        /// </summary>
+        /// <param name="readonlyCodeMode">サン（ゴ）ショウコードであるか</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetReadonlyCodeMode(bool readonlyCodeMode)
+        {
+            try
+            {
+                this.readonlyCodeMode = readonlyCodeMode;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
         /// <summary>サン（ゴ）ショウコード破片</summary>
         [SerializeField] private Transform[] coralParts;
         /// <summary>サン（ゴ）ショウコード破片</summary>
@@ -39,5 +58,28 @@ namespace Main.Model
         [SerializeField] private bool emotionsCodeMode;
         /// <summary>感情コードであるか</summary>
         public bool EmotionsCodeMode => emotionsCodeMode;
+        /// <summary>インタラクトID</summary>
+        [SerializeField] private EnumInteractID enumInteractID;
+        /// <summary>インタラクトID</summary>
+        public EnumInteractID EnumInteractID => enumInteractID;
+        /// <summary>
+        /// インタラクトIDをセット
+        /// </summary>
+        /// <param name="enumInteractID">インタラクトID</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetEnumInteractID(EnumInteractID enumInteractID)
+        {
+            try
+            {
+                this.enumInteractID = enumInteractID;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
     }
 }

@@ -42,6 +42,15 @@ namespace Main.View
             yield return null;
         }
 
+        public IEnumerator PlayChangeSpriteOpenBetweenClose(System.IObserver<bool> observer)
+        {
+            Observable.FromCoroutine<bool>(observer => bodySpriteRuleShellfish.PlayChangeSpriteOpenBetweenClose(observer))
+                .Subscribe(_ => observer.OnNext(true))
+                .AddTo(gameObject);
+
+            yield return null;
+        }
+
         public bool SetColorSpriteIsVisible(bool isVisible)
         {
             return ((IBodySpriteRuleShellfish)bodySpriteRuleShellfish).SetColorSpriteIsVisible(isVisible);
