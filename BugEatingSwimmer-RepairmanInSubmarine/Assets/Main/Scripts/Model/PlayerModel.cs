@@ -73,6 +73,8 @@ namespace Main.Model
         private readonly BoolReactiveProperty _isPressAndHoldAndReleased = new BoolReactiveProperty();
         /// <summary>押し続けて離す</summary>
         public IReactiveProperty<bool> IsPressAndHoldAndReleased => _isPressAndHoldAndReleased;
+        /// <summary>押し続けて離すクールタイム</summary>
+        [SerializeField] private float isPressAndHoldAndReleasedCoolTime = .1f;
         /// <summary>ターン実行状態</summary>
         private readonly BoolReactiveProperty _onTurn = new BoolReactiveProperty();
         /// <summary>ターン実行状態</summary>
@@ -193,29 +195,35 @@ namespace Main.Model
                 }
                 else
                 {
-                    if (MainGameManager.Instance.InputSystemsOwner.InputPlayer.Attacked &&
-                        !MainGameManager.Instance.InputSystemsOwner.InputPlayer.Canceled)
+                    if (!isPressAndHoldAndReleased.Value)
                     {
-                        inputPowerChargeTime.Value += Time.deltaTime;
-                        isPressAndHoldAndReleased.Value = false;
+                        if (MainGameManager.Instance.InputSystemsOwner.InputPlayer.Attacked &&
+                            !MainGameManager.Instance.InputSystemsOwner.InputPlayer.Canceled)
+                        {
+                            inputPowerChargeTime.Value += Time.deltaTime;
+                        }
+                        else if (0f < inputPowerChargeTime.Value &&
+                            !isPlayingAction.Value &&
+                            powerChargePhaseTimes[2] < inputPowerChargeTime.Value &&
+                            !MainGameManager.Instance.InputSystemsOwner.InputPlayer.Canceled)
+                        {
+                            inputPowerChargeTime.Value = 0f;
+                            if (!PlayPunchAction(isPlayingAction, moveVelocityLast, movementDirectionMode))
+                                Debug.LogError("パンチアクション呼び出しの失敗");
+                            isPressAndHoldAndReleased.Value = true;
+                            // 再押下までの待機時間
+                            DOVirtual.DelayedCall(isPressAndHoldAndReleasedCoolTime, () => isPressAndHoldAndReleased.Value = false);
+                        }
+                        else if (0f < inputPowerChargeTime.Value)
+                        {
+                            inputPowerChargeTime.Value = 0f;
+                            if (!PlayPunchAction(isPlayingAction, moveVelocityLast, movementDirectionMode))
+                                Debug.LogError("パンチアクション呼び出しの失敗");
+                        }
+                        // float型の最大値丸め込み
+                        if (1037f < inputPowerChargeTime.Value)
+                            inputPowerChargeTime.Value = 1.1f;
                     }
-                    else if (0f < inputPowerChargeTime.Value &&
-                        !isPlayingAction.Value &&
-                        powerChargePhaseTimes[2] < inputPowerChargeTime.Value &&
-                        !MainGameManager.Instance.InputSystemsOwner.InputPlayer.Canceled)
-                    {
-                        inputPowerChargeTime.Value = 0f;
-                        if (!PlayPunchAction(isPlayingAction, moveVelocityLast, movementDirectionMode))
-                            Debug.LogError("パンチアクション呼び出しの失敗");
-                        isPressAndHoldAndReleased.Value = true;
-                    }
-                    else if (0f < inputPowerChargeTime.Value)
-                    {
-                        inputPowerChargeTime.Value = 0f;
-                    }
-                    // float型の最大値丸め込み
-                    if (1037f < inputPowerChargeTime.Value)
-                        inputPowerChargeTime.Value = 1.1f;
                 }
 
                 return true;

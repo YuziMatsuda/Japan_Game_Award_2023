@@ -535,6 +535,50 @@ namespace Main.Common
                 return false;
             }
         }
+
+        public bool SendReceiverOfRetake(MessageReceived[] receivers, FlowchartModel flowchartModel, Dictionary<EnumSystemCommonCash, int> currentStageDic)
+        {
+            try
+            {
+                foreach (var receiver in receivers)
+                {
+                    var n = flowchartModel.GetBlockNameOfRetake(currentStageDic[EnumSystemCommonCash.SceneId]);
+                    if (!string.IsNullOrEmpty(n))
+                        receiver.OnSendFungusMessage(n);
+                    else
+                        Debug.LogWarning("取得ブロック名無し");
+                }
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool SendReceiverOfInteract(MessageReceived[] receivers, FlowchartModel flowchartModel, EnumInteractID interactID)
+        {
+            try
+            {
+                foreach (var receiver in receivers)
+                {
+                    var n = flowchartModel.GetBlockNameOfInteract(interactID);
+                    if (!string.IsNullOrEmpty(n))
+                        receiver.OnSendFungusMessage(n);
+                    else
+                        Debug.LogWarning("取得ブロック名無し");
+                }
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
     }
 
     /// <summary>
@@ -696,5 +740,21 @@ namespace Main.Common
         /// <param name="subNumber">サブ番号</param>
         /// <returns>成功／失敗</returns>
         public bool SendReceiver(MessageReceived[] receivers, FlowchartModel flowchartModel, Dictionary<EnumSystemCommonCash, int> currentStageDic, int subNumber);
+        /// <summary>
+        /// シナリオのレシーバーへ送信
+        /// </summary>
+        /// <param name="receivers">Fungusのレシーバー</param>
+        /// <param name="flowchartModel">フローチャートのモデル</param>
+        /// <param name="currentStageDic">選択ステージ</param>
+        /// <returns>成功／失敗</returns>
+        public bool SendReceiverOfRetake(MessageReceived[] receivers, FlowchartModel flowchartModel, Dictionary<EnumSystemCommonCash, int> currentStageDic);
+        /// <summary>
+        /// シナリオのレシーバーへ送信
+        /// </summary>
+        /// <param name="receivers">Fungusのレシーバー</param>
+        /// <param name="flowchartModel">フローチャートのモデル</param>
+        /// <param name="interactID">インタラクトID</param>
+        /// <returns>成功／失敗</returns>
+        public bool SendReceiverOfInteract(MessageReceived[] receivers, FlowchartModel flowchartModel, EnumInteractID interactID);
     }
 }

@@ -69,6 +69,20 @@ namespace Main.View
                 return false;
             }
         }
+
+        public IEnumerator PlayChangeSpriteOpenBetweenClose(System.IObserver<bool> observer)
+        {
+            if (!GetComponent<SpriteRenderer>().sprite.Equals(sprites[0]))
+            {
+                DOTween.To(() => 1, x => GetComponent<SpriteRenderer>().sprite = sprites[x], 0, fadeDuration)
+                    .OnComplete(() => observer.OnNext(true));
+            }
+            else
+                // 既に閉じている場合は発行するのみ
+                observer.OnNext(true);
+
+            yield return null;
+        }
     }
 
     /// <summary>
@@ -89,5 +103,11 @@ namespace Main.View
         /// <param name="observer">バインド</param>
         /// <returns>コルーチン</returns>
         public IEnumerator PlayChangeSpriteCloseBetweenOpen(System.IObserver<bool> observer);
+        /// <summary>
+        /// スプライトを開いた状態から閉じる状態へ切り替えるアニメーションを再生
+        /// </summary>
+        /// <param name="observer">バインド</param>
+        /// <returns>コルーチン</returns>
+        public IEnumerator PlayChangeSpriteOpenBetweenClose(System.IObserver<bool> observer);
     }
 }

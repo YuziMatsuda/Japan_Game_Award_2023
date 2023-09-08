@@ -86,6 +86,8 @@ namespace Main.Presenter
         [SerializeField] private MareBlanketSeaView mareBlanketSeaView;
         /// <summary>ショートカットキーUIのビュー</summary>
         [SerializeField] private ShortcutGuideView shortcutGuideView;
+        /// <summary>コードをつつく場所を示すカーソルのビュー</summary>
+        [SerializeField] private AttackCodeCursorView attackCodeCursorView;
 
         private void Reset()
         {
@@ -130,6 +132,7 @@ namespace Main.Presenter
             flowchartModel = GameObject.Find("Flowchart").GetComponent<FlowchartModel>();
             mareBlanketSeaView = GameObject.Find("MareBlanketSea").GetComponent<MareBlanketSeaView>();
             shortcutGuideView = GameObject.Find("ShortcutGuide").GetComponent<ShortcutGuideView>();
+            attackCodeCursorView = GameObject.Find("AttackCodeCursor").GetComponent<AttackCodeCursorView>();
         }
 
         public void OnStart()
@@ -148,6 +151,8 @@ namespace Main.Presenter
             moveGuideView.gameObject.SetActive(false);
             jumpGuideView.SetAlpha(EnumFadeState.Close);
             jumpGuideView.gameObject.SetActive(false);
+            if (!attackCodeCursorView.SetAlpha(EnumFadeState.Close))
+                Debug.LogError("アルファ値をセット呼び出しの失敗");
             if (common.IsOpeningTutorialMode())
             {
                 assignedSeastarCountView.gameObject.SetActive(false);
@@ -289,6 +294,8 @@ namespace Main.Presenter
                             Debug.LogError("アサインを保存呼び出しの失敗");
                         if (!assignedSeastarCountView.SetCounterText(MainGameManager.Instance.GimmickOwner.GetAssinedCounter()))
                             Debug.LogError("ヒトデ総配属人数をセット呼び出しの失敗");
+                        if (!attackCodeCursorView.SetAlpha(EnumFadeState.Close))
+                            Debug.LogError("アルファ値をセット呼び出しの失敗");
                         if (common.IsFinalLevel(areaUnits, currentStageDic))
                         {
                             var missions = common.LoadSaveDatasCSVAndGetMission();
@@ -664,6 +671,8 @@ namespace Main.Presenter
                             .AddTo(gameObject);
                     }
                 });
+            // 正解コードをつついたかどうか（チュートリアルで使用）
+            var correctInteractActionedByTutorial = new BoolReactiveProperty();
             // レベルのインスタンスに合わせてメンバー変数をセット
             MainGameManager.Instance.LevelOwner.IsInstanced.ObserveEveryValueChanged(x => x.Value)
                 .Subscribe(x =>
@@ -1370,6 +1379,17 @@ namespace Main.Presenter
                                     {
                                         if (x)
                                         {
+                                            // 対象のコードがインタラクトIDを持っていた場合は対応するレシーバーを送信
+                                            if (!codeObjs[idx].GetComponent<PivotConfig>().EnumInteractID.Equals(EnumInteractID.None))
+                                            {
+                                                correctInteractActionedByTutorial.Value = true;
+                                                if (!playerModel.SetInputBan(true))
+                                                    Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
+                                                if (!playerModel.SetIsBanMoveVelocity(true))
+                                                    Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
+                                                if (!common.SendReceiverOfInteract(receivers, flowchartModel, codeObjs[idx].GetComponent<PivotConfig>().EnumInteractID))
+                                                    Debug.LogError("シナリオのレシーバーへ送信呼び出しの失敗");
+                                            }
                                             // コード回転のSE
                                             MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_code_normal);
                                             // IsPostingがTrueならバグフィックス状態
@@ -1497,6 +1517,21 @@ namespace Main.Presenter
                                 //            // コード側の処理は特になし
                                 //        }
                                 //    });
+                                codeObjs[idx].GetComponent<PivotModel>().IsTurningFaild.ObserveEveryValueChanged(x => x.Value)
+                                    .Subscribe(x =>
+                                    {
+                                        if (x)
+                                        {
+                                            if (!playerModel.SetInputBan(true))
+                                                Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
+                                            if (!playerModel.SetIsBanMoveVelocity(true))
+                                                Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
+                                            // 対象のコードがインタラクトIDを持っていた場合は対応するレシーバーを送信
+                                            if (!codeObjs[idx].GetComponent<PivotConfig>().EnumInteractID.Equals(EnumInteractID.None))
+                                                if (!common.SendReceiverOfInteract(receivers, flowchartModel, codeObjs[idx].GetComponent<PivotConfig>().EnumInteractID))
+                                                    Debug.LogError("シナリオのレシーバーへ送信呼び出しの失敗");
+                                        }
+                                    });
                             }
                         }
                         else
@@ -1654,8 +1689,17 @@ namespace Main.Presenter
                                             Observable.FromCoroutine<bool>(observer => ruleShellfish.GetComponent<RuleShellfishView>().PlayChangeSpriteCloseBetweenOpen(observer))
                                                 .Subscribe(_ =>
                                                 {
-                                                    if (!common.SendReceiver(receivers, flowchartModel, currentStageDic, common.IsOpeningTutorialMode() ? 1 : -1))
-                                                        Debug.LogError("シナリオのレシーバーへ送信呼び出しの失敗");
+                                                    if (ruleShellfish.GetComponent<RuleShellfishModel>().RuleShellfishConfig.IsRetake &&
+                                                        0 < ruleShellfish.GetComponent<RuleShellfishModel>().OnInRangedCount)
+                                                    {
+                                                        if (!common.SendReceiverOfRetake(receivers, flowchartModel, currentStageDic))
+                                                            Debug.LogError("シナリオのレシーバーへ送信呼び出しの失敗");
+                                                    }
+                                                    else
+                                                    {
+                                                        if (!common.SendReceiver(receivers, flowchartModel, currentStageDic, common.IsOpeningTutorialMode() ? 1 : -1))
+                                                            Debug.LogError("シナリオのレシーバーへ送信呼び出しの失敗");
+                                                    }
                                                 })
                                                 .AddTo(gameObject);
                                         }
@@ -1737,14 +1781,50 @@ namespace Main.Presenter
                                     .Select(q => q))
                                     if (!item.GetComponent<JawsHiModel>().SetIsCollisionBan(false))
                                         Debug.LogError("コライダー禁止中フラグをセット呼び出しの失敗");
+                                var ruleShellfish = GameObject.Find(ConstTagNames.RULESHELLFISH);
                                 if (common.IsOpeningTutorialMode())
                                 {
-                                    var ruleShellfish = GameObject.Find(ConstTagNames.RULESHELLFISH);
                                     if (!ruleShellfish.GetComponent<RuleShellfishModel>().SetColliderState(true))
                                         Debug.LogError("コライダーの状態をセット呼び出しの失敗");
                                     if (!flowchartModel.SetReadedScenarioNo(0))
                                         Debug.LogError("シナリオ番号をセット呼び出しの失敗");
                                 }
+                                if (ruleShellfish != null)
+                                {
+                                    if (ruleShellfish.GetComponent<RuleShellfishModel>().RuleShellfishConfig.IsRetake)
+                                        Observable.FromCoroutine<bool>(observer => ruleShellfish.GetComponent<RuleShellfishView>().PlayChangeSpriteOpenBetweenClose(observer))
+                                            .Subscribe(_ => { })
+                                            .AddTo(gameObject);
+                                    if (ruleShellfish.GetComponent<RuleShellfishModel>().RuleShellfishConfig.IsInstanceOfReadedScenarioTutorial)
+                                    {
+                                        var enumInteractIDSub = new IntReactiveProperty((int)EnumInteractIDSub.None);
+                                        Observable.FromCoroutine<bool>(obserser => attackCodeCursorView.PlayFadeAnimation(obserser, EnumFadeState.Open))
+                                            .Subscribe(_ =>
+                                            {
+                                                if (enumInteractIDSub.Value == (int)EnumInteractIDSub.None)
+                                                {
+                                                    enumInteractIDSub.Value = (int)EnumInteractIDSub.INSB00;
+                                                    if (!attackCodeCursorView.PlayRoundMoveAnimation(ruleShellfish.GetComponent<RuleShellfishModel>().RuleShellfishConfig.InstanceOfReadedScenarioTutorialProperty.guideUIIdxes[enumInteractIDSub.Value], (EnumInteractIDSub)enumInteractIDSub.Value))
+                                                        Debug.LogError("カーソル往復移動アニメーション呼び出しの失敗");
+                                                }
+                                            })
+                                            .AddTo(gameObject);
+                                        if (enumInteractIDSub.Value == (int)EnumInteractIDSub.INSB00 &&
+                                            correctInteractActionedByTutorial.Value)
+                                        {
+                                            enumInteractIDSub.Value = (int)EnumInteractIDSub.INSB01;
+                                            if (!attackCodeCursorView.RewindRoundMoveAnimation(ruleShellfish.GetComponent<RuleShellfishModel>().RuleShellfishConfig.InstanceOfReadedScenarioTutorialProperty.guideUIIdxes[enumInteractIDSub.Value], (EnumInteractIDSub)enumInteractIDSub.Value))
+                                                Debug.LogError("カーソル往復移動アニメーション・一時停止呼び出しの失敗");
+                                            if (!attackCodeCursorView.SetSelectToChild(ruleShellfish.GetComponent<RuleShellfishModel>().RuleShellfishConfig.InstanceOfReadedScenarioTutorialProperty.guideUIIdxes[enumInteractIDSub.Value], (EnumInteractIDSub)enumInteractIDSub.Value))
+                                                Debug.LogError("カーソル配置位置の変更呼び出しの失敗");
+                                            if (!attackCodeCursorView.PlayRoundMoveAnimation(ruleShellfish.GetComponent<RuleShellfishModel>().RuleShellfishConfig.InstanceOfReadedScenarioTutorialProperty.guideUIIdxes[enumInteractIDSub.Value], (EnumInteractIDSub)enumInteractIDSub.Value))
+                                                Debug.LogError("カーソル往復移動アニメーション呼び出しの失敗");
+                                        }
+                                    }
+                                    if (!flowchartModel.SetReadedScenarioNo(0))
+                                        Debug.LogError("シナリオ番号をセット呼び出しの失敗");
+                                }
+
                                 break;
                             case 3:
                                 Observable.FromCoroutine<bool>(observer => playerView.PlayMoveAnimation(observer, flowchartModel.AutoMoveTrackers[0].transform.position))
