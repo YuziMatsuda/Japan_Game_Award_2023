@@ -922,11 +922,22 @@ namespace Main.Presenter
                                     {
                                         if (!seastarViews[idx].SetColorAssigned())
                                             Debug.LogError("アサイン済みのカラー設定呼び出しの失敗");
+                                        Observable.FromCoroutine<bool>(observer => seastarViews[idx].PlaySpinAndScaling(observer))
+                                            .Subscribe(x =>
+                                            {
+                                                if (x)
+                                                    Observable.FromCoroutine<bool>(observer => seastarViews[idx].PlaySwinging(observer))
+                                                        .Subscribe(_ => { })
+                                                        .AddTo(gameObject);
+                                            })
+                                            .AddTo(gameObject);
                                     }
                                     else
                                     {
                                         if (!seastarViews[idx].SetColorUnAssign())
                                             Debug.LogError("未アサイン状態のカラー設定呼び出しの失敗");
+                                        if (!seastarViews[idx].StopSpinAndScaling())
+                                            Debug.LogError("回転しつつ拡大縮小アニメーションを停止呼び出しの失敗");
                                     }
                                 });
                             seastarModels[idx].IsAssignedLocal.ObserveEveryValueChanged(x => x.Value)
@@ -1262,46 +1273,54 @@ namespace Main.Presenter
                                                         isBugFixed = item[EnumMainSceneStagesModulesState.Fixed].Equals(ConstGeneric.DIGITFORM_TRUE);
                                                     }
                                                     // 取り出したバグのモデルを監視
-                                                    if (!goalNode.GetComponent<GoalNodeView>().bugfix())
-                                                        Debug.LogError("バグフィックス呼び出しの失敗");
-                                                    var bug = goalNode.GetComponent<GoalNodeView>().InstanceBug;
-                                                    if (!bug.GetComponent<BugView>().SetColorCleared(isBugFixed))
-                                                        Debug.LogError("カラーを設定呼び出しの失敗");
-                                                    if (!bug.GetComponent<BugView>().PlayBugAura())
-                                                        Debug.LogError("バグオーラを発生呼び出しの失敗");
-                                                    bug.GetComponent<BugModel>().IsEated.ObserveEveryValueChanged(x => x.Value)
+                                                    Observable.FromCoroutine<bool>(observer => goalNode.GetComponent<GoalNodeView>().bugfix(observer, isBugFixed))
                                                         .Subscribe(x =>
                                                         {
                                                             if (x)
                                                             {
-                                                                // HistorySignalsPostedの内容を保存する
-                                                                foreach (var item in mainSceneStagesModulesState.Where(q => q[EnumMainSceneStagesModulesState.SceneId].Equals(currentStageDic[EnumSystemCommonCash.SceneId] + "") &&
-                                                                    q[EnumMainSceneStagesModulesState.Terms].Equals(string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray()))).Select(q => q))
-                                                                {
-                                                                    item[EnumMainSceneStagesModulesState.Fixed] = ConstGeneric.DIGITFORM_TRUE;
-                                                                }
-                                                                if (!playerModel.AutoPlayPunchAction())
-                                                                    Debug.LogError("自動攻撃をセット呼び出しの失敗");
-                                                                if (!playerModel.SetInputBan(true))
-                                                                    Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
-                                                                if (!playerModel.SetIsBanMoveVelocity(true))
-                                                                    Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
-                                                                foreach (var item in jawsHis.Where(q => q != null)
-                                                                    .Select(q => q))
-                                                                    if (!item.GetComponent<JawsHiModel>().SetIsCollisionBan(true))
-                                                                        Debug.LogError("コライダー禁止中フラグをセット呼び出しの失敗");
-                                                                if (!bug.GetComponent<BugView>().PlayCorrectOrWrong())
-                                                                    Debug.LogError("バグ消失パーティクルを再生呼び出しの失敗");
-                                                                if (!bug.GetComponent<BugView>().StopBugAura())
-                                                                    Debug.LogError("バグオーラを停止呼び出しの失敗");
-                                                                Observable.FromCoroutine<bool>(observer => bug.GetComponent<BugView>().PlayFadeAnimation(observer))
-                                                                    .Subscribe(_ =>
-                                                                    {
-                                                                        isGoalReached.Value = true;
-                                                                    })
+                                                                var bug = goalNode.GetComponent<GoalNodeView>().InstanceBug;
+                                                                var bugView = bug.GetComponent<BugView>();
+                                                                Observable.FromCoroutine<bool>(observer => bugView.PlayHovering(observer))
+                                                                    .Subscribe(_ => { })
                                                                     .AddTo(gameObject);
+                                                                bug.GetComponent<BugModel>().IsEated.ObserveEveryValueChanged(x => x.Value)
+                                                                    .Subscribe(x =>
+                                                                    {
+                                                                        if (x)
+                                                                        {
+                                                                            // HistorySignalsPostedの内容を保存する
+                                                                            foreach (var item in mainSceneStagesModulesState.Where(q => q[EnumMainSceneStagesModulesState.SceneId].Equals(currentStageDic[EnumSystemCommonCash.SceneId] + "") &&
+                                                                                q[EnumMainSceneStagesModulesState.Terms].Equals(string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID).ToArray()))).Select(q => q))
+                                                                            {
+                                                                                item[EnumMainSceneStagesModulesState.Fixed] = ConstGeneric.DIGITFORM_TRUE;
+                                                                            }
+                                                                            if (!playerModel.AutoPlayPunchAction())
+                                                                                Debug.LogError("自動攻撃をセット呼び出しの失敗");
+                                                                            if (!playerModel.SetInputBan(true))
+                                                                                Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
+                                                                            if (!playerModel.SetIsBanMoveVelocity(true))
+                                                                                Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
+                                                                            foreach (var item in jawsHis.Where(q => q != null)
+                                                                                .Select(q => q))
+                                                                                if (!item.GetComponent<JawsHiModel>().SetIsCollisionBan(true))
+                                                                                    Debug.LogError("コライダー禁止中フラグをセット呼び出しの失敗");
+                                                                            if (!bugView.PlayCorrectOrWrong())
+                                                                                Debug.LogError("バグ消失パーティクルを再生呼び出しの失敗");
+                                                                            if (!bugView.StopBugAura())
+                                                                                Debug.LogError("バグオーラを停止呼び出しの失敗");
+                                                                            if (!bugView.StopHovering())
+                                                                                Debug.LogError("ホバリングを停止呼び出しの失敗");
+                                                                            Observable.FromCoroutine<bool>(observer => bugView.PlayFadeAnimation(observer))
+                                                                                .Subscribe(_ =>
+                                                                                {
+                                                                                    isGoalReached.Value = true;
+                                                                                })
+                                                                                .AddTo(gameObject);
+                                                                        }
+                                                                    });
                                                             }
-                                                        });
+                                                        })
+                                                        .AddTo(gameObject);
                                                 }
                                                 else
                                                 {
@@ -1402,8 +1421,11 @@ namespace Main.Presenter
                                                     .Length)
                                             {
                                                 var bug = goalNode.GetComponent<GoalNodeView>().InstanceBug;
-                                                if (!bug.GetComponent<BugView>().StopBugAura())
+                                                var bugView = bug.GetComponent<BugView>();
+                                                if (!bugView.StopBugAura())
                                                     Debug.LogError("バグオーラを停止呼び出しの失敗");
+                                                if (!bugView.StopHovering())
+                                                    Debug.LogError("ホバリングを停止呼び出しの失敗");
                                                 Observable.FromCoroutine<bool>(observer => goalNode.GetComponent<GoalNodeView>().degrad(observer))
                                                     .Subscribe(_ =>
                                                     {

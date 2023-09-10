@@ -83,6 +83,8 @@ MonoBehaviour:
   durations:
   - 0.5
   - 0.5
+  - 0.85
+  hoverDistance: 0.15
 --- !u!1 &8801027016678669389
 GameObject:
   m_ObjectHideFlags: 0

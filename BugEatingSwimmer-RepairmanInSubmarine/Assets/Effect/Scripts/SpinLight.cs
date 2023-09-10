@@ -7,7 +7,6 @@ using UniRx;
 
 public class SpinLight : MonoBehaviour
 {
-    [SerializeField] private int maxcnt = 0;
     [SerializeField] private float speed = 500f;
     [SerializeField] private SpriteRenderer teban;
     private float _angle = 0f;
