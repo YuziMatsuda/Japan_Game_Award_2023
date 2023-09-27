@@ -599,6 +599,26 @@ MonoBehaviour:
   cutSceneView: {fileID: 0}
   endingView: {fileID: 0}
   cutSceneTimelineView: {fileID: 0}
+  castsModels:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  bugView: {fileID: 0}
+  shrimpDanceViews:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  seastarView: {fileID: 0}
+  loinclothViews:
+  - {fileID: 0}
+  - {fileID: 0}
+  ruleShellfishView: {fileID: 0}
 --- !u!1 &4136715924690140342
 GameObject:
   m_ObjectHideFlags: 0

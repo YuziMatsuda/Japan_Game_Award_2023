@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using UniRx.Triggers;
 using DG.Tweening;
 using Main.Common;
+using UnityEngine.SceneManagement;
 
 namespace Main.View
 {
@@ -34,10 +36,25 @@ namespace Main.View
             DOTween.To(() => 0, x => GetComponent<SpriteRenderer>().sprite = sprites[x], 1, fadeDuration)
                 .OnComplete(() =>
                 {
-                    if (!MainGameManager.Instance.ParticleSystemsOwner.PlayParticleSystems(GetInstanceID(), EnumParticleSystemsIndex.ParticleJigglyBubbleSoapy, transform.position))
-                        throw new System.Exception("指定されたパーティクルシステムを再生する呼び出しの失敗");
-                    // 泡を出すSE
-                    MainGameManager.Instance.AudioOwner.PlaySFX(Audio.ClipToPlay.se_swim);
+                    if (SceneManager.GetActiveScene().name.Equals("MainScene"))
+                    {
+                        if (!MainGameManager.Instance.ParticleSystemsOwner.PlayParticleSystems(GetInstanceID(), EnumParticleSystemsIndex.ParticleJigglyBubbleSoapy, transform.position))
+                            throw new System.Exception("指定されたパーティクルシステムを再生する呼び出しの失敗");
+                        // 泡を出すSE
+                        MainGameManager.Instance.AudioOwner.PlaySFX(Audio.ClipToPlay.se_swim);
+                    }
+                    else if (SceneManager.GetActiveScene().name.Equals("AreaScene"))
+                    {
+                        if (!Area.Common.AreaGameManager.Instance.ParticleSystemsOwner.PlayParticleSystems(GetInstanceID(), Area.Common.EnumParticleSystemsIndex.ParticleJigglyBubbleSoapy, transform.position))
+                            throw new System.Exception("指定されたパーティクルシステムを再生する呼び出しの失敗");
+                        var tParticle = Area.Common.AreaGameManager.Instance.ParticleSystemsOwner.GetParticleSystemsTransform(GetInstanceID(), Area.Common.EnumParticleSystemsIndex.ParticleJigglyBubbleSoapy);
+                        var tRule = transform;
+                        // エンディングのルール貝は移動するため、追加で追尾する制御が必要
+                        this.UpdateAsObservable()
+                            .Subscribe(_ => tParticle.position = tRule.position);
+                        // 泡を出すSE
+                        Area.Common.AreaGameManager.Instance.AudioOwner.PlaySFX(Area.Audio.ClipToPlay.se_swim);
+                    }
                     DOVirtual.DelayedCall(delayDuration, () => observer.OnNext(true));
                 });
 

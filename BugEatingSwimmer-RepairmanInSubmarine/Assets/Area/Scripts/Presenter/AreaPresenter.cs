@@ -64,6 +64,18 @@ namespace Area.Presenter
         [SerializeField] private EndingView endingView;
         /// <summary>タイムラインのビュー</summary>
         [SerializeField] private CutSceneTimelineView cutSceneTimelineView;
+        /// <summary>キャストのモデル</summary>
+        [SerializeField] private CastsModel[] castsModels;
+        /// <summary>バグのビュー</summary>
+        [SerializeField] private Main.View.BugView bugView;
+        /// <summary>エビダンスのビュー</summary>
+        [SerializeField] private Main.View.ShrimpDanceView[] shrimpDanceViews;
+        /// <summary>ヒトデのビュー</summary>
+        [SerializeField] private Main.View.SeastarView seastarView;
+        /// <summary>コシギンチャクのビュー</summary>
+        [SerializeField] private Main.View.LoinclothView[] loinclothViews;
+        /// <summary>ルール貝のビュー</summary>
+        [SerializeField] private Main.View.RuleShellfishView ruleShellfishView;
 
         private void Reset()
         {
@@ -141,6 +153,12 @@ namespace Area.Presenter
             cutSceneView = GameObject.Find("CutScene").GetComponent<CutSceneView>();
             endingView = GameObject.Find("Ending").GetComponent<EndingView>();
             cutSceneTimelineView = GameObject.Find("CutSceneTimeline").GetComponent<CutSceneTimelineView>();
+            castsModels = GameObject.Find("Casts").GetComponentsInChildren<CastsModel>();
+            bugView = GameObject.Find("Bug").GetComponent<Main.View.BugView>();
+            shrimpDanceViews = GameObject.Find("Level").GetComponentsInChildren<Main.View.ShrimpDanceView>();
+            seastarView = GameObject.Find("Level").GetComponentInChildren<Main.View.SeastarView>();
+            loinclothViews = GameObject.Find("Level").GetComponentsInChildren<Main.View.LoinclothView>();
+            ruleShellfishView = GameObject.Find("Level").GetComponentInChildren<Main.View.RuleShellfishView>();
         }
 
         public void OnStart()
@@ -450,6 +468,53 @@ namespace Area.Presenter
                                                     {
                                                         if (!common.SendToScenarioReceiver(receivers, flowchartModel))
                                                             Debug.LogError("シナリオのレシーバーへ送信呼び出しの失敗");
+                                                        // エンディングにてキャスト用オブジェクトへの処理を呼び出し
+                                                        foreach (var item in castsModels.Select((p, i) => new { Content = p, Index = i }))
+                                                        {
+                                                            item.Content.IsBeginMarch.ObserveEveryValueChanged(x => x.Value)
+                                                                .Subscribe(x =>
+                                                                {
+                                                                    if (x)
+                                                                    {
+                                                                        switch ((EnumCasts)item.Index)
+                                                                        {
+                                                                            case EnumCasts.CastBug:
+                                                                                Observable.FromCoroutine<bool>(observer => bugView.PlayHovering(observer))
+                                                                                    .Subscribe(_ => { })
+                                                                                    .AddTo(gameObject);
+                                                                                break;
+                                                                            case EnumCasts.CastPowerShell:
+                                                                                break;
+                                                                            case EnumCasts.CastShrimpDance:
+                                                                                foreach (var item in shrimpDanceViews)
+                                                                                    if (!item.PlayDanceAnimation())
+                                                                                        Debug.LogError("ダンスアニメーションを再生呼び出しの失敗");
+                                                                                break;
+                                                                            case EnumCasts.CastSeastar:
+                                                                                Observable.FromCoroutine<bool>(observer => seastarView.PlaySwinging(observer))
+                                                                                    .Subscribe(_ => { })
+                                                                                    .AddTo(gameObject);
+                                                                                break;
+                                                                            case EnumCasts.CastJawsHI:
+                                                                                break;
+                                                                            case EnumCasts.CastLoincloth:
+                                                                                foreach (var item in loinclothViews)
+                                                                                    if (!item.PlaySwing())
+                                                                                        Debug.LogError("揺らすアニメーションを再生呼び出しの失敗");
+                                                                                break;
+                                                                            case EnumCasts.CastRuleShellfish:
+                                                                                break;
+                                                                            case EnumCasts.CastRobot:
+                                                                                break;
+                                                                            case EnumCasts.CastSwimmer:
+                                                                                break;
+                                                                            default:
+                                                                                Debug.LogError("例外エラー");
+                                                                                break;
+                                                                        }
+                                                                    }
+                                                                });
+                                                        }
                                                     }
                                                     else if (enumRobotpanel.Equals(EnumRobotPanel.FallingApart))
                                                     {
@@ -989,6 +1054,7 @@ namespace Area.Presenter
             //                }
             //            });
             //    }
+
         }
     }
 }
