@@ -725,8 +725,6 @@ namespace Area.Presenter
 
                                 break;
                             case EnumEventCommand.Submited:
-                                // 決定SEを再生
-                                AreaGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_decided);
                                 foreach (var child in robotPanelModel.RobotUnitImageModels)
                                     if (child != null)
                                     {
@@ -735,16 +733,26 @@ namespace Area.Presenter
                                     }
                                 if (!playerView.RedererCursorDirectionAndDistance(new UnityEngine.UI.Navigation(), EnumCursorDistance.Long))
                                     Debug.LogError("ナビゲーションの状態によってカーソル表示を変更呼び出しの失敗");
-                                Observable.FromCoroutine<bool>(observer => templetePanelView.PlayAnimationZoomInUnit(item.RobotUnitImageConfig.EnumUnitID, observer))
+                                Observable.FromCoroutine<bool>(observer => playerView.PlayDiveAnimation(observer))
                                     .Subscribe(_ =>
                                     {
-                                        if (!common.SetSystemCommonCashAndDefaultStageIndex((EnumUnitID)currentUnitID.Value))
-                                            Debug.LogError("キャッシュをセット呼び出しの失敗");
-                                        // シーン読み込み時のアニメーション
-                                        Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                        // 決定SEを再生
+                                        AreaGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_decided);
+                                        if (!AreaGameManager.Instance.ParticleSystemsOwner.PlayParticleSystems(playerView.GetInstanceID(), EnumParticleSystemsIndex.Ripples, playerView.transform.position))
+                                            Debug.LogError("指定されたパーティクルシステムを再生する呼び出しの失敗");
+                                        playerView.gameObject.SetActive(false);
+                                        Observable.FromCoroutine<bool>(observer => templetePanelView.PlayAnimationZoomInUnit(item.RobotUnitImageConfig.EnumUnitID, observer))
                                             .Subscribe(_ =>
                                             {
-                                                AreaGameManager.Instance.SceneOwner.LoadNextScene();
+                                                if (!common.SetSystemCommonCashAndDefaultStageIndex((EnumUnitID)currentUnitID.Value))
+                                                    Debug.LogError("キャッシュをセット呼び出しの失敗");
+                                                // シーン読み込み時のアニメーション
+                                                Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
+                                                    .Subscribe(_ =>
+                                                    {
+                                                        AreaGameManager.Instance.SceneOwner.LoadNextScene();
+                                                    })
+                                                    .AddTo(gameObject);
                                             })
                                             .AddTo(gameObject);
                                     })

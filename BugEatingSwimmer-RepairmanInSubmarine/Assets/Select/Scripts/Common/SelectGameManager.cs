@@ -49,6 +49,10 @@ namespace Select.Common
         [SerializeField] private InputSystemsOwner inputSystemsOwner;
         /// <summary>InputSystemのオーナー</summary>
         public InputSystemsOwner InputSystemsOwner => inputSystemsOwner;
+        /// <summary>パーティクルのオーナー</summary>
+        [SerializeField] private ParticleSystemsOwner particleSystemsOwner;
+        /// <summary>パーティクルのオーナー</summary>
+        public ParticleSystemsOwner ParticleSystemsOwner => particleSystemsOwner;
 
         private void Reset()
         {
@@ -60,6 +64,7 @@ namespace Select.Common
             algorithmOwner = GameObject.Find("AlgorithmOwner").GetComponent<AlgorithmOwner>();
             missionOwner = GameObject.Find("MissionOwner").GetComponent<MissionOwner>();
             inputSystemsOwner = GetComponentInChildren<InputSystemsOwner>();
+            particleSystemsOwner = GameObject.Find("ParticleSystemsOwner").GetComponent<ParticleSystemsOwner>();
         }
 
         private void Awake()
@@ -77,6 +82,7 @@ namespace Select.Common
             gimmickOwner.OnStart();
             algorithmOwner.OnStart();
             inputSystemsOwner.OnStart();
+            particleSystemsOwner.OnStart();
         }
     }
 

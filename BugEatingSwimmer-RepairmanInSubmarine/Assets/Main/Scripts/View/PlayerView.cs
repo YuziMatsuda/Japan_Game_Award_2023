@@ -20,7 +20,7 @@ namespace Main.View
         /// <summary>プレイヤーのボディのスプライト</summary>
         [SerializeField] private BodySpritePlayer bodySpritePlayer;
         /// <summary>アニメーション終了時間</summary>
-        [SerializeField] private float[] durations = { 1.5f };
+        [SerializeField] private float[] durations = { 1.5f, .75f, .75f, .25f };
 
         private void Reset()
         {
@@ -164,9 +164,30 @@ namespace Main.View
 
         public IEnumerator PlayMoveAnimation(System.IObserver<bool> observer, Vector3 target)
         {
-            transform.DOMove(target, durations[0])
+            if (_transform == null)
+                _transform = transform;
+
+            _transform.localEulerAngles = Vector3.right;
+            _transform.DOMove(target, durations[0])
                 .SetEase(Ease.InOutQuad)
                 .OnComplete(() => observer.OnNext(true));
+
+            yield return null;
+        }
+
+        public IEnumerator PlayDiveAnimation(System.IObserver<bool> observer, Vector3[] targets)
+        {
+            if (_transform == null)
+                _transform = transform;
+
+            _transform.localEulerAngles = new Vector3(0, 0, 30f);
+            DOTween.Sequence()
+                .Append(_transform.DOMove(targets[0], durations[1]))
+                .Append(_transform.DOMove(targets[1], durations[2])
+                    .OnStart(() => _transform.localEulerAngles = new Vector3(0, 0, -30f)))
+                // イージングをいれるとOnCompleteを発行するタイミングが想定と異なるため別タイミングで制御
+                .Join(DOVirtual.DelayedCall(durations[3], () => observer.OnNext(true)))
+                .SetEase(Ease.OutCirc);
 
             yield return null;
         }
@@ -216,5 +237,12 @@ namespace Main.View
         /// <param name="target">位置</param>
         /// <returns>コルーチン</returns>
         public IEnumerator PlayMoveAnimation(System.IObserver<bool> observer, Vector3 target);
+        /// <summary>
+        /// 飛び込みアニメーションを再生
+        /// </summary>
+        /// <param name="observer">バインド</param>
+        /// <param name="targets">位置</param>
+        /// <returns>コルーチン</returns>
+        public IEnumerator PlayDiveAnimation(System.IObserver<bool> observer, Vector3[] targets);
     }
 }

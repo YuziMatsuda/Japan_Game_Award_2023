@@ -380,6 +380,7 @@ MonoBehaviour:
   - 0
   - 0.5
   - 1
+  isPressAndHoldAndReleasedCoolTime: 0.1
   delayDoDuration: 0.25
 --- !u!114 &7897886183892488648
 MonoBehaviour:
@@ -397,6 +398,9 @@ MonoBehaviour:
   bodySpritePlayer: {fileID: 1669334553369898377}
   durations:
   - 1.5
+  - 0.75
+  - 0.75
+  - 0.25
 --- !u!1001 &1759981777413534401
 PrefabInstance:
   m_ObjectHideFlags: 0

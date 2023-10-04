@@ -3259,10 +3259,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1853407373, guid: e45d6d8dfe00f914682e5ed4198180c4, type: 3}
-      propertyPath: _duration.floatVal
-      value: 23
-      objectReference: {fileID: 0}
     - target: {fileID: 6400638602360737541, guid: e45d6d8dfe00f914682e5ed4198180c4, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -3324,66 +3320,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: CutSceneTimeline
       objectReference: {fileID: 0}
-    - target: {fileID: 7175781527526132650, guid: 2ceb82fcfde56554cb7353c60750b549, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7175781527526132650, guid: 2ceb82fcfde56554cb7353c60750b549, type: 3}
-      propertyPath: m_SceneBindings.Array.size
-      value: 26
-      objectReference: {fileID: 0}
-    - target: {fileID: 7175781527526132650, guid: 2ceb82fcfde56554cb7353c60750b549, type: 3}
-      propertyPath: m_SceneBindings.Array.data[13].key
-      value: 
-      objectReference: {fileID: 4007788501071289188, guid: 9b2f2610b5a421f4686bee8197eef743, type: 2}
-    - target: {fileID: 7175781527526132650, guid: 2ceb82fcfde56554cb7353c60750b549, type: 3}
-      propertyPath: m_SceneBindings.Array.data[14].key
-      value: 
-      objectReference: {fileID: 2751785005497612063, guid: 9b2f2610b5a421f4686bee8197eef743, type: 2}
-    - target: {fileID: 7175781527526132650, guid: 2ceb82fcfde56554cb7353c60750b549, type: 3}
-      propertyPath: m_SceneBindings.Array.data[15].key
-      value: 
-      objectReference: {fileID: 993140013234051581, guid: 9b2f2610b5a421f4686bee8197eef743, type: 2}
-    - target: {fileID: 7175781527526132650, guid: 2ceb82fcfde56554cb7353c60750b549, type: 3}
-      propertyPath: m_SceneBindings.Array.data[16].key
-      value: 
-      objectReference: {fileID: -8763082783145884078, guid: 9b2f2610b5a421f4686bee8197eef743, type: 2}
-    - target: {fileID: 7175781527526132650, guid: 2ceb82fcfde56554cb7353c60750b549, type: 3}
-      propertyPath: m_SceneBindings.Array.data[17].key
-      value: 
-      objectReference: {fileID: -5012375571015480285, guid: 9b2f2610b5a421f4686bee8197eef743, type: 2}
-    - target: {fileID: 7175781527526132650, guid: 2ceb82fcfde56554cb7353c60750b549, type: 3}
-      propertyPath: m_SceneBindings.Array.data[18].key
-      value: 
-      objectReference: {fileID: 1561394818099330225, guid: 9b2f2610b5a421f4686bee8197eef743, type: 2}
-    - target: {fileID: 7175781527526132650, guid: 2ceb82fcfde56554cb7353c60750b549, type: 3}
-      propertyPath: m_SceneBindings.Array.data[19].key
-      value: 
-      objectReference: {fileID: -1337506294927161328, guid: 9b2f2610b5a421f4686bee8197eef743, type: 2}
-    - target: {fileID: 7175781527526132650, guid: 2ceb82fcfde56554cb7353c60750b549, type: 3}
-      propertyPath: m_SceneBindings.Array.data[20].key
-      value: 
-      objectReference: {fileID: 4681866908026731465, guid: 9b2f2610b5a421f4686bee8197eef743, type: 2}
-    - target: {fileID: 7175781527526132650, guid: 2ceb82fcfde56554cb7353c60750b549, type: 3}
-      propertyPath: m_SceneBindings.Array.data[21].key
-      value: 
-      objectReference: {fileID: -7326742023301164235, guid: 9b2f2610b5a421f4686bee8197eef743, type: 2}
-    - target: {fileID: 7175781527526132650, guid: 2ceb82fcfde56554cb7353c60750b549, type: 3}
-      propertyPath: m_SceneBindings.Array.data[22].key
-      value: 
-      objectReference: {fileID: 9082089718540184608, guid: 9b2f2610b5a421f4686bee8197eef743, type: 2}
-    - target: {fileID: 7175781527526132650, guid: 2ceb82fcfde56554cb7353c60750b549, type: 3}
-      propertyPath: m_SceneBindings.Array.data[23].key
-      value: 
-      objectReference: {fileID: 6684411387228490660, guid: 9b2f2610b5a421f4686bee8197eef743, type: 2}
-    - target: {fileID: 7175781527526132650, guid: 2ceb82fcfde56554cb7353c60750b549, type: 3}
-      propertyPath: m_SceneBindings.Array.data[24].key
-      value: 
-      objectReference: {fileID: 5954860231419899424, guid: 9b2f2610b5a421f4686bee8197eef743, type: 2}
-    - target: {fileID: 7175781527526132650, guid: 2ceb82fcfde56554cb7353c60750b549, type: 3}
-      propertyPath: m_SceneBindings.Array.data[25].key
-      value: 
-      objectReference: {fileID: -1734233441087495285, guid: 9b2f2610b5a421f4686bee8197eef743, type: 2}
     - target: {fileID: 7175781527526132650, guid: 2ceb82fcfde56554cb7353c60750b549, type: 3}
       propertyPath: m_SceneBindings.Array.data[0].value
       value: 

@@ -12,7 +12,7 @@ namespace Main.View
     /// CinemachineVirtualCamera
     /// </summary>
     [RequireComponent(typeof(CinemachineVirtualCamera))]
-    public class CinemachineVirtualCameraView : MonoBehaviour, ICinemachineVirtualCameraView
+    public class CinemachineVirtualCameraView : MonoBehaviour, ICinemachineVirtualCameraView, ILensMovement
     {
         /// <summary>CinemachineVirtualCamera</summary>
         private CinemachineVirtualCamera _cinemachineVirtualCamera;
@@ -22,6 +22,10 @@ namespace Main.View
         [SerializeField] private Vector3[] bodyTrackedObjectOffsets = {new Vector3(0f, 5f, 0f), new Vector3(0f, 0f, 0f) };
         /// <summary>アニメーション終了時間</summary>
         [SerializeField] private float[] durations = { .5f };
+        /// <summary>レンズ制御</summary>
+        [SerializeField] private LensMovement lensMovement;
+        /// <summary>カメラスクロール許容幅</summary>
+        [SerializeField] private float[] deadZoneWidths = { .4f };
 
         public bool SetBodyTrackedObjectOffsets(EnumBodyTrackedObjectOffsetIndex index)
         {
@@ -32,6 +36,25 @@ namespace Main.View
                 _cinemachineVirtualCamera.GetCinemachineComponent(CinemachineCore.Stage.Body)
                     .GetComponent<CinemachineFramingTransposer>()
                     .m_TrackedObjectOffset = bodyTrackedObjectOffsets[(int)index];
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool SetDeadZone()
+        {
+            try
+            {
+                if (_cinemachineVirtualCamera == null)
+                    _cinemachineVirtualCamera = GetComponent<CinemachineVirtualCamera>();
+                var cinemachineFramingTransposer = _cinemachineVirtualCamera.GetCinemachineComponent(CinemachineCore.Stage.Body)
+                    .GetComponent<CinemachineFramingTransposer>();
+                cinemachineFramingTransposer.m_DeadZoneWidth = deadZoneWidths[0];
 
                 return true;
             }
@@ -96,9 +119,15 @@ namespace Main.View
             yield return null;
         }
 
+        public bool PlayScrollDeltaZoomIn()
+        {
+            return ((ILensMovement)lensMovement).PlayScrollDeltaZoomIn();
+        }
+
         private void Reset()
         {
             defaultTarget = GameObject.Find("Level").transform;
+            lensMovement = GetComponent<LensMovement>();
         }
     }
 
@@ -139,6 +168,11 @@ namespace Main.View
         /// <param name="index">カメラのオフセットのインデックス</param>
         /// <returns>成功／失敗</returns>
         public bool SetBodyTrackedObjectOffsets(EnumBodyTrackedObjectOffsetIndex index);
+        /// <summary>
+        /// カメラを追尾させる境界をセット
+        /// </summary>
+        /// <returns>成功／失敗</returns>
+        public bool SetDeadZone();
     }
 
     /// <summary>

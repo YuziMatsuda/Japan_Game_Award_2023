@@ -488,23 +488,23 @@ namespace Main.Presenter
                 inputUIActionsState.ObserveEveryValueChanged(x => x.Value)
                     .Subscribe(x =>
                     {
-                    // 押下されるボタンが切り替わったら押下時間リセット
-                    inputUIPushedTime.Value = 0f;
+                        // 押下されるボタンが切り替わったら押下時間リセット
+                        inputUIPushedTime.Value = 0f;
                     });
                 inputUIPushedTime.ObserveEveryValueChanged(x => x.Value)
                     .Subscribe(x =>
                     {
                         if (0f < x)
                         {
-                        // いずれかのボタンが押されている
-                        if (!((EnumShortcuActionMode)inputUIActionsState.Value).Equals(EnumShortcuActionMode.None))
+                            // いずれかのボタンが押されている
+                            if (!((EnumShortcuActionMode)inputUIActionsState.Value).Equals(EnumShortcuActionMode.None))
                                 for (var j = 0; j < pushTimeGageViews.Length; j++)
                                     if (!pushTimeGageViews[j].EnabledPushGageAndGetFillAmount(j == inputUIActionsState.Value ? x : 0f))
                                         Debug.LogError("ゲージ更新呼び出しの失敗");
                         }
                         else
-                        // 全てのボタンから指を離している
-                        for (var j = 0; j < pushTimeGageViews.Length; j++)
+                            // 全てのボタンから指を離している
+                            for (var j = 0; j < pushTimeGageViews.Length; j++)
                                 if (!pushTimeGageViews[j].EnabledPushGageAndGetFillAmount(0f))
                                     Debug.LogError("ゲージ更新呼び出しの失敗");
                     });
@@ -1854,10 +1854,19 @@ namespace Main.Presenter
                                     .AddTo(gameObject);
                                 break;
                             case 4:
-                                Observable.FromCoroutine<bool>(observer => playerView.PlayMoveAnimation(observer, flowchartModel.AutoMoveTrackers[1].transform.position))
+                                Observable.FromCoroutine<bool>(observer => playerView.PlayDiveAnimation(observer, new Vector3[] { flowchartModel.AutoMoveTrackers[1].transform.position, flowchartModel.AutoMoveTrackers[2].transform.position, }))
                                     .Subscribe(_ =>
                                     {
                                         MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_decided);
+                                        if (!MainGameManager.Instance.ParticleSystemsOwner.PlayParticleSystems(playerView.GetInstanceID(), EnumParticleSystemsIndex.Ripples, flowchartModel.AutoMoveTrackers[2].transform.position))
+                                            Debug.LogError("指定されたパーティクルシステムを再生する呼び出しの失敗");
+                                        playerView.gameObject.SetActive(false);
+                                        if (!cinemachineVirtualCameraView.SetFollow(flowchartModel.AutoMoveTrackers[2].transform))
+                                            Debug.LogError("フォローをセット呼び出しの失敗");
+                                        if (!cinemachineVirtualCameraView.SetDeadZone())
+                                            Debug.LogError("カメラを追尾させる境界をセット呼び出しの失敗");
+                                        if (!cinemachineVirtualCameraView.PlayScrollDeltaZoomIn())
+                                            Debug.LogError("スクロール量をセット呼び出しの失敗");
                                     })
                                     .AddTo(gameObject);
                                 break;

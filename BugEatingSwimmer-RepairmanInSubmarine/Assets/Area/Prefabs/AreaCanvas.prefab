@@ -8113,6 +8113,10 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 2548968514007265388, guid: e81e5d41b1d719241acbaba2c735fab4, type: 3}
+      propertyPath: jumpDistance
+      value: 116
+      objectReference: {fileID: 0}
+    - target: {fileID: 2548968514007265388, guid: e81e5d41b1d719241acbaba2c735fab4, type: 3}
       propertyPath: defaultTarget
       value: 
       objectReference: {fileID: 4431877573159457298}
