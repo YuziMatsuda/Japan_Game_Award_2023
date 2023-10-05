@@ -1542,16 +1542,16 @@ namespace Main.Presenter
                                 codeObjs[idx].GetComponent<PivotModel>().IsTurningFaild.ObserveEveryValueChanged(x => x.Value)
                                     .Subscribe(x =>
                                     {
-                                        if (x)
+                                        if (x &&
+                                            !codeObjs[idx].GetComponent<PivotConfig>().EnumInteractID.Equals(EnumInteractID.None))
                                         {
                                             if (!playerModel.SetInputBan(true))
                                                 Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
                                             if (!playerModel.SetIsBanMoveVelocity(true))
                                                 Debug.LogError("移動制御禁止フラグをセット呼び出しの失敗");
                                             // 対象のコードがインタラクトIDを持っていた場合は対応するレシーバーを送信
-                                            if (!codeObjs[idx].GetComponent<PivotConfig>().EnumInteractID.Equals(EnumInteractID.None))
-                                                if (!common.SendReceiverOfInteract(receivers, flowchartModel, codeObjs[idx].GetComponent<PivotConfig>().EnumInteractID))
-                                                    Debug.LogError("シナリオのレシーバーへ送信呼び出しの失敗");
+                                            if (!common.SendReceiverOfInteract(receivers, flowchartModel, codeObjs[idx].GetComponent<PivotConfig>().EnumInteractID))
+                                                Debug.LogError("シナリオのレシーバーへ送信呼び出しの失敗");
                                         }
                                     });
                             }
