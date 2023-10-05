@@ -27,6 +27,10 @@ namespace Select.Model
                 {
                     if (currentPosition.Value.Equals(prevPosition.Value))
                         direction.Value = (int)EnumDirectionMode2D.Default;
+                    else if (currentPosition.Value.x == prevPosition.Value.x)
+                    {
+                        // Y軸のみの更新は向きを変えない
+                    }
                     else
                     {
                         // 右向きは正面、それ以外は左向き

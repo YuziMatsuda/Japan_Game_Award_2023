@@ -194,6 +194,19 @@ MonoBehaviour:
   bodySprite: {fileID: 2920669390348910060}
   assignedColor: {r: 1, g: 1, b: 1, a: 1}
   unAssignColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  rigidbody2D: {fileID: 4418909310312335313}
+  durations:
+  - 0.3
+  - 0.6
+  - 0.3
+  - 1
+  - 1
+  transformStates:
+  - {x: 1.3, y: 1.3, z: 1.3}
+  - {x: 0, y: 0, z: -360}
+  - {x: 1, y: 1, z: 1}
+  - {x: 0, y: 0, z: -30}
+  - {x: 0, y: 0, z: 30}
 --- !u!50 &4418909310312335313
 Rigidbody2D:
   serializedVersion: 4

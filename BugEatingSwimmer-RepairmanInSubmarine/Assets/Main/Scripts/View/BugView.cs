@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 using Main.Common;
 using DG.Tweening;
 using Effect;
+using Main.Model;
 
 namespace Main.View
 {
@@ -21,17 +21,21 @@ namespace Main.View
         /// <summary>ボディのスプライト</summary>
         [SerializeField] private BodySprite bodySprite;
         /// <summary>演出</summary>
-        [SerializeField] private float[] durations = { .25f, .25f };
+        [SerializeField] private float[] durations = { .5f, .5f, .85f };
+        /// <summary>上昇する距離</summary>
+        [SerializeField] private float hoverDistance = .15f;
 
         /// <summary>トランスフォーム</summary>
         private Transform _transform;
+        /// <summary>実行中のTween</summary>
+        private Tweener _isPlaying;
 
         private void Reset()
         {
             bodySprite = transform.GetChild(0).GetComponent<BodySprite>();
         }
 
-        public IEnumerator PlayFadeAnimation(IObserver<bool> observer)
+        public IEnumerator PlayFadeAnimation(System.IObserver<bool> observer)
         {
             return bodySprite.PlayFadeAnimation(observer);
         }
@@ -45,7 +49,7 @@ namespace Main.View
 
         public bool SetColorSpriteRenderer(Color color)
         {
-            throw new NotImplementedException();
+            throw new System.NotImplementedException();
         }
 
         public bool PlayCorrectOrWrong()
@@ -96,7 +100,7 @@ namespace Main.View
 
                 return true;
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 Debug.LogError(e);
                 return false;
@@ -112,7 +116,63 @@ namespace Main.View
 
                 return true;
             }
-            catch (Exception e)
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public IEnumerator PlayHovering(System.IObserver<bool> observer)
+        {
+            if (_transform == null)
+                _transform = transform;
+            var offset = Vector3.up;
+            var config = _transform.parent.GetComponent<PivotConfig>();
+            switch (config.EnumDirectionModeDefault)
+            {
+                case EnumDirectionMode.Up:
+                    offset = Vector3.down;
+
+                    break;
+                case EnumDirectionMode.Right:
+                    offset = Vector3.left;
+
+                    break;
+                case EnumDirectionMode.Down:
+                    // 処理無し
+                    break;
+                case EnumDirectionMode.Left:
+                    offset = Vector3.right;
+
+                    break;
+                default:
+                    // 処理無し
+                    break;
+            }
+            // 親ゴールノードの向きと生成アニメーションの位置を補正する
+            _isPlaying = _transform.DOLocalMove(transform.localPosition + offset * hoverDistance, durations[2])
+                .SetLoops(-1, LoopType.Yoyo)
+                .SetEase(Ease.InOutSine)
+                .SetLink(gameObject);
+            observer.OnNext(true);
+
+            yield return null;
+        }
+
+        public bool StopHovering()
+        {
+            try
+            {
+                if (_isPlaying != null &&
+                    _isPlaying.IsPlaying())
+                {
+                    _isPlaying.Rewind();
+                }
+
+                return true;
+            }
+            catch (System.Exception e)
             {
                 Debug.LogError(e);
                 return false;
@@ -148,5 +208,16 @@ namespace Main.View
         /// </summary>
         /// <returns>成功／失敗</returns>
         public bool StopBugAura();
+        /// <summary>
+        /// ホバリングを再生
+        /// </summary>
+        /// <param name="observer">バインド</param>
+        /// <returns>コルーチン</returns>
+        public IEnumerator PlayHovering(System.IObserver<bool> observer);
+        /// <summary>
+        /// ホバリングを停止
+        /// </summary>
+        /// <returns>成功／失敗</returns>
+        public bool StopHovering();
     }
 }

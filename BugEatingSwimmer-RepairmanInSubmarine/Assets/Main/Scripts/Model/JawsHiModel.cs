@@ -42,6 +42,8 @@ namespace Main.Model
         private readonly BoolReactiveProperty _isBack = new BoolReactiveProperty();
         /// <summary>後ろを向いているか</summary>
         public IReactiveProperty<bool> IsBack => _isBack;
+        /// <summary>デフォルトで停止させるか</summary>
+        [SerializeField] private bool isDefaultStop;
 
         private void Reset()
         {
@@ -68,8 +70,9 @@ namespace Main.Model
                 _targets = targetList.ToArray();
             }
 
-            if (!PlayTrackingMoveAnimation())
-                Debug.LogError("追跡移動するアニメーションを再生呼び出しの失敗");
+            if (!isDefaultStop)
+                if (!PlayTrackingMoveAnimation())
+                    Debug.LogError("追跡移動するアニメーションを再生呼び出しの失敗");
 
             if (_transform)
                 _transform = transform;

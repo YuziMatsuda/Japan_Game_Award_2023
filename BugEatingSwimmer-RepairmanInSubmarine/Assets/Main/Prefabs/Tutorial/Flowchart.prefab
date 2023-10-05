@@ -30,6 +30,7 @@ Transform:
   m_Children:
   - {fileID: 266661938562536641}
   - {fileID: 6703522614347968241}
+  - {fileID: 9014965707458887849}
   m_Father: {fileID: 4579061302384269196}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -237,7 +238,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   version: 1
-  scrollPos: {x: 306.25116, y: 27.830223}
+  scrollPos: {x: 327.8422, y: 371.01227}
   variablesScrollPos: {x: 0, y: 0}
   variablesExpanded: 1
   blockViewHeight: 400
@@ -249,8 +250,9 @@ MonoBehaviour:
     width: 1114
     height: 859
   selectedBlocks:
-  - {fileID: 2471044899750221970}
-  selectedCommands: []
+  - {fileID: 8841403048471529283}
+  selectedCommands:
+  - {fileID: 7284455013350772547}
   variables: []
   description: "\u4F1A\u8A71\u30C6\u30AD\u30B9\u30C8"
   stepPause: 0
@@ -353,6 +355,7 @@ MonoBehaviour:
   autoMoveTrackers:
   - {fileID: 3059810745491117495}
   - {fileID: 858193385083229001}
+  - {fileID: 6275997229462668349}
   blockNamesFromInteractIDs:
   - enumInteractID: 1
     blockName: Scenario0OPbetweenArea1Clear_1-1-2
@@ -2006,7 +2009,7 @@ MonoBehaviour:
   indentLevel: 0
   targetObject: {fileID: 4579061302384269201}
   methodName: OnReadedScenario
-  delay: 1
+  delay: 2
 --- !u!114 &615021056981101037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2789,7 +2792,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7885046548150044922}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.67, y: 2.54, z: 0}
+  m_LocalPosition: {x: 5.74, y: 3.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2803,6 +2806,50 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7885046548150044922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9794112102c5c9a45b3905ed7c54ea82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &8115773927856353107
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9014965707458887849}
+  - component: {fileID: 6275997229462668349}
+  m_Layer: 0
+  m_Name: AutoMoveTracker_2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9014965707458887849
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8115773927856353107}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 7.67, y: 2.54, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5959494732412736426}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6275997229462668349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8115773927856353107}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9794112102c5c9a45b3905ed7c54ea82, type: 3}

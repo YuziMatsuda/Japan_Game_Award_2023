@@ -5220,7 +5220,7 @@ MonoBehaviour:
   indentLevel: 0
   _duration:
     floatRef: {fileID: 0}
-    floatVal: 15
+    floatVal: 23
   durationOLD: 0
 --- !u!114 &1853407374
 MonoBehaviour:

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using UniRx;
 using Select.Common;
+using GameManagers.Common;
 
 namespace Select.View
 {
@@ -31,6 +32,10 @@ namespace Select.View
         private bool _isSkipMode;
         /// <summary>スキップモード（キャプション選択のキャンセル）</summary>
         public bool IsSkipMode => _isSkipMode;
+        /// <summary>ダイブする距離</summary>
+        [SerializeField] private float jumpDistance = 116f;
+        /// <summary>アニメーション終了時間</summary>
+        [SerializeField] private float[] durations = { .75f, .75f, .25f };
 
         private void Reset()
         {
@@ -106,6 +111,80 @@ namespace Select.View
         {
             return ((IBodyImageForTransform)bodyImage).SetLocalScaleX(scaleX);
         }
+
+        public IEnumerator PlayDiveAnimation(System.IObserver<bool> observer, int direction)
+        {
+            var scale = bodyImage.transform.localScale;
+            bodyImage.transform.localEulerAngles = GetAdjustEulerAngles(EnumDiveStates.Jump, direction);
+            var fromAnchor = (bodyImage.transform as RectTransform).anchoredPosition;
+            DOTween.Sequence()
+                .Append((bodyImage.transform as RectTransform).DOAnchorPos(fromAnchor + Vector2.up * jumpDistance, durations[0]))
+                .Append((bodyImage.transform as RectTransform).DOAnchorPos(fromAnchor, durations[1])
+                    .OnStart(() => bodyImage.transform.localEulerAngles = GetAdjustEulerAngles(EnumDiveStates.Fall, direction)))
+                // イージングをいれるとOnCompleteを発行するタイミングが想定と異なるため別タイミングで制御
+                .Join(DOVirtual.DelayedCall(durations[2], () =>
+                {
+                    bodyImage.transform.localEulerAngles = GetAdjustEulerAngles(EnumDiveStates.Swim, direction);
+                    observer.OnNext(true);
+                }))
+                .SetEase(Ease.OutCirc);
+
+            yield return null;
+        }
+
+        /// <summary>
+        /// ジャンプまたは、落下時の角度をアジャストした値を取得
+        /// </summary>
+        /// <param name="state">ダイブの状態</param>
+        /// <param name="direction">角度</param>
+        /// <returns>返還後の角度</returns>
+        private Vector3 GetAdjustEulerAngles(EnumDiveStates state, int direction)
+        {
+            switch (state)
+            {
+                case EnumDiveStates.Jump:
+                    return IsForward(direction) ? new Vector3(0, 0, 30f) : new Vector3(0, 0, -30f);
+                case EnumDiveStates.Fall:
+                    return IsForward(direction) ? new Vector3(0, 0, -30f) : new Vector3(0, 0, 30f);
+                case EnumDiveStates.Swim:
+                    return Vector3.zero;
+                default:
+                    throw new System.Exception("例外エラー");
+            }
+        }
+
+        /// <summary>
+        /// 正面か
+        /// </summary>
+        /// <param name="direction">角度</param>
+        /// <returns>正面か</returns>
+        private bool IsForward(int direction)
+        {
+            switch ((EnumDirectionMode2D)direction)
+            {
+                case EnumDirectionMode2D.Back:
+                    return false;
+                case EnumDirectionMode2D.Default:
+                    return true;
+                case EnumDirectionMode2D.Forward:
+                    return true;
+                default:
+                    throw new System.Exception("例外エラー");
+            }
+        }
+
+        /// <summary>
+        /// ダイブの状態
+        /// </summary>
+        private enum EnumDiveStates
+        {
+            /// <summary>ジャンプ</summary>
+            Jump,
+            /// <summary>落下</summary>
+            Fall,
+            /// <summary>泳ぐ（通常）</summary>
+            Swim,
+        }
     }
 
     /// <summary>
@@ -121,5 +200,12 @@ namespace Select.View
         /// <param name="isSkipMode">スキップモード</param>
         /// <returns>成功／失敗</returns>
         public bool SetSkipMode(bool isSkipMode);
+        /// <summary>
+        /// 飛び込みアニメーションを再生
+        /// </summary>
+        /// <param name="observer">バインド</param>
+        /// <param name="direction">角度</param>
+        /// <returns>コルーチン</returns>
+        public IEnumerator PlayDiveAnimation(System.IObserver<bool> observer, int direction);
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using DG.Tweening;
-using System;
 using Main.Common;
 
 namespace Main.View
@@ -26,35 +25,33 @@ namespace Main.View
         [SerializeField] private Vector3 bugMoveDirection = Vector3.up;
         /// <summary>移動アニメーション距離</summary>
         [SerializeField] private float bugMoveDistance = 1.5f;
+        /// <summary>移動アニメーション距離</summary>
+        public float BugMoveDistance => bugMoveDistance;
         /// <summary>信号発生アニメーション時間</summary>
         private bool _isRuning;
         /// <summary>撤退移動アニメーション時間</summary>
         [SerializeField] private float bugReturnMoveDuration = .15f;
 
-        public bool bugfix()
+        public IEnumerator bugfix(System.IObserver<bool> observer, bool isBugFixed)
         {
-            try
+            if (_instancedBug == null)
             {
-                if (_instancedBug == null)
+                _instancedBug = Instantiate(bug, transform.position, Quaternion.identity, transform);
+                // 未クリアかクリア済みでカラーを変更
+                if (_instancedBug.GetComponent<BugView>() != null)
                 {
-                    _instancedBug = Instantiate(bug, transform.position, Quaternion.identity, transform);
-                    // T.B.D 未クリアかクリア済みでカラーを変更
-                    var isAlreadyCleared = false;
-                    if (_instancedBug.GetComponent<BugView>() != null)
-                    {
-                        if (!_instancedBug.GetComponent<BugView>().SetColorCleared(isAlreadyCleared))
-                            throw new System.Exception("カラーを設定呼び出しの失敗");
-                    }
-                    _instancedBug.DOLocalMove(bugMoveDirection * bugMoveDistance, bugMoveDuration);
+                    if (!_instancedBug.GetComponent<BugView>().SetColorCleared(isBugFixed))
+                        Debug.LogError("カラーを設定呼び出しの失敗");
+                    if (!_instancedBug.GetComponent<BugView>().PlayBugAura())
+                        Debug.LogError("バグオーラを発生呼び出しの失敗");
                 }
+                _instancedBug.DOLocalMove(bugMoveDirection * bugMoveDistance, bugMoveDuration)
+                    .OnComplete(() => observer.OnNext(true));
+            }
+            else
+                observer.OnNext(true);
 
-                return true;
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError(e);
-                return false;
-            }
+            yield return null;
         }
 
 
@@ -62,19 +59,19 @@ namespace Main.View
 
         public bool SetIsRuning(bool isRuning)
         {
-            throw new NotImplementedException();
+            throw new System.NotImplementedException();
         }
 
-        public IEnumerator degrad(IObserver<bool> observer)
+        public IEnumerator degrad(System.IObserver<bool> observer)
         {
             _instancedBug.DOLocalMove(Vector3.zero, bugReturnMoveDuration)
                 .OnComplete(() => observer.OnNext(true));
             yield return null;
         }
 
-        public IEnumerator PlayLightAnimation(IObserver<bool> observer)
+        public IEnumerator PlayLightAnimation(System.IObserver<bool> observer)
         {
-            throw new NotImplementedException();
+            throw new System.NotImplementedException();
         }
     }
 
@@ -88,8 +85,10 @@ namespace Main.View
         /// バグフィックス
         /// バグを出現させる
         /// </summary>
+        /// <param name="observer">バインド</param>
+        /// <param name="isBugFixed">バグフィックス状態</param>
         /// <returns>成功／失敗</returns>
-        public bool bugfix();
+        public IEnumerator bugfix(System.IObserver<bool> observer, bool isBugFixed);
         /// <summary>
         /// デグレード
         /// バグを撤退させる

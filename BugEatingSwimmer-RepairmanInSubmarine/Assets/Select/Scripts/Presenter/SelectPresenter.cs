@@ -306,6 +306,8 @@ namespace Select.Presenter
                     }
                 });
 
+            // パーティクルを生成対象が動く為、一時的にUpdateで監視
+            var updateObservable = this.UpdateAsObservable().Subscribe(_ => { });
             // ステージ選択の操作
             foreach (var child in logoStageModels.Where(q => q != null).Select(q => q))
             {
@@ -359,18 +361,29 @@ namespace Select.Presenter
 
                                 break;
                             case EnumEventCommand.Submited:
-                                // 決定SEを再生
-                                SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_decided);
                                 if (!logoStageModels[child.Index].SetButtonEnabled(false))
                                     Debug.LogError("ボタンのステータスを変更呼び出しの失敗");
                                 if (!logoStageModels[child.Index].SetEventTriggerEnabled(false))
                                     Debug.LogError("イベントトリガーのステータスを変更呼び出しの失敗");
                                 if (!GameManager.Instance.SoftwareCursorPositionAdjusterView.SetCursorEnabled(false))
                                     Debug.LogError("カーソルの速度を変更呼び出しの失敗");
-                                if (!logoStagesView.ZoomInOutPanel(child.Index))
-                                    Debug.LogError("該当ステージを拡大させる呼び出しの失敗");
-                                if (!logoStageViews[child.Index].SetRenderDisableBackgroundFrame())
-                                    Debug.LogError("選択中フレームを非表示呼び出しの失敗");
+                                Observable.FromCoroutine<bool>(observer => playerView.PlayDiveAnimation(observer, playerModel.BodyImage.Direction.Value))
+                                    .Subscribe(_ =>
+                                    {
+                                        // 決定SEを再生
+                                        SelectGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_decided);
+                                        updateObservable.Dispose();
+                                        if (!SelectGameManager.Instance.ParticleSystemsOwner.PlayParticleSystems(playerView.GetInstanceID(), EnumParticleSystemsIndex.Ripples, logoStageModels[child.Index].transform.position + Vector3.forward * 16f))
+                                            Debug.LogError("指定されたパーティクルシステムを再生する呼び出しの失敗");
+                                        var particle = SelectGameManager.Instance.ParticleSystemsOwner.GetParticleSystemsTransform(playerView.GetInstanceID(), EnumParticleSystemsIndex.Ripples);
+                                        updateObservable = this.UpdateAsObservable()
+                                            .Subscribe(_ => particle.position = logoStageModels[child.Index].transform.position + Vector3.forward * 16f);
+                                        if (!logoStagesView.ZoomInOutPanel(child.Index))
+                                            Debug.LogError("該当ステージを拡大させる呼び出しの失敗");
+                                        if (!logoStageViews[child.Index].SetRenderDisableBackgroundFrame())
+                                            Debug.LogError("選択中フレームを非表示呼び出しの失敗");
+                                    })
+                                    .AddTo(gameObject);
 
                                 break;
                             default:
