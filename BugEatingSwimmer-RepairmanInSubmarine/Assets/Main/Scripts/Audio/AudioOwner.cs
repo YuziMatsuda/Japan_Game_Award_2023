@@ -118,6 +118,14 @@ namespace Main.Audio
         se_energy_store,
         /// <summary>スイマーがサンショウコードを壊す為にエネルギーを解放する時の音</summary>
         se_energy_release,
+        /// <summary>斬撃11</summary>
+        se_slash_11,
+        /// <summary>剣ぶつかり合い3</summary>
+        se_sword_clash_3,
+        /// <summary>特殊攻撃01</summary>
+        se_special_attack_01,
+        /// <summary>場面転換・スライド表現04</summary>
+        se_scene_change_slide_exp_04,
     }
 
     /// <summary>

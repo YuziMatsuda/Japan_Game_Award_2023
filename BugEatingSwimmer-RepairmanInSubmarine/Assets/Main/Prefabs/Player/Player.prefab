@@ -401,6 +401,7 @@ MonoBehaviour:
   - 0.75
   - 0.75
   - 0.25
+  playSFXChargeModes: 0d00000012000000
 --- !u!1001 &1759981777413534401
 PrefabInstance:
   m_ObjectHideFlags: 0

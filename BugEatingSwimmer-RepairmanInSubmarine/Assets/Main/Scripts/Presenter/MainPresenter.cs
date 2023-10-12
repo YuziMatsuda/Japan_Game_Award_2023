@@ -839,8 +839,9 @@ namespace Main.Presenter
                                                         Debug.LogError("チャージ開始呼び出しの失敗");
                                                     if (!playerView.ChangeChargeMode(0, true))
                                                         Debug.LogError("チャージ開始呼び出しの失敗");
-                                                    // パワーチャージSE
-                                                    MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_energy_store, true);
+                                                    if (!playerView.PlaySFXChargeMode(0))
+                                                        Debug.LogError("SFXを再生チャージ呼び出しの失敗");
+
                                                     break;
                                                 case 1:
                                                     // 処理無し
@@ -848,12 +849,14 @@ namespace Main.Presenter
                                                 case 2:
                                                     if (!playerView.ChangeChargeMode(1, true))
                                                         Debug.LogError("チャージ開始呼び出しの失敗");
+                                                    if (!playerView.PlaySFXChargeMode(1))
+                                                        Debug.LogError("SFXを再生チャージ呼び出しの失敗");
                                                     break;
                                                 case -1:
                                                     if (!playerView.StopCharge())
                                                         Debug.LogError("チャージ停止呼び出しの失敗");
-                                                    // パワーチャージSE停止
-                                                    MainGameManager.Instance.AudioOwner.StopSFX(ClipToPlay.se_energy_store);
+                                                    if (!playerView.StopSFXChargeMode(0))
+                                                        Debug.LogError("SFXを停止チャージ呼び出しの失敗");
                                                     for (var i = 0; i < playerView.Halos.PlayerHalos.Length; i++)
                                                         if (!playerView.ChangeChargeMode(i, false))
                                                             Debug.LogError("チャージ状態を切り替え呼び出しの失敗");

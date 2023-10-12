@@ -623,6 +623,10 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 15d8878a464da534daf5ad796db5cb81, type: 3}
   - {fileID: 8300000, guid: d98f14e55aca59d44ac7ff22176b4bd1, type: 3}
   - {fileID: 8300000, guid: b027ac0b0f6962b4fa8310c4023bdca1, type: 3}
+  - {fileID: 8300000, guid: 3564e57f29870764ab918af4a7f6de4f, type: 3}
+  - {fileID: 8300000, guid: 2f9ee84ba9715fc46916b24a315e1c74, type: 3}
+  - {fileID: 8300000, guid: 2439b40269f80dc4ab2fce4faf99a500, type: 3}
+  - {fileID: 8300000, guid: ae399d4a31c12b4489cc1fbb84223740, type: 3}
   sFXChannelPrefab: {fileID: 1821450510366777210, guid: 13aae3403db5d45428b59ad80eca3da0, type: 3}
 --- !u!1 &1369696454850185356
 GameObject:
