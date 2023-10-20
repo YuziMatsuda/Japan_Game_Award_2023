@@ -35,3 +35,4 @@
 ### [InputSystem](https://forpro.unity3d.jp/unity_pro_tips/2021/05/20/1957/)
 ### [DOTween(HOTween v2)](https://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676)
 ### [UniRx](https://kingmo.jp/kumonos/unirx-unitask-upm-import/)
+### [CRIWARE Unity Plug-in_v3.09.01](https://game.criware.jp/products/adx-le/#ledl)
