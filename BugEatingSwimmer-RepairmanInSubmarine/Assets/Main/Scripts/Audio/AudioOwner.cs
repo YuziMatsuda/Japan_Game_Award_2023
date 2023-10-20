@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Main.Common;
+using CRIACLE_BGM.CueSheet_0;
 
 namespace Main.Audio
 {
@@ -40,7 +41,7 @@ namespace Main.Audio
             sfxPlayer.PlaySFX(clipToPlay, isLoopmode);
         }
 
-        public void PlayBGM(ClipToPlayBGM clipToPlay)
+        public void PlayBGM(Cue clipToPlay)
         {
             bgmPlayer.PlayBGM(clipToPlay);
         }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Area.Common;
+using CRIACLE_BGM.CueSheet_1;
 
 namespace Area.Audio
 {
@@ -27,6 +28,7 @@ namespace Area.Audio
         public void OnStart()
         {
             sfxPlayer.OnStart();
+            bgmPlayer.OnStart();
             audioMixer.OnStart();
         }
 
@@ -35,7 +37,7 @@ namespace Area.Audio
             sfxPlayer.PlaySFX(clipToPlay);
         }
 
-        public void PlayBGM(ClipToPlayBGM clipToPlay)
+        public void PlayBGM(Cue clipToPlay)
         {
             bgmPlayer.PlayBGM(clipToPlay);
         }

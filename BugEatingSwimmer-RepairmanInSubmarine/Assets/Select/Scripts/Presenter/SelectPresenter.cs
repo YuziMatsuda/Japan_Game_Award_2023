@@ -10,6 +10,7 @@ using Select.Audio;
 using System.Linq;
 using Fungus;
 using GameManagers.Common;
+using CRIACLE_BGM.CueSheet_1;
 
 namespace Select.Presenter
 {
@@ -193,7 +194,7 @@ namespace Select.Presenter
             if (!common.CheckMissionAndSaveDatasCSVOfMission())
                 Debug.LogError("ミッションの更新チェック呼び出しの失敗");
 
-            SelectGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_select);
+            SelectGameManager.Instance.AudioOwner.PlayBGM(Cue.select_start_and_loop);
             // シーン読み込み時のアニメーション
             Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Open))
                 .Subscribe(_ =>

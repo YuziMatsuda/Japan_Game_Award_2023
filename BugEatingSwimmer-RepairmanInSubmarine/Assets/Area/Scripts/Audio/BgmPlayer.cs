@@ -1,43 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CriWare;
+using CRIACLE_BGM.CueSheet_1;
+using Area.Common;
+using Area.Template;
 
 namespace Area.Audio
 {
     /// <summary>
     /// BGMのプレイヤー
     /// </summary>
-    [RequireComponent(typeof(AudioSource))]
-    public class BgmPlayer : MonoBehaviour, IBgmPlayer
+    [RequireComponent(typeof(CriAtomSource))]
+    public class BgmPlayer : MonoBehaviour, IBgmPlayer, IAreaGameManager
     {
-        /// <summary>オーディオソース</summary>
-        [SerializeField] private AudioSource audioSource;
-        /// <summary>効果音のクリップ</summary>
-        [SerializeField] private AudioClip[] clip;
+        /// <summary>CRIアトムソース</summary>
+        [SerializeField] private CriAtomSource criAtomSource;
 
         private void Reset()
         {
-            audioSource = GetComponent<AudioSource>();
-            audioSource.loop = true;
+            criAtomSource = GetComponent<CriAtomSource>();
         }
 
         /// <summary>
         /// 指定されたBGMを再生する
         /// </summary>
         /// <param name="clipToPlay">BGM</param>
-        public void PlayBGM(ClipToPlayBGM clipToPlay)
+        public void PlayBGM(Cue clipToPlay)
         {
             try
             {
-                if ((int)clipToPlay <= (clip.Length - 1))
-                {
-                    audioSource.clip = clip[(int)clipToPlay];
-
-                    // BGMを再生
-                    audioSource.Play();
-                }
-                else
-                    throw new System.Exception($"対象のファイルが見つかりません:[{clipToPlay}]");
+                criAtomSource.Play((int)clipToPlay);
             }
             catch (System.Exception e)
             {
@@ -47,7 +40,36 @@ namespace Area.Audio
 
         public void StopBGM()
         {
-            audioSource.Stop();
+            criAtomSource.Stop();
+        }
+
+        public void OnStart()
+        {
+            var tResourcesAccessory = new AreaTemplateResourcesAccessory();
+            var configMap = tResourcesAccessory.GetSystemConfig(tResourcesAccessory.LoadSaveDatasCSV(ConstResorcesNames.SYSTEM_CONFIG));
+            if (!OutPutAudios(configMap[EnumSystemConfig.BGMVolumeIndex], ConstAudioMixerGroupsNames.GROUP_NAME_BGM))
+                Debug.LogError($"{ConstAudioMixerGroupsNames.GROUP_NAME_BGM}設定呼び出しの失敗");
+        }
+
+        /// <summary>
+        /// ミキサーへ反映
+        /// </summary>
+        /// <param name="value">音量の値</param>
+        /// <param name="groupsName">オーディオグループ名</param>
+        /// <returns>成功／失敗</returns>
+        private bool OutPutAudios(float value, string groupsName)
+        {
+            try
+            {
+                CriAtom.SetCategoryVolume(groupsName, 1 * (value / 10));
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Select.Common;
+using CRIACLE_BGM.CueSheet_1;
 
 namespace Select.Audio
 {
@@ -35,7 +36,7 @@ namespace Select.Audio
             sfxPlayer.PlaySFX(clipToPlay);
         }
 
-        public void PlayBGM(ClipToPlayBGM clipToPlay)
+        public void PlayBGM(Cue clipToPlay)
         {
             bgmPlayer.PlayBGM(clipToPlay);
         }

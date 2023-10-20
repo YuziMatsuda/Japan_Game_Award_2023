@@ -9,6 +9,7 @@ using UniRx.Triggers;
 using Area.Audio;
 using System.Linq;
 using Fungus;
+using CRIACLE_BGM.CueSheet_1;
 
 namespace Area.Presenter
 {
@@ -193,7 +194,7 @@ namespace Area.Presenter
             cutSceneView.gameObject.SetActive(false);
             endingView.gameObject.SetActive(false);
 
-            AreaGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_select);
+            AreaGameManager.Instance.AudioOwner.PlayBGM(Cue.select_start_and_loop);
             var enumRobotpanel = common.GetStateOfRobotUnitConnect();
             if (common.IsConnectedAnimation())
             {
@@ -255,7 +256,8 @@ namespace Area.Presenter
                             Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
                                 .Subscribe(_ =>
                                 {
-                                    AreaGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_select);
+                                    AreaGameManager.Instance.AudioOwner.StopBGM();
+                                    AreaGameManager.Instance.AudioOwner.PlayBGM(Cue.select_start_and_loop);
                                     cutSceneView.gameObject.SetActive(false);
                                     Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Open))
                                         .Subscribe(_ => { })
@@ -437,7 +439,8 @@ namespace Area.Presenter
                                                             {
                                                                 if (!cutSceneView.SetSprite(EnumRecollectionPicture.RecollectionPicture1_1))
                                                                     Debug.LogError("スプライトをセット呼び出しの失敗");
-                                                                AreaGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_kaiso);
+                                                                AreaGameManager.Instance.AudioOwner.StopBGM();
+                                                                AreaGameManager.Instance.AudioOwner.PlayBGM(Cue.kaiso);
                                                                 cutSceneView.gameObject.SetActive(true);
                                                                 Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Open))
                                                                     .Subscribe(_ =>
@@ -569,7 +572,8 @@ namespace Area.Presenter
                                                                         .ToArray()[0]))
                                                                         Debug.LogError("スプライトをセット呼び出しの失敗");
                                                                 }
-                                                                AreaGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_kaiso);
+                                                                AreaGameManager.Instance.AudioOwner.StopBGM();
+                                                                AreaGameManager.Instance.AudioOwner.PlayBGM(Cue.kaiso);
                                                                 cutSceneView.gameObject.SetActive(true);
                                                                 Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Open))
                                                                     .Subscribe(_ =>

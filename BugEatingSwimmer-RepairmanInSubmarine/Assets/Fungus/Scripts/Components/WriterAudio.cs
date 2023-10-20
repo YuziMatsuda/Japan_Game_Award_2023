@@ -32,6 +32,7 @@ namespace Fungus
         // If none is specifed then we use any AudioSource on the gameobject, and if that doesn't exist we create one.
         [Tooltip("AudioSource to use for playing sound effects. If none is selected then one will be created.")]
         [SerializeField] protected AudioSource targetAudioSource;
+        private AudioSource _targetAudioSource_2;
 
         [Tooltip("Type of sound effect to play when writing text")]
         [SerializeField] protected AudioMode audioMode = AudioMode.Beeps;
@@ -176,8 +177,20 @@ namespace Fungus
             if (inputSound != null)
             {
                 // Assumes we're playing a 2D sound
-                AudioSource.PlayClipAtPoint(inputSound, Vector3.zero);
+                PlayOnInput(inputSound);
             }
+        }
+
+        /// <summary>
+        /// クリックSEを再生
+        /// </summary>
+        /// <param name="audioClip">オーディオクリップ</param>
+        private void PlayOnInput(AudioClip audioClip)
+        {
+            if (_targetAudioSource_2 == null)
+                _targetAudioSource_2 = transform.GetChild(0).GetComponent<AudioSource>();
+            _targetAudioSource_2.clip = audioClip;
+            _targetAudioSource_2.Play();
         }
 
         public virtual void OnStart(AudioClip audioClip)
