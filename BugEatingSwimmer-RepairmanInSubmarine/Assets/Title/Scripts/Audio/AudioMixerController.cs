@@ -11,7 +11,7 @@ namespace Title.Audio
     /// オーディオミキサー
     /// </summary>
     [RequireComponent(typeof(AudioMixer))]
-    public class AudioMixerController : MonoBehaviour, ITitleGameManager
+    public class AudioMixerController : MonoBehaviour, ITitleGameManager, IAudioMixerController
     {
         /// <summary>ミキサー</summary>
         [SerializeField] private AudioMixer audioMixer;
@@ -29,11 +29,6 @@ namespace Title.Audio
                 Debug.LogError($"{ConstAudioMixerGroupsNames.GROUP_NAME_SE}設定呼び出しの失敗");
         }
 
-        /// <summary>
-        /// ボリュームをセット
-        /// </summary>
-        /// <param name="configMap">システム設定</param>
-        /// <returns>成功／失敗</returns>
         public bool SetVolume(Dictionary<EnumSystemConfig, int> configMap)
         {
             try
@@ -52,10 +47,6 @@ namespace Title.Audio
             }
         }
 
-        /// <summary>
-        /// オーディオ情報をリロード
-        /// </summary>
-        /// <returns>成功／失敗</returns>
         public bool ReLoadAudios()
         {
             try
@@ -124,5 +115,24 @@ namespace Title.Audio
                 return false;
             }
         }
+    }
+
+    /// <summary>
+    /// オーディオミキサー
+    /// インターフェース
+    /// </summary>
+    public interface IAudioMixerController
+    {
+        /// <summary>
+        /// ボリュームをセット
+        /// </summary>
+        /// <param name="configMap">システム設定</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetVolume(Dictionary<EnumSystemConfig, int> configMap);
+        /// <summary>
+        /// オーディオ情報をリロード
+        /// </summary>
+        /// <returns>成功／失敗</returns>
+        public bool ReLoadAudios();
     }
 }

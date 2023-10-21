@@ -4,6 +4,7 @@ using UnityEngine;
 using Main.Common;
 using Effect;
 using DG.Tweening;
+using Main.Audio;
 
 namespace Main.View
 {
@@ -21,6 +22,8 @@ namespace Main.View
         [SerializeField] private BodySpritePlayer bodySpritePlayer;
         /// <summary>アニメーション終了時間</summary>
         [SerializeField] private float[] durations = { 1.5f, .75f, .75f, .25f };
+        /// <summary>SFXを再生 チャージSEをセット</summary>
+        [SerializeField] private ClipToPlay[] playSFXChargeModes = { ClipToPlay.se_energy_store, ClipToPlay.se_scene_change_slide_exp_04 };
 
         private void Reset()
         {
@@ -191,6 +194,43 @@ namespace Main.View
 
             yield return null;
         }
+
+        public bool PlaySFXChargeMode(int idx)
+        {
+            try
+            {
+                if (playSFXChargeModes.Length <= idx)
+                    throw new System.Exception($"範囲外インデックス:{idx}");
+                // パワーチャージSEならループ再生
+                // パワーチャージフルSE再生
+                MainGameManager.Instance.AudioOwner.PlaySFX(playSFXChargeModes[idx], idx == 0 ? true : false);
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
+        public bool StopSFXChargeMode(int idx)
+        {
+            try
+            {
+                if (playSFXChargeModes.Length <= idx)
+                    throw new System.Exception($"範囲外インデックス:{idx}");
+                // パワーチャージSE停止
+                MainGameManager.Instance.AudioOwner.StopSFX(playSFXChargeModes[idx]);
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
     }
 
     public interface IPlayerView
@@ -244,5 +284,19 @@ namespace Main.View
         /// <param name="targets">位置</param>
         /// <returns>コルーチン</returns>
         public IEnumerator PlayDiveAnimation(System.IObserver<bool> observer, Vector3[] targets);
+        /// <summary>
+        /// SFXを再生
+        /// チャージ
+        /// </summary>
+        /// <param name="idx">インデックス</param>
+        /// <returns>成功／失敗</returns>
+        public bool PlaySFXChargeMode(int idx);
+        /// <summary>
+        /// SFXを停止
+        /// チャージ
+        /// </summary>
+        /// <param name="idx">インデックス</param>
+        /// <returns>成功／失敗</returns>
+        public bool StopSFXChargeMode(int idx);
     }
 }

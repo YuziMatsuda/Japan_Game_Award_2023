@@ -107,7 +107,7 @@ namespace Main.InputSystem
         {
             try
             {
-                _inputActions.Disable();
+                _inputActions.Dispose();
                 inputPlayer.DisableAll();
                 inputUI.DisableAll();
                 _compositeDisposable.Clear();

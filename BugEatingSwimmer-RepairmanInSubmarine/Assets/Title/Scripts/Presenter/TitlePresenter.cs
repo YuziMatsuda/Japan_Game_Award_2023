@@ -9,6 +9,7 @@ using Title.Common;
 using Title.Audio;
 using Title.Template;
 using System.Linq;
+using CRIACLE_BGM.CueSheet_0;
 
 namespace Title.Presenter
 {
@@ -187,7 +188,7 @@ namespace Title.Presenter
             fadeImage.SetActive(true);
             option.SetActive(false);
             // BGMを再生
-            TitleGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_title);
+            TitleGameManager.Instance.AudioOwner.PlayBGM(Cue.main_start_and_loop);
             // シーン読み込み時のアニメーション
             Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Open))
                 .Subscribe(_ =>

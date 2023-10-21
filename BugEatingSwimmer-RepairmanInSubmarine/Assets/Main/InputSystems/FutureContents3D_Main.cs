@@ -20,6 +20,8 @@ public partial class @FutureContents3D_Main : IInputActionCollection2, IDisposab
     public InputActionAsset asset { get; }
     public @FutureContents3D_Main()
     {
+        if (asset != null)
+            UnityEngine.Debug.LogError($"Main_InputActionAsset‚ªŠù‚É‘¶İ:{asset}");
         asset = InputActionAsset.FromJson(@"{
     ""name"": ""FutureContents3D_Main"",
     ""maps"": [

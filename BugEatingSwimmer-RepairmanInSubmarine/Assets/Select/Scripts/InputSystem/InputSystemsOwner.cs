@@ -83,7 +83,7 @@ namespace Select.InputSystem
         {
             try
             {
-                _inputActions.Disable();
+                _inputActions.Dispose();
                 inputUI.DisableAll();
                 _compositeDisposable.Clear();
 

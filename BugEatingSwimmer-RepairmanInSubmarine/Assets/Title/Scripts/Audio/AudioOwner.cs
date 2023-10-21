@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Title.Common;
 using Title.Template;
+using CRIACLE_BGM.CueSheet_0;
 
 namespace Title.Audio
 {
     /// <summary>
     /// オーディオのオーナー
     /// </summary>
-    public class AudioOwner : MonoBehaviour, ITitleGameManager, ISfxPlayer, IBgmPlayer
+    public class AudioOwner : MonoBehaviour, ITitleGameManager, ISfxPlayer, IBgmPlayer, IAudioMixerController
     {
         /// <summary>SEのプレイヤー</summary>
         [SerializeField] private SfxPlayer sfxPlayer;
@@ -36,7 +37,7 @@ namespace Title.Audio
             sfxPlayer.PlaySFX(clipToPlay);
         }
 
-        public void PlayBGM(ClipToPlayBGM clipToPlay)
+        public void PlayBGM(Cue clipToPlay)
         {
             bgmPlayer.PlayBGM(clipToPlay);
         }
@@ -48,7 +49,8 @@ namespace Title.Audio
         /// <returns>成功／失敗</returns>
         public bool SetVolume(Dictionary<EnumSystemConfig, int> configMap)
         {
-            return audioMixer.SetVolume(configMap);
+            return audioMixer.SetVolume(configMap) &&
+                bgmPlayer.SetVolume(configMap);
         }
 
         /// <summary>
@@ -57,7 +59,8 @@ namespace Title.Audio
         /// <returns>成功／失敗</returns>
         public bool ReLoadAudios()
         {
-            return audioMixer.ReLoadAudios();
+            return audioMixer.ReLoadAudios() &&
+                bgmPlayer.ReLoadAudios();
         }
 
         /// <summary>

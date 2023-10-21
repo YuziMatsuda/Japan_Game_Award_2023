@@ -20,7 +20,7 @@ namespace Title.Test
 
         private void Start()
         {
-            TitleGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_title);
+            //TitleGameManager.Instance.AudioOwner.PlayBGM(ClipToPlayBGM.bgm_title);
             //slider.onValueChanged.AddListener(SetAudioMixer);
             var tTResources = new TitleTemplateResourcesAccessory();
             var datas = tTResources.LoadSaveDatasCSV(ConstResorcesNames.SYSTEM_CONFIG);

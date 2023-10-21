@@ -18,7 +18,14 @@ namespace Main.Common
 
         public Transform GetParticleSystemsTransform(int instanceID, EnumParticleSystemsIndex index)
         {
-            return GetParticleSystems(instanceID, index).transform;
+            var particle = GetParticleSystems(instanceID, index);
+            if (particle == null)
+            {
+                Debug.LogWarning("オブジェクトが削除または見つかりませんでした");
+                return null;
+            }
+
+            return particle.transform;
         }
 
         public void OnStart()
@@ -32,6 +39,12 @@ namespace Main.Common
             try
             {
                 var particle = GetParticleSystems(instanceID, index);
+                if (particle == null)
+                {
+                    Debug.LogWarning("オブジェクトが削除または見つかりませんでした");
+                    return true;
+                }
+
                 particle.position = position;
                 if (!particle.gameObject.activeSelf)
                     particle.gameObject.SetActive(true);
@@ -59,6 +72,12 @@ namespace Main.Common
             try
             {
                 var particle = GetParticleSystems(instanceID, index);
+                if (particle == null)
+                {
+                    Debug.LogWarning("オブジェクトが削除または見つかりませんでした");
+                    return true;
+                }
+
                 if (!stopImmediately)
                 {
                     if (particle.GetComponent<ParticleSystem>() != null)
@@ -86,13 +105,24 @@ namespace Main.Common
         /// <returns>パーティクルシステム</returns>
         private Transform GetParticleSystems(int instanceID, EnumParticleSystemsIndex index)
         {
-            if (!_particleSystemsIdxDictionary.ContainsKey($"{instanceID + index}"))
+            try
             {
-                var sfx = Instantiate(particleSystems[(int)index], _transform);
-                _particleSystemsIdxDictionary.Add($"{instanceID + index}", _transform.childCount - 1);
-                return sfx;
+                if (_transform == null)
+                    throw new System.Exception("対象オブジェクト削除済み");
+
+                if (!_particleSystemsIdxDictionary.ContainsKey($"{instanceID + index}"))
+                {
+                    var sfx = Instantiate(particleSystems[(int)index], _transform);
+                    _particleSystemsIdxDictionary.Add($"{instanceID + index}", _transform.childCount - 1);
+                    return sfx;
+                }
+                return _transform.GetChild(_particleSystemsIdxDictionary[$"{instanceID + index}"]);
             }
-            return _transform.GetChild(_particleSystemsIdxDictionary[$"{instanceID + index}"]);
+            catch (System.Exception e)
+            {
+                Debug.LogWarning(e);
+                return null;
+            }
         }
     }
 

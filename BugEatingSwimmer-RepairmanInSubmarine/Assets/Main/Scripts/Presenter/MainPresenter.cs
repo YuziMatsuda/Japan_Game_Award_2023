@@ -378,6 +378,9 @@ namespace Main.Presenter
                                 Debug.LogError("ボタン有効／無効切り替え呼び出しの失敗");
                             if (!gameProceedButtonModel.SetEventTriggerEnabled(false))
                                 Debug.LogError("イベント有効／無効切り替え呼び出しの失敗");
+                            // プレイヤーの挙動によって発生するイベント無効　など
+                            if (!MainGameManager.Instance.InputSystemsOwner.Exit())
+                                Debug.LogError("InputSystem終了呼び出しの失敗");
                             var owner = MainGameManager.Instance.SceneOwner;
                             if (!owner.SetSystemCommonCash(owner.CountUpSceneId(currentStageDic)))
                                 Debug.LogError("シーンID更新呼び出しの失敗");
@@ -420,6 +423,9 @@ namespace Main.Presenter
                                 Debug.LogError("ボタン有効／無効切り替え呼び出しの失敗");
                             if (!gameRetryButtonModel.SetEventTriggerEnabled(false))
                                 Debug.LogError("イベント有効／無効切り替え呼び出しの失敗");
+                            // プレイヤーの挙動によって発生するイベント無効　など
+                            if (!MainGameManager.Instance.InputSystemsOwner.Exit())
+                                Debug.LogError("InputSystem終了呼び出しの失敗");
                             // シーン読み込み時のアニメーション
                             Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
                                 .Subscribe(_ => MainGameManager.Instance.SceneOwner.LoadMainScene())
@@ -459,6 +465,9 @@ namespace Main.Presenter
                                 Debug.LogError("ボタン有効／無効切り替え呼び出しの失敗");
                             if (!gameSelectButtonModel.SetEventTriggerEnabled(false))
                                 Debug.LogError("イベント有効／無効切り替え呼び出しの失敗");
+                            // プレイヤーの挙動によって発生するイベント無効　など
+                            if (!MainGameManager.Instance.InputSystemsOwner.Exit())
+                                Debug.LogError("InputSystem終了呼び出しの失敗");
                             // シーン読み込み時のアニメーション
                             Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
                                 .Subscribe(_ =>
@@ -538,7 +547,7 @@ namespace Main.Presenter
                                     if (playerModel != null)
                                         if (!playerModel.SetInputBan(true))
                                             Debug.LogError("操作禁止フラグ更新呼び出しの失敗");
-                                    // T.B.D プレイヤーの挙動によって発生するイベント無効　など
+                                    // プレイヤーの挙動によって発生するイベント無効　など
                                     if (!MainGameManager.Instance.InputSystemsOwner.Exit())
                                         Debug.LogError("InputSystem終了呼び出しの失敗");
                                     // シーン読み込み時のアニメーション
@@ -830,8 +839,9 @@ namespace Main.Presenter
                                                         Debug.LogError("チャージ開始呼び出しの失敗");
                                                     if (!playerView.ChangeChargeMode(0, true))
                                                         Debug.LogError("チャージ開始呼び出しの失敗");
-                                                    // パワーチャージSE
-                                                    MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_energy_store, true);
+                                                    if (!playerView.PlaySFXChargeMode(0))
+                                                        Debug.LogError("SFXを再生チャージ呼び出しの失敗");
+
                                                     break;
                                                 case 1:
                                                     // 処理無し
@@ -839,12 +849,14 @@ namespace Main.Presenter
                                                 case 2:
                                                     if (!playerView.ChangeChargeMode(1, true))
                                                         Debug.LogError("チャージ開始呼び出しの失敗");
+                                                    if (!playerView.PlaySFXChargeMode(1))
+                                                        Debug.LogError("SFXを再生チャージ呼び出しの失敗");
                                                     break;
                                                 case -1:
                                                     if (!playerView.StopCharge())
                                                         Debug.LogError("チャージ停止呼び出しの失敗");
-                                                    // パワーチャージSE停止
-                                                    MainGameManager.Instance.AudioOwner.StopSFX(ClipToPlay.se_energy_store);
+                                                    if (!playerView.StopSFXChargeMode(0))
+                                                        Debug.LogError("SFXを停止チャージ呼び出しの失敗");
                                                     for (var i = 0; i < playerView.Halos.PlayerHalos.Length; i++)
                                                         if (!playerView.ChangeChargeMode(i, false))
                                                             Debug.LogError("チャージ状態を切り替え呼び出しの失敗");
@@ -1026,6 +1038,9 @@ namespace Main.Presenter
                                             // エラーSEを再生
                                             MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_code_error);
                                             Time.timeScale = 0f;
+                                            // プレイヤーの挙動によって発生するイベント無効　など
+                                            if (!MainGameManager.Instance.InputSystemsOwner.Exit())
+                                                Debug.LogError("InputSystem終了呼び出しの失敗");
                                             Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Close))
                                                 .Subscribe(_ => MainGameManager.Instance.SceneOwner.LoadMainScene())
                                                 .AddTo(gameObject);
@@ -1781,6 +1796,9 @@ namespace Main.Presenter
                                 // 実績履歴を更新
                                 if (common.AddMissionHistory() < 1)
                                     Debug.LogError("実績履歴を更新呼び出しの失敗");
+                                // プレイヤーの挙動によって発生するイベント無効　など
+                                if (!MainGameManager.Instance.InputSystemsOwner.Exit())
+                                    Debug.LogError("InputSystem終了呼び出しの失敗");
                                 var owner = MainGameManager.Instance.SceneOwner;
                                 if (!owner.SetSystemCommonCash(owner.CountUpSceneId(currentStageDic)))
                                     Debug.LogError("シーンID更新呼び出しの失敗");
