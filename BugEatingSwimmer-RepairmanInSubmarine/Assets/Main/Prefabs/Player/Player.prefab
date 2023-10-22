@@ -367,8 +367,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3c593b7e555c964a88d3f2d6add6b31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 4
-  brake: 5
+  moveSpeed: 6
+  brake: 4
   forceMode: 1
   movementDirectionMode: 1
   targetPointer: {fileID: 8949991182942567068, guid: 03e01bcd328197f4eaf59fae6ae11afe, type: 3}
