@@ -76,13 +76,14 @@ namespace Select.Common
         private void Start()
         {
             audioOwner.OnStart();
+            missionOwner.OnStart();
+            particleSystemsOwner.OnStart();
             presenter.OnStart();
             cursorVisible.OnStart();
             sceneOwner.OnStart();
             gimmickOwner.OnStart();
             algorithmOwner.OnStart();
             inputSystemsOwner.OnStart();
-            particleSystemsOwner.OnStart();
         }
     }
 

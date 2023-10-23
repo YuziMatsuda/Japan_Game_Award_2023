@@ -108,6 +108,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missions:
   - enumMissionID: 6
+    stageIndex: 0
+  bugFixedDirectionsInStages:
+  - enumMissionID: 10
+    stageIndex: 1
+  - enumMissionID: 11
+    stageIndex: 2
+  - enumMissionID: 12
+    stageIndex: 3
+  - enumMissionID: 13
+    stageIndex: 4
+  - enumMissionID: 14
+    stageIndex: 5
+  - enumMissionID: 15
+    stageIndex: 6
+  - enumMissionID: 16
+    stageIndex: 7
+  - enumMissionID: 17
+    stageIndex: 8
+  - enumMissionID: 18
+    stageIndex: 9
+  - enumMissionID: 19
+    stageIndex: 10
+  - enumMissionID: 20
+    stageIndex: 11
+  - enumMissionID: 21
+    stageIndex: 12
+  - enumMissionID: 22
+    stageIndex: 13
+  - enumMissionID: 23
+    stageIndex: 14
+  - enumMissionID: 24
+    stageIndex: 15
+  - enumMissionID: 25
+    stageIndex: 16
+  - enumMissionID: 26
+    stageIndex: 17
 --- !u!1 &1697066100
 GameObject:
   m_ObjectHideFlags: 0

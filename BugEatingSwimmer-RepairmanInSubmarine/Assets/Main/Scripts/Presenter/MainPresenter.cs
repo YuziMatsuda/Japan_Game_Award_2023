@@ -281,7 +281,12 @@ namespace Main.Presenter
                         mainSceneStagesState[currentStageDic[EnumSystemCommonCash.SceneId]][EnumMainSceneStagesState.State] = 2;
                         if (currentStageDic[EnumSystemCommonCash.SceneId] < mainSceneStagesState.Length - 1 &&
                             mainSceneStagesState[(currentStageDic[EnumSystemCommonCash.SceneId] + 1)][EnumMainSceneStagesState.State] < 1)
+                        {
                             mainSceneStagesState[(currentStageDic[EnumSystemCommonCash.SceneId] + 1)][EnumMainSceneStagesState.State] = 1;
+                            // ステージ2-4をクリアした場合はレフトアーム側（ステージ4-1）も解放する
+                            if (currentStageDic[EnumSystemCommonCash.SceneId] == 7)
+                                mainSceneStagesState[(currentStageDic[EnumSystemCommonCash.SceneId] + 1 + 3)][EnumMainSceneStagesState.State] = 1;
+                        }
                         // ステージごとのクリア状態を保存
                         //Debug.Log(string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID)));
                         if (!MainGameManager.Instance.SceneOwner.SaveMainSceneStagesState(mainSceneStagesState))

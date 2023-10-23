@@ -43,6 +43,10 @@ namespace Select.Model
         [SerializeField] private Navigation navigationOfIT;
         /// <summary>エリア内の最終ステージか</summary>
         [SerializeField] private bool isFinalInArea;
+        /// <summary>演出の再生</summary>
+        private bool _isPlayDirection;
+        /// <summary>演出の再生</summary>
+        public bool IsPlayDirection => _isPlayDirection;
 
         private void Reset()
         {
@@ -60,7 +64,26 @@ namespace Select.Model
             try
             {
                 var mainSceneStagesState = SelectGameManager.Instance.SceneOwner.GetMainSceneStagesState();
-                stageState.Value = mainSceneStagesState[Index][EnumMainSceneStagesState.State];
+                var state = mainSceneStagesState[Index][EnumMainSceneStagesState.State];
+                switch (state)
+                {
+                    case 0:
+                        _isPlayDirection = true;
+
+                        break;
+                    case 1:
+                        _isPlayDirection = SelectGameManager.Instance.MissionOwner.IsLocked(_index);
+
+                        break;
+                    case 2:
+                        _isPlayDirection = SelectGameManager.Instance.MissionOwner.IsLocked(_index);
+
+                        break;
+                    default:
+                        // 処理無し
+                        break;
+                }
+                stageState.Value = state;
 
                 return true;
             }
