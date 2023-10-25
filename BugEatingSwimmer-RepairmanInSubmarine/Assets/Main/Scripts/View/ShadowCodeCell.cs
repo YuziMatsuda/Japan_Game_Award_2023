@@ -32,15 +32,12 @@ namespace Main.View
             pivotDynamic = transform.GetChild(0).GetComponent<PivotDynamic>();
         }
 
-        public IEnumerator PlayLightAnimation(IObserver<bool> observer, EnumDirectionMode enumDirectionMode)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerator PlaySpinAnimation(IObserver<bool> observer, Vector3 vectorDirectionMode)
+        public IEnumerator PlaySpinAnimation(IObserver<bool> observer, Vector3 vectorDirectionMode, bool restartMode)
         {
             if (_transform == null)
                 _transform = transform;
+            if (restartMode)
+                _transform.DOComplete();
             _transform.DOLocalRotate(vectorDirectionMode, turnDuration)
                 .OnComplete(() => observer.OnNext(true));
 
@@ -107,6 +104,11 @@ namespace Main.View
                 return false;
             }
         }
+
+        public IEnumerator PlayLightAnimation(IObserver<bool> observer, EnumDirectionMode enumDirectionMode, bool restartMode)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>
@@ -120,8 +122,9 @@ namespace Main.View
         /// </summary>
         /// <param name="observer">バインド</param>
         /// <param name="vectorDirectionMode">方角モードのベクター</param>
+        /// <param name="restartMode">リスタートモード</param>
         /// <returns>コルーチン</returns>
-        public IEnumerator PlaySpinAnimation(System.IObserver<bool> observer, Vector3 vectorDirectionMode);
+        public IEnumerator PlaySpinAnimation(System.IObserver<bool> observer, Vector3 vectorDirectionMode, bool restartMode);
 
         /// <summary>
         /// 回転方角セット
@@ -135,8 +138,9 @@ namespace Main.View
         /// </summary>
         /// <param name="observer">バインド</param>
         /// <param name="enumDirectionMode">方角モード</param>
+        /// <param name="restartMode">リスタートモード</param>
         /// <returns>コルーチン</returns>
-        public IEnumerator PlayLightAnimation(System.IObserver<bool> observer, EnumDirectionMode enumDirectionMode);
+        public IEnumerator PlayLightAnimation(System.IObserver<bool> observer, EnumDirectionMode enumDirectionMode, bool restartMode);
 
         /// <summary>
         /// ライト点灯初期設定

@@ -33,6 +33,8 @@ namespace Main.View
         /// 見た目のみの挙動のため、他のアニメーションが再生されたら即終了させてもよい想定
         /// </summary>
         private Tweener _errorTweener;
+        /// <summary>ライトの点灯アニメーション</summary>
+        private Tweener _lightTweener;
 
         public bool InitializeLight(EnumDirectionMode enumDirectionMode)
         {
@@ -77,13 +79,22 @@ namespace Main.View
             yield return null;
         }
 
-        public IEnumerator PlayLightAnimation(IObserver<bool> observer, EnumDirectionMode enumDirectionMode)
+        public IEnumerator PlayLightAnimation(IObserver<bool> observer, EnumDirectionMode enumDirectionMode, bool restartMode)
         {
             if (_spriteRenderer == null)
                 _spriteRenderer = GetComponent<SpriteRenderer>();
-            _spriteRenderer.DOFade(endValue: onFade, duration)
-                .SetUpdate(true)
-                .OnComplete(() => observer.OnNext(true));
+            if (restartMode &&
+                _lightTweener != null &&
+                _lightTweener.IsActive() &&
+                _lightTweener.IsPlaying())
+            {
+                _lightTweener.Rewind();
+                _lightTweener.Play();
+            }
+            else
+                _lightTweener = _spriteRenderer.DOFade(endValue: onFade, duration)
+                    .SetUpdate(true)
+                    .OnComplete(() => observer.OnNext(true));
 
             yield return null;
         }
@@ -93,7 +104,7 @@ namespace Main.View
             throw new NotImplementedException();
         }
 
-        public IEnumerator PlaySpinAnimation(IObserver<bool> observer, Vector3 vectorDirectionMode)
+        public IEnumerator PlaySpinAnimation(IObserver<bool> observer, Vector3 vectorDirectionMode, bool restartMode)
         {
             throw new NotImplementedException();
         }
@@ -108,6 +119,10 @@ namespace Main.View
                     _errorTweener.IsActive() &&
                     _errorTweener.IsPlaying())
                     _errorTweener.Complete();
+                if (_lightTweener != null &&
+                    _lightTweener.IsActive() &&
+                    _lightTweener.IsPlaying())
+                    _lightTweener.Rewind();
                 var color = _spriteRenderer.color;
                 color.a = offFade;
                 _spriteRenderer.color = color;

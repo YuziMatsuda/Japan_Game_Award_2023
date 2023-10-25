@@ -47,7 +47,7 @@ namespace Main.View
                 (!shadowCode.CodeCellsLeft.gameObject.activeSelf && EnumDirectionMode.Left.Equals(enumDirectionMode));
         }
 
-        public IEnumerator PlayLightAnimation(IObserver<bool> observer, EnumDirectionMode enumDirectionMode)
+        public IEnumerator PlayLightAnimation(IObserver<bool> observer, EnumDirectionMode enumDirectionMode, bool restartMode)
         {
             var idx = 0;
             if (IsDisabledCodeCellsDirection(enumDirectionMode))
@@ -58,50 +58,51 @@ namespace Main.View
             else
             {
                 // 支点
-                Observable.FromCoroutine<bool>(observer => lightCodeCellSprites[idx++].PlayLightAnimation(observer, enumDirectionMode))
+                Observable.FromCoroutine<bool>(observer => lightCodeCellSprites[idx++].PlayLightAnimation(observer, enumDirectionMode, restartMode))
                     .Subscribe(_ =>
                     {
                         // ヘッド
-                        Observable.FromCoroutine<bool>(observer => lightCodeCellSprites[idx++].PlayLightAnimation(observer, enumDirectionMode))
+                        Observable.FromCoroutine<bool>(observer => lightCodeCellSprites[idx++].PlayLightAnimation(observer, enumDirectionMode, restartMode))
                             .Subscribe(_ =>
                             {
                                 // セル
-                                Observable.FromCoroutine<bool>(observer => lightCodeCellSprites[idx++].PlayLightAnimation(observer, enumDirectionMode))
+                                Observable.FromCoroutine<bool>(observer => lightCodeCellSprites[idx++].PlayLightAnimation(observer, enumDirectionMode, restartMode))
                                     .Subscribe(_ =>
                                     {
                                         // セル
-                                        Observable.FromCoroutine<bool>(observer => lightCodeCellSprites[idx++].PlayLightAnimation(observer, enumDirectionMode))
+                                        Observable.FromCoroutine<bool>(observer => lightCodeCellSprites[idx++].PlayLightAnimation(observer, enumDirectionMode, restartMode))
                                             .Subscribe(_ =>
                                             {
                                                 // セル
-                                                Observable.FromCoroutine<bool>(observer => lightCodeCellSprites[idx++].PlayLightAnimation(observer, enumDirectionMode))
+                                                Observable.FromCoroutine<bool>(observer => lightCodeCellSprites[idx++].PlayLightAnimation(observer, enumDirectionMode, restartMode))
                                                     .Subscribe(_ =>
                                                     {
                                                         // セル
-                                                        Observable.FromCoroutine<bool>(observer => lightCodeCellSprites[idx++].PlayLightAnimation(observer, enumDirectionMode))
+                                                        Observable.FromCoroutine<bool>(observer => lightCodeCellSprites[idx++].PlayLightAnimation(observer, enumDirectionMode, restartMode))
                                                             .Subscribe(_ =>
                                                             {
                                                                 observer.OnNext(true);
-                                                            })
+                                                            }, () => PlayLightAnimationFinal(observer))
                                                             .AddTo(gameObject);
-                                                    })
+                                                    }, () => PlayLightAnimationFinal(observer))
                                                     .AddTo(gameObject);
-                                            })
+                                            }, () => PlayLightAnimationFinal(observer))
                                             .AddTo(gameObject);
-                                    })
+                                    }, () => PlayLightAnimationFinal(observer))
                                     .AddTo(gameObject);
-                            })
+                            }, () => PlayLightAnimationFinal(observer))
                             .AddTo(gameObject);
-                    })
+                    }, () => PlayLightAnimationFinal(observer))
                     .AddTo(gameObject);
             }
 
             yield return null;
         }
 
-        public IEnumerator PlaySpinAnimation(IObserver<bool> observer, Vector3 vectorDirectionMode)
+        private void PlayLightAnimationFinal(IObserver<bool> observer)
         {
-            throw new NotImplementedException();
+            SetAlphaOff();
+            observer.OnCompleted();
         }
 
         public bool SetSpinDirection(Vector3 vectorDirectionMode)
@@ -206,6 +207,11 @@ namespace Main.View
         }
 
         public bool SetDefaultDirection()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerator PlaySpinAnimation(IObserver<bool> observer, Vector3 vectorDirectionMode, bool restartMode)
         {
             throw new NotImplementedException();
         }

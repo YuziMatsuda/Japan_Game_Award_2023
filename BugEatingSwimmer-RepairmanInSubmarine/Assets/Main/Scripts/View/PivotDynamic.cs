@@ -27,7 +27,7 @@ namespace Main.View
             throw new NotImplementedException();
         }
 
-        public IEnumerator PlayLightAnimation(IObserver<bool> observer, EnumDirectionMode enumDirectionMode)
+        public IEnumerator PlayLightAnimation(IObserver<bool> observer, EnumDirectionMode enumDirectionMode, bool restartMode)
         {
             throw new NotImplementedException();
         }
@@ -37,7 +37,7 @@ namespace Main.View
             throw new NotImplementedException();
         }
 
-        public IEnumerator PlaySpinAnimation(IObserver<bool> observer, Vector3 vectorDirectionMode)
+        public IEnumerator PlaySpinAnimation(IObserver<bool> observer, Vector3 vectorDirectionMode, bool restartMode)
         {
             throw new NotImplementedException();
         }

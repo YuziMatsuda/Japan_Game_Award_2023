@@ -1429,8 +1429,6 @@ namespace Main.Presenter
                                                 if (!common.SendReceiverOfInteract(receivers, flowchartModel, codeObjs[idx].GetComponent<PivotConfig>().EnumInteractID))
                                                     Debug.LogError("シナリオのレシーバーへ送信呼び出しの失敗");
                                             }
-                                            // コード回転のSE
-                                            MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_code_normal);
                                             // IsPostingがTrueならバグフィックス状態
                                             // バグフィックス状態でコードをつつく　⇒　回転によりコードが繋がらなくなる
                                             // Histroyに含まないコード回転は無視する

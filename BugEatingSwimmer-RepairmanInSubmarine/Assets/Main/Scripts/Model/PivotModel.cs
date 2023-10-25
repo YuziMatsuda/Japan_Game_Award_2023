@@ -6,6 +6,7 @@ using System.Linq;
 using Main.Common;
 using DG.Tweening;
 using Main.View;
+using Main.Audio;
 
 namespace Main.Model
 {
@@ -47,6 +48,8 @@ namespace Main.Model
         private readonly BoolReactiveProperty _isPathEmotions = new BoolReactiveProperty();
         /// <summary>感情コードを通過</summary>
         public IReactiveProperty<bool> IsPathEmotions => _isPathEmotions;
+        /// <summary>設定</summary>
+        [SerializeField] private PivotConfig pivotConfig;
 
         protected override void Reset()
         {
@@ -57,9 +60,10 @@ namespace Main.Model
 
             shadowCodeCell = transform.GetChild(0).GetChild(0).GetComponent<ShadowCodeCell>() != null ? transform.GetChild(0).GetChild(0).GetComponent<ShadowCodeCell>() : null;
             lightCodeCell = transform.GetChild(1).GetComponent<LightCodeCell>() != null ? transform.GetChild(1).GetComponent<LightCodeCell>() : null;
-            if (GetComponent<PivotConfig>().EnumAtomicMode.Equals(EnumAtomicMode.Molecules))
+            pivotConfig = GetComponent<PivotConfig>();
+            if (pivotConfig.EnumAtomicMode.Equals(EnumAtomicMode.Molecules))
             {
-                var enumDirectionModeDefault = GetComponent<PivotConfig>().EnumDirectionModeDefault;
+                var enumDirectionModeDefault = pivotConfig.EnumDirectionModeDefault;
                 shadowCodeCell.transform.localEulerAngles = vectorDirectionModes[(int)enumDirectionModeDefault];
                 lightCodeCell.transform.localEulerAngles = vectorDirectionModes[(int)enumDirectionModeDefault];
             }
@@ -68,9 +72,9 @@ namespace Main.Model
         protected override void Start()
         {
             base.Start();
-            _enumDirectionMode.Value = (int)GetComponent<PivotConfig>().EnumDirectionModeDefault;
+            _enumDirectionMode.Value = (int)pivotConfig.EnumDirectionModeDefault;
 
-            if (GetComponent<PivotConfig>().EnumAtomicMode.Equals(EnumAtomicMode.Molecules) &&
+            if (pivotConfig.EnumAtomicMode.Equals(EnumAtomicMode.Molecules) &&
                 lightCodeCell != null)
             {
                 if (!lightCodeCell.SetAlphaOff())
@@ -80,7 +84,7 @@ namespace Main.Model
             }
             // サン（ゴ）ショウコードであるかの状態をセット
             // ピボット側では動的な値として扱う
-            if (GetComponent<PivotConfig>().ReadonlyCodeMode)
+            if (pivotConfig.ReadonlyCodeMode)
                 if (!shadowCodeCell.SetDefaultDirection())
                     Debug.LogError("デフォルト角度をセット呼び出しの失敗");
         }
@@ -88,23 +92,22 @@ namespace Main.Model
         protected override void OnTriggerEnter2D(Collider2D collision)
         {
             if (!_onTriggerEnter2DDisabled &&
-                GetComponent<PivotConfig>().EnumAtomicMode.Equals(EnumAtomicMode.Molecules) &&
+                pivotConfig.EnumAtomicMode.Equals(EnumAtomicMode.Molecules) &&
                 0 < tags.Where(q => collision.CompareTag(q)).Select(q => q).ToArray().Length &&
                 shadowCodeCell != null &&
-                lightCodeCell != null &&
-                !_isTurning.Value)
+                lightCodeCell != null)
             {
                 // プレイヤーがパワー状態か
                 var trigger = collision.GetComponent<AttackTrigger>();
-                if (GetComponent<PivotConfig>().ReadonlyCodeMode &&
+                if (pivotConfig.ReadonlyCodeMode &&
                     trigger != null &&
                     trigger.IsPower.Value &&
                     trigger.IsPressAndHoldAndReleased.Value)
                 {
-                    if (!GetComponent<PivotConfig>().SetReadonlyCodeMode(false))
+                    if (!pivotConfig.SetReadonlyCodeMode(false))
                         Debug.LogError("サン（ゴ）ショウコードであるかをセット呼び出しの失敗");
                     // パワー解除時にサン（ゴ）ショウコードの破片がとぶ
-                    foreach (var item in GetComponent<PivotConfig>().CoralParts)
+                    foreach (var item in pivotConfig.CoralParts)
                         Instantiate(item, _transform.position, Quaternion.identity, _transform);
                     if (!lightCodeCell.SetSprite(EnumPivotDynamic.PivotLight))
                         Debug.LogError("スプライトをセット呼び出しの失敗");
@@ -115,41 +118,14 @@ namespace Main.Model
                         Debug.LogError("パワー状態をセット呼び出しの失敗");
                 }
 
-                if (!GetComponent<PivotConfig>().ReadonlyCodeMode)
+                if (!pivotConfig.ReadonlyCodeMode)
                 {
-                    // 通常コードの振る舞い
-                    _isTurning.Value = true;
-                    var turnValue = GetTurnValue(_transform, collision.ClosestPoint(_transform.position), isSpinDirectionMode);
-                    if (turnValue == 0)
-                        Debug.LogError("ターン加算値の取得呼び出しの失敗");
-                    _enumDirectionMode.Value = (int)_algorithmCommon.GetAjustedEnumDirectionMode((EnumDirectionMode)_enumDirectionMode.Value, turnValue);
-                    // 回転アニメーション
-                    if (!lightCodeCell.SetAlphaOff())
-                        Debug.LogError("アルファ値をセット呼び出しの失敗");
-                    Observable.FromCoroutine<bool>(observer => shadowCodeCell.PlaySpinAnimation(observer, vectorDirectionModes[_enumDirectionMode.Value]))
-                        .Subscribe(_ =>
-                        {
-                            if (!lightCodeCell.SetSpinDirection(vectorDirectionModes[_enumDirectionMode.Value]))
-                                Debug.LogError("回転方角セット呼び出しの失敗");
-                            Observable.FromCoroutine<bool>(observer => lightCodeCell.PlayLightAnimation(observer, (EnumDirectionMode)_enumDirectionMode.Value))
-                                .Subscribe(_ =>
-                                {
-                                    _isTurning.Value = false;
-                                    var config = GetComponent<PivotConfig>();
-                                    if (config.EnumInteractID.Equals(EnumInteractID.IN0000))
-                                    {
-                                        if (!config.SetEnumInteractID(EnumInteractID.IN0001))
-                                            Debug.LogError("インタラクトIDをセット呼び出しの失敗");
-                                        if (!config.SetReadonlyCodeMode(true))
-                                            Debug.LogError("サン（ゴ）ショウコードであるかをセット呼び出しの失敗");
-                                        if (GetComponent<PivotConfig>().ReadonlyCodeMode)
-                                            if (!shadowCodeCell.SetDefaultDirection())
-                                                Debug.LogError("デフォルト角度をセット呼び出しの失敗");
-                                    }
-                                })
-                                .AddTo(gameObject);
-                        })
-                        .AddTo(gameObject);
+                    // コード回転のSE
+                    MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_code_normal);
+                    PlaySpinAnimations(collision, _isTurning.Value,
+                        _isTurning, _transform, isSpinDirectionMode, _enumDirectionMode, _algorithmCommon,
+                        lightCodeCell, shadowCodeCell, vectorDirectionModes, pivotConfig,
+                        gameObject);
                 }
                 else
                 {
@@ -175,7 +151,7 @@ namespace Main.Model
                 lightCodeCell != null)
             {
                 // 向いている先がエラーならエラー演出
-                if (IsErrorDirection(GetComponent<PivotConfig>().ErrorDirections, (EnumDirectionMode)_enumDirectionMode.Value))
+                if (IsErrorDirection(pivotConfig.ErrorDirections, (EnumDirectionMode)_enumDirectionMode.Value))
                 {
                     // エラーSE
                     MainGameManager.Instance.AudioOwner.PlaySFX(Audio.ClipToPlay.se_code_error);
@@ -184,13 +160,83 @@ namespace Main.Model
                         .AddTo(gameObject);
                 }
                 // 感情コードの判定
-                if (GetComponent<PivotConfig>().EmotionsCodeMode &&
+                if (pivotConfig.EmotionsCodeMode &&
                     !_isPathEmotions.Value)
                 {
                     // エラーSE
                     //Debug.LogWarning("感情コード");
                     _isPathEmotions.Value = true;
                 }
+            }
+        }
+
+        /// <summary>
+        /// 回転アニメーションの再生
+        /// 関連するコード全て
+        /// </summary>
+        /// <param name="collision">2Dコリジョン</param>
+        /// <param name="restartMode">リスタートモード</param>
+        /// <param name="isTurning">ターンアニメーション実行中</param>
+        /// <param name="transform">トランスフォーム</param>
+        /// <param name="isSpinDirectionMode">回転方向モード</param>
+        /// <param name="enumDirectionMode">方角モード</param>
+        /// <param name="algorithmCommon">アルゴリズムの共通処理</param>
+        /// <param name="lightCodeCell">コード（明）挙動制御</param>
+        /// <param name="shadowCodeCell">コード挙動制御</param>
+        /// <param name="vectorDirectionModes">方角モードのベクター配列</param>
+        /// <param name="pivotConfig">設定</param>
+        /// <param name="gameObject">ゲームオブジェクト</param>
+        private void PlaySpinAnimations(Collider2D collision, bool restartMode,
+            BoolReactiveProperty isTurning, Transform transform, EnumSpinDirectionMode isSpinDirectionMode, IntReactiveProperty enumDirectionMode, AlgorithmCommon algorithmCommon,
+            LightCodeCell lightCodeCell, ShadowCodeCell shadowCodeCell, Vector3[] vectorDirectionModes, PivotConfig pivotConfig,
+            GameObject gameObject)
+        {
+            // 再生中の場合は一度状態をリセット
+            if (restartMode &&
+                _isTurning.Value)
+                _isTurning.Value = false;
+            // 通常コードの振る舞い
+            isTurning.Value = true;
+            var turnValue = GetTurnValue(transform, collision.ClosestPoint(transform.position), isSpinDirectionMode);
+            if (turnValue == 0)
+                Debug.LogError("ターン加算値の取得呼び出しの失敗");
+            enumDirectionMode.Value = (int)algorithmCommon.GetAjustedEnumDirectionMode((EnumDirectionMode)enumDirectionMode.Value, turnValue);
+            // 回転アニメーション
+            if (!lightCodeCell.SetAlphaOff())
+                Debug.LogError("アルファ値をセット呼び出しの失敗");
+            Observable.FromCoroutine<bool>(observer => shadowCodeCell.PlaySpinAnimation(observer, vectorDirectionModes[enumDirectionMode.Value], restartMode))
+                .Subscribe(_ =>
+                {
+                    if (!lightCodeCell.SetSpinDirection(vectorDirectionModes[enumDirectionMode.Value]))
+                        Debug.LogError("回転方角セット呼び出しの失敗");
+                    Observable.FromCoroutine<bool>(observer => lightCodeCell.PlayLightAnimation(observer, (EnumDirectionMode)enumDirectionMode.Value, restartMode))
+                        .Subscribe(_ => PlaySpinAnimationsFinal(isTurning, pivotConfig, shadowCodeCell),
+                            () => PlaySpinAnimationsFinal(isTurning, pivotConfig, shadowCodeCell))
+                        .AddTo(gameObject);
+                })
+                .AddTo(gameObject);
+        }
+
+        /// <summary>
+        /// 回転アニメーションの再生
+        /// 関連するコード全て
+        /// 最終処理
+        /// </summary>
+        /// <param name="isTurning">ターンアニメーション実行中</param>
+        /// <param name="pivotConfig">設定</param>
+        /// <param name="shadowCodeCell">コード挙動制御</param>
+        private void PlaySpinAnimationsFinal(BoolReactiveProperty isTurning, PivotConfig pivotConfig, ShadowCodeCell shadowCodeCell)
+        {
+            isTurning.Value = false;
+            if (pivotConfig.EnumInteractID.Equals(EnumInteractID.IN0000))
+            {
+                if (!pivotConfig.SetEnumInteractID(EnumInteractID.IN0001))
+                    Debug.LogError("インタラクトIDをセット呼び出しの失敗");
+                if (!pivotConfig.SetReadonlyCodeMode(true))
+                    Debug.LogError("サン（ゴ）ショウコードであるかをセット呼び出しの失敗");
+                if (pivotConfig.ReadonlyCodeMode)
+                    if (!shadowCodeCell.SetDefaultDirection())
+                        Debug.LogError("デフォルト角度をセット呼び出しの失敗");
             }
         }
 
@@ -343,10 +389,10 @@ namespace Main.Model
                         var otherIgnoreDirection = GetOtherIgnoreDirection(prevNodeCode);
                         if (otherIgnoreDirection < 0)
                             throw new System.Exception("無効角度の取得呼び出しの失敗");
-                        if (GetComponent<PivotConfig>().EnumAtomicMode.Equals(EnumAtomicMode.Molecules) &&
+                        if (pivotConfig.EnumAtomicMode.Equals(EnumAtomicMode.Molecules) &&
                             !_algorithmCommon.GetAjustedEnumDirectionMode((EnumDirectionMode)otherIgnoreDirection, 2).Equals((EnumDirectionMode)_enumDirectionMode.Value))
                         {
-                            var modes = GetModes((EnumDirectionMode)_enumDirectionMode.Value, GetComponent<PivotConfig>().ErrorDirections);
+                            var modes = GetModes((EnumDirectionMode)_enumDirectionMode.Value, pivotConfig.ErrorDirections);
                             _toList = algorithmOwner.GetSignalDestinations(modes.ToArray(), _transform, EnumCodeState.Normal, rayDistance, rayLayerMask);
                             _toListLength.Value = _toList.Length;
                         }
@@ -374,11 +420,11 @@ namespace Main.Model
 
                         var fromList = new List<Transform>();
                         // 分子の場合かつ、自コードの向きと一つ前のコードの向きが正反対でない
-                        if (GetComponent<PivotConfig>().EnumAtomicMode.Equals(EnumAtomicMode.Molecules) &&
+                        if (pivotConfig.EnumAtomicMode.Equals(EnumAtomicMode.Molecules) &&
                             !_algorithmCommon.GetAjustedEnumDirectionMode((EnumDirectionMode)otherIgnoreDirection, 2).Equals((EnumDirectionMode)_enumDirectionMode.Value))
                         {
                             // 自コード向きも考慮する
-                            fromList.AddRange(algorithmOwner.GetSignalDestinations(GetModes((EnumDirectionMode)_enumDirectionMode.Value, GetComponent<PivotConfig>().ErrorDirections).ToArray(), _transform, EnumCodeState.Normal, rayDistance, rayLayerMask));
+                            fromList.AddRange(algorithmOwner.GetSignalDestinations(GetModes((EnumDirectionMode)_enumDirectionMode.Value, pivotConfig.ErrorDirections).ToArray(), _transform, EnumCodeState.Normal, rayDistance, rayLayerMask));
                         }
                         var merge = new List<Transform>();
                         if (0 < fromList.Count)
