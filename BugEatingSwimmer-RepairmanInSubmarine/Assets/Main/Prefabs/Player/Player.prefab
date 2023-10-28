@@ -106,7 +106,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5103204942550962179}
-  - component: {fileID: 8707505228997292459}
+  - component: {fileID: 3882603761838677709}
   - component: {fileID: 3510612658944079212}
   m_Layer: 0
   m_Name: AttackTrigger
@@ -130,7 +130,7 @@ Transform:
   m_Father: {fileID: 7897886183892488649}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!58 &8707505228997292459
+--- !u!58 &3882603761838677709
 CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -158,7 +158,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43a05fc343caaa943ad18fc516eda5be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  circleCollider: {fileID: 8707505228997292459}
+  circleCollider: {fileID: 3882603761838677709}
 --- !u!1 &5965844324386129902
 GameObject:
   m_ObjectHideFlags: 0
@@ -332,7 +332,7 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1.572084, y: 0.7}
+  m_Size: {x: 2.29, y: 0.7}
   m_Direction: 1
 --- !u!50 &7897886183892488650
 Rigidbody2D:
@@ -382,6 +382,7 @@ MonoBehaviour:
   - 1
   isPressAndHoldAndReleasedCoolTime: 0.1
   delayDoDuration: 0.25
+  attackingDistance: 1.785
 --- !u!114 &7897886183892488648
 MonoBehaviour:
   m_ObjectHideFlags: 0

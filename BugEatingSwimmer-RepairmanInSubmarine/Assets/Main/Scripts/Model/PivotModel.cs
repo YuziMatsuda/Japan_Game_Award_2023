@@ -50,6 +50,10 @@ namespace Main.Model
         public IReactiveProperty<bool> IsPathEmotions => _isPathEmotions;
         /// <summary>設定</summary>
         [SerializeField] private PivotConfig pivotConfig;
+        /// <summary>回転アニメーションを一時ロック管理フラグ</summary>
+        private bool _isLockedPlaySpinAnimations;
+        /// <summary>回転アニメーションの待機時間</summary>
+        [SerializeField] private float delayTimeOfLockedPlaySpinAnimations = .35f;
 
         protected override void Reset()
         {
@@ -120,12 +124,17 @@ namespace Main.Model
 
                 if (!pivotConfig.ReadonlyCodeMode)
                 {
-                    // コード回転のSE
-                    MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_code_normal);
-                    PlaySpinAnimations(collision, _isTurning.Value,
-                        _isTurning, _transform, isSpinDirectionMode, _enumDirectionMode, _algorithmCommon,
-                        lightCodeCell, shadowCodeCell, vectorDirectionModes, pivotConfig,
-                        gameObject);
+                    if (!_isLockedPlaySpinAnimations)
+                    {
+                        _isLockedPlaySpinAnimations = true;
+                        DOVirtual.DelayedCall(delayTimeOfLockedPlaySpinAnimations, () => _isLockedPlaySpinAnimations = false);
+                        // コード回転のSE
+                        MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_code_normal);
+                        PlaySpinAnimations(collision, _isTurning.Value,
+                            _isTurning, _transform, isSpinDirectionMode, _enumDirectionMode, _algorithmCommon,
+                            lightCodeCell, shadowCodeCell, vectorDirectionModes, pivotConfig,
+                            gameObject);
+                    }
                 }
                 else
                 {
@@ -193,8 +202,8 @@ namespace Main.Model
         {
             // 再生中の場合は一度状態をリセット
             if (restartMode &&
-                _isTurning.Value)
-                _isTurning.Value = false;
+                isTurning.Value)
+                isTurning.Value = false;
             // 通常コードの振る舞い
             isTurning.Value = true;
             var turnValue = GetTurnValue(transform, collision.ClosestPoint(transform.position), isSpinDirectionMode);

@@ -20,8 +20,6 @@ public partial class @FutureContents3D_Main : IInputActionCollection2, IDisposab
     public InputActionAsset asset { get; }
     public @FutureContents3D_Main()
     {
-        if (asset != null)
-            UnityEngine.Debug.LogError($"Main_InputActionAssetÇ™ä˘Ç…ë∂ç›:{asset}");
         asset = InputActionAsset.FromJson(@"{
     ""name"": ""FutureContents3D_Main"",
     ""maps"": [
@@ -33,7 +31,7 @@ public partial class @FutureContents3D_Main : IInputActionCollection2, IDisposab
                     ""name"": ""Move"",
                     ""type"": ""Value"",
                     ""id"": ""80e67fbe-7e80-4bd8-b465-677521cf5585"",
-                    ""expectedControlType"": ""Vector2"",
+                    ""expectedControlType"": ""Stick"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -63,7 +61,7 @@ public partial class @FutureContents3D_Main : IInputActionCollection2, IDisposab
                     ""id"": ""5ffb9609-439f-4949-8d31-1c241551de47"",
                     ""path"": ""<Gamepad>/leftStick"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""StickDeadzone"",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Move"",
                     ""isComposite"": false,

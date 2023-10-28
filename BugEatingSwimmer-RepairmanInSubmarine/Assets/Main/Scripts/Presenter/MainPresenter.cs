@@ -813,6 +813,9 @@ namespace Main.Presenter
                                     playerModel.IsPlayingAction.ObserveEveryValueChanged(x => x.Value)
                                         .Subscribe(x =>
                                         {
+                                            if (x)
+                                                if (!attackTrigger.SetTarget(playerModel.TargetAttackingPosition))
+                                                    Debug.LogError("ターゲットをセット呼び出しの失敗");
                                             if (!attackTrigger.SetColliderEnabled(x))
                                                 Debug.LogError("コライダーの有効／無効をセット呼び出しの失敗");
                                         });

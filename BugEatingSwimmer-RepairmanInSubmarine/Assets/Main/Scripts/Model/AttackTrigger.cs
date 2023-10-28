@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
-using System.Linq;
+using UniRx.Triggers;
 
 namespace Main.Model
 {
@@ -18,6 +18,8 @@ namespace Main.Model
         public IReactiveProperty<bool> IsPower => transform.parent.GetComponent<PlayerModel>().IsPower;
         /// <summary>押し続けて離す</summary>
         public IReactiveProperty<bool> IsPressAndHoldAndReleased => transform.parent.GetComponent<PlayerModel>().IsPressAndHoldAndReleased;
+        /// <summary>ターゲット位置</summary>
+        private Vector3 _targetPosition;
 
         public bool SetAutoAttack(bool isEnabled)
         {
@@ -71,7 +73,31 @@ namespace Main.Model
 
         private void Start()
         {
+            var transform = this.transform;
             circleCollider.enabled = false;
+            this.UpdateAsObservable()
+                .Subscribe(_ =>
+                {
+                    if (circleCollider.enabled)
+                        if (_targetPosition != null &&
+                            transform.position != _targetPosition)
+                            transform.position = _targetPosition;
+                });
+        }
+
+        public bool SetTarget(Vector3 targetPosition)
+        {
+            try
+            {
+                _targetPosition = targetPosition;
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
         }
     }
 
@@ -86,5 +112,11 @@ namespace Main.Model
         /// <param name="enabled">有効／無効</param>
         /// <returns>成功／失敗</returns>
         public bool SetColliderEnabled(bool enabled);
+        /// <summary>
+        /// ターゲットをセット
+        /// </summary>
+        /// <param name="transform">トランスフォーム</param>
+        /// <returns>成功／失敗</returns>
+        public bool SetTarget(Vector3 targetPosition);
     }
 }
