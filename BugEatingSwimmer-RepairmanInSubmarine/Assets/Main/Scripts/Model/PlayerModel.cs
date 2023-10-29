@@ -87,6 +87,12 @@ namespace Main.Model
         public IReactiveProperty<bool> IsSwimming => _isSwimming;
         /// <summary>最後に入力された速度ベクター（向きの判定用）</summary>
         private Vector2ReactiveProperty _moveVelocityLast = new Vector2ReactiveProperty();
+        /// <summary>攻撃先のターゲット</summary>
+        private Vector3 _targetAttackingPosition;
+        /// <summary>攻撃先のターゲット</summary>
+        public Vector3 TargetAttackingPosition => _targetAttackingPosition;
+        /// <summary>攻撃の予測稼働範囲の補正値</summary>
+        [SerializeField] private float attackingDistance = 1.785f;
 
         public bool SetInputBan(bool unactive)
         {
@@ -114,8 +120,11 @@ namespace Main.Model
 
                     if (!_inputBan)
                     {
-                        if (!AttackMovement(_isPlayingAction, moveVelocity, _moveVelocityLast, movementDirectionMode, _isPower, _inputPowerChargeTime, _isPressAndHoldAndReleased, powerChargePhaseTimes))
+                        if (!AttackMovement(_isPlayingAction, moveVelocity, _moveVelocityLast, movementDirectionMode, _isPower, _inputPowerChargeTime, _isPressAndHoldAndReleased, powerChargePhaseTimes, toDirectionLast, transform))
                             Debug.LogError("攻撃のモーション呼び出しの失敗");
+                        // 移動方向に合わせて向きを変える
+                        if (0f < moveVelocity.Value.magnitude)
+                            transform.rotation = GetQuaternionDirection(movementDirectionMode, transform, _onTurn, toDirectionLast);
                     }
                     else
                         _inputPowerChargeTime.Value = 0f;
@@ -141,9 +150,6 @@ namespace Main.Model
                             0f < moveVelocity.Value.magnitude &&
                             !CheckDrift(moveVelocity.Value, rigidbody.velocity, inputAngleFrontal) ?
                             0f : brake;
-                        // 移動方向に合わせて向きを変える
-                        if (0f < moveVelocity.Value.magnitude)
-                            transform.rotation = GetQuaternionDirection(movementDirectionMode, transform, _onTurn, toDirectionLast);
                     }
                     else
                         rigidbody.velocity = Vector3.zero;
@@ -174,14 +180,17 @@ namespace Main.Model
         /// <param name="inputPowerChargeTime">パワーチャージ時間</param>
         /// <param name="isPressAndHoldAndReleased">押し続けて離す</param>
         /// <param name="powerChargePhaseTimes">パワーチャージの段階を変える時間</param>
+        /// <param name="toDirectionLast">最後に参照された移動向き（デフォルトは右向き）</param>
+        /// <param name="transform">トランスフォーム</param>
         /// <returns>成功／失敗</returns>
-        private bool AttackMovement(BoolReactiveProperty isPlayingAction, Vector2ReactiveProperty moveVelocity, Vector2ReactiveProperty moveVelocityLast, EnumMovementDirectionMode movementDirectionMode, BoolReactiveProperty isPower, FloatReactiveProperty inputPowerChargeTime, BoolReactiveProperty isPressAndHoldAndReleased, float[] powerChargePhaseTimes)
+        private bool AttackMovement(BoolReactiveProperty isPlayingAction, Vector2ReactiveProperty moveVelocity, Vector2ReactiveProperty moveVelocityLast, EnumMovementDirectionMode movementDirectionMode, BoolReactiveProperty isPower, FloatReactiveProperty inputPowerChargeTime, BoolReactiveProperty isPressAndHoldAndReleased, float[] powerChargePhaseTimes, Vector3ReactiveProperty toDirectionLast, Transform transform)
         {
             try
             {
                 if (!isPlayingAction.Value)
                     moveVelocity.Value = new Vector2(MainGameManager.Instance.InputSystemsOwner.InputPlayer.Moved.x, MainGameManager.Instance.InputSystemsOwner.InputPlayer.Moved.y) * moveSpeed;
                 if (0 < moveVelocity.Value.magnitude)
+                    // ベロシティ0だとパンチアクションが実行できないための対策
                     moveVelocityLast.Value = moveVelocity.Value;
                 _moveVelocityReactiveProperty.Value = moveVelocity.Value;
                 if (!isPower.Value)
@@ -189,7 +198,7 @@ namespace Main.Model
                     if (!isPlayingAction.Value &&
                         MainGameManager.Instance.InputSystemsOwner.InputPlayer.Attacked)
                     {
-                        if (!PlayPunchAction(isPlayingAction, moveVelocityLast, movementDirectionMode))
+                        if (!PlayPunchAction(isPlayingAction, moveVelocityLast, movementDirectionMode, toDirectionLast, transform))
                             Debug.LogError("パンチアクション呼び出しの失敗");
                     }
                 }
@@ -208,7 +217,7 @@ namespace Main.Model
                             !MainGameManager.Instance.InputSystemsOwner.InputPlayer.Canceled)
                         {
                             inputPowerChargeTime.Value = 0f;
-                            if (!PlayPunchAction(isPlayingAction, moveVelocityLast, movementDirectionMode))
+                            if (!PlayPunchAction(isPlayingAction, moveVelocityLast, movementDirectionMode, toDirectionLast, transform))
                                 Debug.LogError("パンチアクション呼び出しの失敗");
                             isPressAndHoldAndReleased.Value = true;
                             // 再押下までの待機時間
@@ -217,7 +226,7 @@ namespace Main.Model
                         else if (0f < inputPowerChargeTime.Value)
                         {
                             inputPowerChargeTime.Value = 0f;
-                            if (!PlayPunchAction(isPlayingAction, moveVelocityLast, movementDirectionMode))
+                            if (!PlayPunchAction(isPlayingAction, moveVelocityLast, movementDirectionMode, toDirectionLast, transform))
                                 Debug.LogError("パンチアクション呼び出しの失敗");
                         }
                         // float型の最大値丸め込み
@@ -260,14 +269,34 @@ namespace Main.Model
         /// <returns>成功／失敗</returns>
         private bool PlayPunchAction(BoolReactiveProperty isPlayingAction, Vector2ReactiveProperty moveVelocityLast, EnumMovementDirectionMode movementDirectionMode)
         {
+            return PlayPunchAction(isPlayingAction, moveVelocityLast, movementDirectionMode, null, transform);
+        }
+
+        /// <summary>
+        /// パンチアクション
+        /// </summary>
+        /// <param name="isPlayingAction">攻撃モーション中</param>
+        /// <param name="moveVelocityLast">最後に向いた移動ベロシティ</param>
+        /// <param name="movementDirectionMode">移動向き</param>
+        /// <param name="toDirectionLast">最後に参照された移動向き（デフォルトは右向き）</param>
+        /// <param name="transform">トランスフォーム</param>
+        /// <returns>成功／失敗</returns>
+        private bool PlayPunchAction(BoolReactiveProperty isPlayingAction, Vector2ReactiveProperty moveVelocityLast, EnumMovementDirectionMode movementDirectionMode, Vector3ReactiveProperty toDirectionLast, Transform transform)
+        {
             try
             {
                 isPlayingAction.Value = true;
                 switch (enumAttackMotionMode)
                 {
                     case EnumAttackMotionMode.OneAttack:
-                        transform.DOPunchPosition(GetNormalized(moveVelocityLast.Value, movementDirectionMode) * attackDistance, attackDuration, 1, 1f)
+                        var point = GetNormalized(moveVelocityLast.Value, movementDirectionMode) * attackDistance;
+                        point.x = Mathf.Abs(point.x) * transform.rotation.y == 0f ? 1f : -1f;
+                        var t = transform.DOPunchPosition(point,
+                            attackDuration, 1, 1f)
                             .OnComplete(() => isPlayingAction.Value = false);
+                        if (toDirectionLast != null)
+                            SetTargetAttackingWorldPosition(transform,
+                                point * (toDirectionLast.Value.Equals(Vector3.right) ? 1f : -1f) * attackingDistance);
                         break;
                     case EnumAttackMotionMode.SeveralAttack:
                         // DOPunchPositionはもっとダイナミックに動かさないと振動数の引数が作用しない？
@@ -286,6 +315,19 @@ namespace Main.Model
                 Debug.LogError(e);
                 return false;
             }
+        }
+
+        /// <summary>
+        /// 攻撃先のターゲットへワールド座標をセット
+        /// DOPunchPositionはローカル座標を指定するため、ローカル座標を返却
+        /// </summary>
+        /// <param name="transform">トランスフォーム</param>
+        /// <param name="targetAttackingPosition">攻撃先のターゲット（ローカル座標）</param>
+        /// <returns>攻撃先のターゲット（ローカル座標）</returns>
+        private Vector3 SetTargetAttackingWorldPosition(Transform transform, Vector3 targetAttackingPosition)
+        {
+            _targetAttackingPosition = transform.TransformPoint(targetAttackingPosition);
+            return targetAttackingPosition;
         }
 
         /// <summary>

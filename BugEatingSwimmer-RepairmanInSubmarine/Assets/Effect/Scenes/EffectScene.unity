@@ -6204,9 +6204,17 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1622591290, guid: b32d6039b173b534fa9c162bcee30914, type: 3}
+      propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 791045152456902160, guid: b32d6039b173b534fa9c162bcee30914, type: 3}
       propertyPath: m_Name
       value: BugAura
+      objectReference: {fileID: 0}
+    - target: {fileID: 791045152456902162, guid: b32d6039b173b534fa9c162bcee30914, type: 3}
+      propertyPath: looping
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 791045152456902165, guid: b32d6039b173b534fa9c162bcee30914, type: 3}
       propertyPath: m_RootOrder

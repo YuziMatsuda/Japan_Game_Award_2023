@@ -145,6 +145,7 @@ MonoBehaviour:
   readonlyCodeMode: 0
   coralParts: []
   emotionsCodeMode: 0
+  enumInteractID: 0
 --- !u!114 &2177946357393909634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -173,6 +174,8 @@ MonoBehaviour:
   lightCodeCell: {fileID: 0}
   notLetPassTags:
   - DustConnectSignal
+  pivotConfig: {fileID: 7453025132582565660}
+  delayTimeOfLockedPlaySpinAnimations: 0.35
 --- !u!114 &2688145068106797634
 MonoBehaviour:
   m_ObjectHideFlags: 0

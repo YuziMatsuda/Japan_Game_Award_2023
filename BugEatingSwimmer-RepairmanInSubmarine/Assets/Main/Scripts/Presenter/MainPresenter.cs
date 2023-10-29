@@ -281,7 +281,12 @@ namespace Main.Presenter
                         mainSceneStagesState[currentStageDic[EnumSystemCommonCash.SceneId]][EnumMainSceneStagesState.State] = 2;
                         if (currentStageDic[EnumSystemCommonCash.SceneId] < mainSceneStagesState.Length - 1 &&
                             mainSceneStagesState[(currentStageDic[EnumSystemCommonCash.SceneId] + 1)][EnumMainSceneStagesState.State] < 1)
+                        {
                             mainSceneStagesState[(currentStageDic[EnumSystemCommonCash.SceneId] + 1)][EnumMainSceneStagesState.State] = 1;
+                            // ステージ2-4をクリアした場合はレフトアーム側（ステージ4-1）も解放する
+                            if (currentStageDic[EnumSystemCommonCash.SceneId] == 7)
+                                mainSceneStagesState[(currentStageDic[EnumSystemCommonCash.SceneId] + 1 + 3)][EnumMainSceneStagesState.State] = 1;
+                        }
                         // ステージごとのクリア状態を保存
                         //Debug.Log(string.Join("/", MainGameManager.Instance.AlgorithmOwner.HistorySignalsPosted.Select(q => q.GetComponent<PivotConfig>().EnumNodeCodeID)));
                         if (!MainGameManager.Instance.SceneOwner.SaveMainSceneStagesState(mainSceneStagesState))
@@ -808,6 +813,9 @@ namespace Main.Presenter
                                     playerModel.IsPlayingAction.ObserveEveryValueChanged(x => x.Value)
                                         .Subscribe(x =>
                                         {
+                                            if (x)
+                                                if (!attackTrigger.SetTarget(playerModel.TargetAttackingPosition))
+                                                    Debug.LogError("ターゲットをセット呼び出しの失敗");
                                             if (!attackTrigger.SetColliderEnabled(x))
                                                 Debug.LogError("コライダーの有効／無効をセット呼び出しの失敗");
                                         });
@@ -1424,8 +1432,6 @@ namespace Main.Presenter
                                                 if (!common.SendReceiverOfInteract(receivers, flowchartModel, codeObjs[idx].GetComponent<PivotConfig>().EnumInteractID))
                                                     Debug.LogError("シナリオのレシーバーへ送信呼び出しの失敗");
                                             }
-                                            // コード回転のSE
-                                            MainGameManager.Instance.AudioOwner.PlaySFX(ClipToPlay.se_code_normal);
                                             // IsPostingがTrueならバグフィックス状態
                                             // バグフィックス状態でコードをつつく　⇒　回転によりコードが繋がらなくなる
                                             // Histroyに含まないコード回転は無視する

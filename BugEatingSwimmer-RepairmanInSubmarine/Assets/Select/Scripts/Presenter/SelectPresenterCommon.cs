@@ -17,6 +17,8 @@ namespace Select.Common
     {
         /// <summary>ミッションID</summary>
         public EnumMissionID enumMissionID;
+        /// <summary>ステージ番号</summary>
+        public int stageIndex;
     }
 
     /// <summary>
@@ -67,8 +69,12 @@ namespace Select.Common
                     updateCount++;
                 }
                 if (0 < updateCount)
+                {
                     if (!temp.SaveDatasCSVOfMission(ConstResorcesNames.MISSION, mission))
                         throw new System.Exception("実績一覧管理データをCSVデータへ保存呼び出しの失敗");
+                    if (!SelectGameManager.Instance.MissionOwner.ReLoad())
+                        throw new System.Exception("リロード呼び出しの失敗");
+                }
 
                 return true;
             }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Select.Common;
+using UniRx;
 
 namespace Select.View
 {
@@ -17,6 +18,15 @@ namespace Select.View
             Color.green,
             Color.blue,
         };
+
+        public IEnumerator PlayFadeColorTextMessage(System.IObserver<bool> observer, EnumFadeState state)
+        {
+            Observable.FromCoroutine<bool>(observer => PlayFadeColorText(observer, state))
+                .Subscribe(_ => observer.OnNext(true))
+                .AddTo(gameObject);
+
+            yield return null;
+        }
 
         public bool SetColorTextMessage(EnumStageStatusMessage enumStageStatusMessage)
         {
@@ -68,5 +78,12 @@ namespace Select.View
         /// <param name="enumStageStatusMessage">ステージ状態の表示テキストインデックス</param>
         /// <returns>成功／失敗</returns>
         public bool SetColorTextMessage(EnumStageStatusMessage enumStageStatusMessage);
+        /// <summary>
+        /// テキストメッセージカラーをセットするフェードアニメーションを再生
+        /// </summary>
+        /// <param name="observer">バインド</param>
+        /// <param name="state">フェード状態</param>
+        /// <returns>コルーチン</returns>
+        public IEnumerator PlayFadeColorTextMessage(System.IObserver<bool> observer, EnumFadeState state);
     }
 }

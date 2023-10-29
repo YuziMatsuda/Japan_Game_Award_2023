@@ -9,7 +9,7 @@
                     "name": "Move",
                     "type": "Value",
                     "id": "80e67fbe-7e80-4bd8-b465-677521cf5585",
-                    "expectedControlType": "Vector2",
+                    "expectedControlType": "Stick",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -39,7 +39,7 @@
                     "id": "5ffb9609-439f-4949-8d31-1c241551de47",
                     "path": "<Gamepad>/leftStick",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "StickDeadzone",
                     "groups": "Gamepad",
                     "action": "Move",
                     "isComposite": false,

@@ -193,23 +193,85 @@ namespace Select.Presenter
             // 会話イベント発生
             if (!common.CheckMissionAndSaveDatasCSVOfMission())
                 Debug.LogError("ミッションの更新チェック呼び出しの失敗");
+            // キャンセル入力を許可／禁止
+            var isEnabledCancel = new BoolReactiveProperty();
 
             SelectGameManager.Instance.AudioOwner.PlayBGM(Cue.select_start_and_loop);
             // シーン読み込み時のアニメーション
             Observable.FromCoroutine<bool>(observer => fadeImageView.PlayFadeAnimation(observer, EnumFadeState.Open))
                 .Subscribe(_ =>
                 {
-                    // UI操作を許可
-                    foreach (var child in logoStageModels)
-                        if (child != null)
+                    var isEnabledUI = new BoolReactiveProperty();
+                    isEnabledUI.ObserveEveryValueChanged(x => x.Value)
+                        .Subscribe(x =>
                         {
-                            child.SetButtonEnabled(true);
-                            child.SetEventTriggerEnabled(true);
-                        }
-                    if (!GameManager.Instance.SoftwareCursorPositionAdjusterView.SetCursorEnabled(true))
-                        Debug.LogError("カーソルのステータスを変更呼び出しの失敗");
+                            if (x)
+                            {
+                                // UI操作を許可
+                                foreach (var child in logoStageModels)
+                                    if (child != null)
+                                    {
+                                        child.SetButtonEnabled(true);
+                                        child.SetEventTriggerEnabled(true);
+                                    }
+                                if (!GameManager.Instance.SoftwareCursorPositionAdjusterView.SetCursorEnabled(true))
+                                    Debug.LogError("カーソルのステータスを変更呼び出しの失敗");
+                                isEnabledCancel.Value = true;
+                            }
+                        });
                     if (!common.SetCounterBetweenAndFillAmountAllGage(seastarGageViews))
                         Debug.LogError("全ヒトデゲージのカウンターとフィルターをセット呼び出しの失敗");
+                    // ステージのノイズ解放演出
+                    var logoStageModelsOfIsPlayDirection = logoStageModels.Select((p, i) => new { Content = p, Index = i })
+                        .Where(q => q.Content != null &&
+                        q.Content.IsPlayDirection &&
+                        (
+                            q.Content.StageState.Value == 1 ||
+                            q.Content.StageState.Value == 2
+                        ) &&
+                        q.Content.transform.GetComponent<LogoStageView>().IsVisibledInPage);
+                    if (0 < logoStageModelsOfIsPlayDirection.Select(q => q)
+                        .ToArray()
+                        .Length)
+                    {
+                        foreach (var item in logoStageModelsOfIsPlayDirection)
+                        {
+                            switch (item.Content.StageState.Value)
+                            {
+                                case 1:
+                                    // 選択可
+                                    Observable.FromCoroutine<bool>(observer => logoStageViews[item.Index].PlayRenderEnabled(observer))
+                                        .Subscribe(_ =>
+                                        {
+                                            isEnabledUI.Value = true;
+                                            if (!SelectGameManager.Instance.MissionOwner.SaveTempOfDirection(item.Index))
+                                                Debug.LogError("実績の一時保存呼び出しの失敗");
+                                        })
+                                        .AddTo(gameObject);
+
+                                    break;
+                                case 2:
+                                    // クリア
+                                    Observable.FromCoroutine<bool>(observer => logoStageViews[item.Index].PlayRenderClearMark(observer))
+                                        .Subscribe(_ =>
+                                        {
+                                            isEnabledUI.Value = true;
+                                            if (!SelectGameManager.Instance.MissionOwner.SaveTempOfDirection(item.Index))
+                                                Debug.LogError("実績の一時保存呼び出しの失敗");
+                                        })
+                                        .AddTo(gameObject);
+
+                                    break;
+                                default:
+                                    Debug.LogWarning("例外ケース");
+                                    break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        isEnabledUI.Value = true;
+                    }
                     // コア解放演出
                     if (common.IsConnectedAnimation())
                     {
@@ -268,17 +330,39 @@ namespace Select.Presenter
                                 // 処理無し
                                 break;
                             case 0:
+                                // 選択不可（ノイズ状態）
                                 if (!logoStageViews[idx].RenderDisableMark())
                                     Debug.LogError("選択不可マーク表示呼び出しの失敗");
                                 break;
                             case 1:
                                 // 選択可
-                                if (!logoStageViews[idx].RenderEnabled())
-                                    Debug.LogError("選択可表示呼び出しの失敗");
+                                if (!logoStageModels[idx].IsPlayDirection)
+                                {
+                                    if (!logoStageViews[idx].RenderEnabled())
+                                        Debug.LogError("選択可表示呼び出しの失敗");
+                                }
+                                else
+                                {
+                                    // 演出ありの場合はノイズ状態で表示
+                                    if (!logoStageViews[idx].RenderDisableMark())
+                                        Debug.LogError("選択不可マーク表示呼び出しの失敗");
+                                }
+
                                 break;
                             case 2:
-                                if (!logoStageViews[idx].RenderClearMark())
-                                    Debug.LogError("クリア済みマーク表示呼び出しの失敗");
+                                // クリア
+                                if (!logoStageModels[idx].IsPlayDirection)
+                                {
+                                    if (!logoStageViews[idx].RenderClearMark())
+                                        Debug.LogError("クリア済みマーク表示呼び出しの失敗");
+                                }
+                                else
+                                {
+                                    // 演出ありの場合はノイズ状態で表示
+                                    if (!logoStageViews[idx].RenderDisableMark())
+                                        Debug.LogError("選択不可マーク表示呼び出しの失敗");
+                                }
+
                                 break;
                             default:
                                 Debug.LogWarning("例外ケース");
@@ -287,6 +371,7 @@ namespace Select.Presenter
                     });
             }
             // 選択ステージ番号の更新
+            var isOnlyOneced = new BoolReactiveProperty();
             stageIndex.ObserveEveryValueChanged(x => x.Value)
                 .Subscribe(x =>
                 {
@@ -304,6 +389,13 @@ namespace Select.Presenter
                             Debug.LogError("アルファ値切り替え処理の失敗");
                         if (!pageViews[i].SetBlocksRaycasts(i == pageIdx))
                             Debug.LogError("レイキャスト判定対象を設定の失敗");
+                        if (i == pageIdx)
+                            if (!isOnlyOneced.Value)
+                            {
+                                isOnlyOneced.Value = true;
+                                if (!pageViews[i].PlayRenderDisableMarkOfCurrentStages())
+                                    Debug.LogError("選択不可マークを表示演出を再生呼び出しの失敗");
+                            }
                     }
                 });
 
@@ -394,8 +486,6 @@ namespace Select.Presenter
                     });
             }
 
-            // キャンセル入力を許可／禁止
-            var isEnabledCancel = new BoolReactiveProperty(true);
             // ステージが選択された状態なら、キャプションを表示にする
             logoStagesView.IsZoomed.ObserveEveryValueChanged(x => x.Value)
                 .Subscribe(x =>
