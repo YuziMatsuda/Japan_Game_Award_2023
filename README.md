@@ -1,6 +1,11 @@
 # BugEatingSwimmer-RepairmanInSubmarine
 ## リリースノート
-#### v1.7.0
+#### v1.7.1
+* レベルデザイン
+	* 5-4にてヒトデが2個獲得できる場所が存在する
+* メカニクス
+	* 遊び方を開く、ポーズ中にプレイヤーの向きが変わる
+###### v1.7.0
 * メカニクス 
 	* ノードの当たり判定拡大
 	* ノード回転中（ランプが点滅していく演出中）は突っつきを受け付けない（連打すると１回分、回転しない）
@@ -45,11 +50,12 @@
 ###### v0.0.1
 ###### プロトタイプ版制作
 ## プロジェクトバージョン
-### v1.7.0
+### v1.7.1
 ## UnityEditorバージョン
 ### [2021.3.13f1](https://unity.com/releases/editor/whats-new/2021.3.13)
 ## 使用アセット
 ### [InputSystem](https://forpro.unity3d.jp/unity_pro_tips/2021/05/20/1957/)
 ### [DOTween(HOTween v2)](https://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676)
 ### [UniRx](https://kingmo.jp/kumonos/unirx-unitask-upm-import/)
+### [Fungus](https://github.com/snozbot/fungus/tree/master)
 ### [CRIWARE Unity Plug-in_v3.09.01](https://game.criware.jp/products/adx-le/#ledl)
