@@ -224,6 +224,8 @@ namespace Main.Presenter
                         }
                         pauseView.gameObject.SetActive(true);
                         gamePauseModel.SetSelectedGameObject();
+                        if (!playerModel.SetInputBan(true))
+                            Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
                     }
                 });
             // ポーズ画面表示中の操作
@@ -255,6 +257,8 @@ namespace Main.Presenter
                                 .Subscribe(_ =>
                                 {
                                     pauseView.gameObject.SetActive(false);
+                                    if (!playerModel.SetInputBan(false))
+                                        Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
                                 })
                                 .AddTo(gameObject);
                             break;
@@ -591,6 +595,8 @@ namespace Main.Presenter
                                     if (!gameManualScrollView.SetPage(EnumGameManualPagesIndex.Page_1))
                                         Debug.LogError("ページ変更呼び出しの失敗");
                                     gameManualViewPageModels[(int)EnumGameManualPagesIndex.Page_1].SetSelectedGameObject();
+                                    if (!playerModel.SetInputBan(true))
+                                        Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
                                     break;
                                 default:
                                     Debug.LogWarning("例外ケース");
@@ -634,6 +640,8 @@ namespace Main.Presenter
                                     {
                                         gameManualScrollView.gameObject.SetActive(false);
                                         inProcess = EnumShortcuActionMode.None;
+                                        if (!playerModel.SetInputBan(false))
+                                            Debug.LogError("操作禁止フラグをセット呼び出しの失敗");
                                     })
                                     .AddTo(gameObject);
                                 break;
